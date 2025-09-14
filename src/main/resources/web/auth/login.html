@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PharmaLink</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+<div class="login-box">
+    <div class="logo-container">
+        <div class="logo">
+            <span class="logo-title">PharmaLink</span>
+            <span class="logo-subtitle">Backend Controle</span>
+        </div>
+    </div>
+
+    <div th:if="${param.error}" class="message error-message">
+        Ungültiger Benutzername oder Passwort.
+    </div>
+
+    <div th:if="${param.logout}" class="message success-message">
+        Sie wurden erfolgreich abgemeldet.
+    </div>
+
+    <form th:action="@{/authenticate}" method="post">
+        <div class="form-group">
+            <label for="username">Benutzername:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Passwort:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Anmelden">
+        </div>
+    </form>
+</div>
+</body>
+</html>

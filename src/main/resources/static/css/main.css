@@ -1,0 +1,299 @@
+/*
+====================================================================
+    1. GLOBALE VARIABLEN & BASIS-STILE
+====================================================================
+*/
+
+:root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --spacing-2: 0.5rem;
+    --spacing-3: 0.8rem;
+    --spacing-4: 1.25rem;
+    --spacing-5: 2rem;
+    --color-bg-page: #f8fafc;
+    --color-bg-content: #ffffff;
+    --color-border: #eef2f7;
+    --color-text-primary: #222;
+    --color-text-secondary: #475569;
+
+    /* Header & Footer Farben */
+    --color-header-bg: #1B1B1B;
+    --color-header-text: #ffffff;
+    --color-nav-hover-bg: rgba(255, 255, 255, 0.1);
+    --color-nav-active-bg: #3b82f6;
+
+    /* Akzentfarben */
+    --color-accent-red: #e74c3c;
+    --color-accent-red-dark: #c0392b;
+    --color-accent-green-dark: #16a34a;
+}
+
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-page);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-4) var(--spacing-5);
+    box-sizing: border-box;
+}
+
+hr.section-divider {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: var(--spacing-5) 0;
+}
+
+
+/*
+====================================================================
+    2. STANDARD-KOMPONENTEN
+====================================================================
+*/
+
+.card {
+    background-color: var(--color-bg-content);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-4);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 1px solid transparent;
+    background-color: #1B1B1B;
+    color: #ffffff;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: var(--spacing-4);
+}
+
+.info-section {
+    color: var(--color-text-secondary);
+}
+
+.info-section:not(:last-child) {
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-3);
+    border-bottom: 1px dashed var(--color-border);
+}
+
+.info-section p {
+    margin: 0;
+}
+
+.info-section p strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.actor-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-2) var(--spacing-4);
+}
+
+.logo-link {
+    display: flex;
+    flex-direction: column; /* Stellt Titel und Untertitel untereinander dar */
+    text-decoration: none;
+}
+
+.logo-title {
+    font-size: 1.5rem; /* Etwas kleiner als vorher */
+    font-weight: 600;  /* Semibold für einen modernen Look */
+    color: var(--color-header-text);
+    line-height: 1.1;  /* Zeilenhöhe für kompakte Darstellung */
+}
+
+.logo-subtitle {
+    font-size: 0.65rem; /* Sehr kleiner Text */
+    font-weight: 400;
+    text-transform: uppercase; /* In Großbuchstaben für einen "technischen" Look */
+    letter-spacing: 0.1em;     /* Mehr Abstand zwischen den Buchstaben */
+    color: var(--color-header-text);
+    opacity: 0.7; /* Leicht transparent, um untergeordnet zu wirken */
+}
+
+/*
+====================================================================
+    3. HEADER & FOOTER
+====================================================================
+*/
+
+.main-header,
+.main-footer {
+    background-color: var(--color-header-bg);
+    color: var(--color-header-text);
+    padding: 0 var(--spacing-5);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.header-content,
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.main-header .header-content {
+    min-height: 64px;
+}
+
+.main-footer {
+    padding-top: var(--spacing-4);
+    padding-bottom: var(--spacing-4);
+    border-top: none;
+}
+
+.footer-content {
+    gap: var(--spacing-4);
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.main-nav a {
+    background-color: transparent;
+    color: var(--color-header-text);
+    text-decoration: none;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.main-nav a:hover {
+    background-color: var(--color-nav-hover-bg);
+}
+
+.main-nav a.active {
+    background-color: var(--color-nav-active-bg);
+}
+
+.logout-button {
+    background-color: transparent;
+    color: var(--color-header-text);
+    border: 1px solid var(--color-header-text);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.logout-button:hover {
+    background-color: var(--color-accent-red);
+    border-color: var(--color-accent-red);
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.main-footer a {
+    color: var(--color-header-text);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    opacity: 0.8;
+}
+
+.main-footer a:hover {
+    text-decoration: none;
+    opacity: 1;
+}
+
+/*
+====================================================================
+    4. HELFER-KLASSEN
+====================================================================
+*/
+
+.copy-on-click {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+}
+
+.copy-on-click:hover {
+    background-color: var(--color-border);
+}
+
+.copied-feedback {
+    box-shadow: 0 0 0 2px var(--color-accent-green-dark);
+    background-color: transparent !important;
+}
+
+/*
+====================================================================
+    5. RESPONSIVE ANPASSUNGEN
+====================================================================
+*/
+
+@media (max-width: 768px) {
+    main, .main-header, .main-footer {
+        padding-left: var(--spacing-4);
+        padding-right: var(--spacing-4);
+    }
+
+    .header-content,
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4) 0;
+        text-align: center;
+    }
+
+    .header-content {
+        align-items: flex-start;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .main-nav a, .logout-button {
+        display: block;
+        text-align: center;
+    }
+}
+

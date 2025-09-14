@@ -1,0 +1,141 @@
+/*
+====================================================================
+    1. LOKALE VARIABLEN & BASIS-STILE FÜR DEN JSON-VIEWER
+====================================================================
+*/
+/* KORREKTUR: Der Klassenname wurde zu .json-formatter-viewer-theme geändert */
+.json-formatter-viewer-theme {
+    /* -- Definierte Variablen für dieses Bauteil -- */
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --radius-sm: 6px;
+    --spacing-2: 0.5rem;
+    --spacing-3: 0.8rem;
+    --spacing-5: 1.5rem;
+    --color-bg-content: #ffffff;
+    --color-bg-subtle: #f8fafc; /* Hellgrau für Value-Boxen */
+    --color-border: #eef2f7;
+    --color-text-key: #475569;
+    --color-lineage: #1B1B1B;
+
+    /* Syntax-Farben */
+    --syntax-string: #222;
+    --syntax-number: #8b5cf6;
+    --syntax-boolean: #ec4899;
+    --syntax-null: #ef4444;
+
+    /* Interaktive Themen-Farben */
+    --theme-status-bg: #ecfdf5;
+    --theme-status-text: #10b981;
+    --theme-hersteller-bg: #fffbeb;
+    --theme-hersteller-text: #f59e0b;
+    --theme-med-id-bg: #eff6ff;
+    --theme-med-id-text: #3b82f6;
+    --theme-boolean-bg: #fdf2f8;
+    --theme-boolean-text: #ec4899;
+
+    font-family: var(--font-mono);
+    font-size: 14px;
+}
+
+/*
+====================================================================
+    2. NEUES DESIGN: KEY/VALUE ALS SEPARATE BOXEN
+====================================================================
+*/
+
+.json-formatter-viewer-theme .json-formatter-row {
+    display: flex;
+    align-items: stretch;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+}
+
+.json-formatter-viewer-theme .json-formatter-key {
+    background-color: var(--color-bg-content);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-2) var(--spacing-3);
+    color: var(--color-text-key);
+    font-weight: 500;
+    flex-shrink: 0;
+    flex-basis: 200px;
+    text-transform: uppercase;
+}
+
+.json-formatter-viewer-theme .json-formatter-string,
+.json-formatter-viewer-theme .json-formatter-number,
+.json-formatter-viewer-theme .json-formatter-boolean,
+.json-formatter-viewer-theme .json-formatter-null {
+    background-color: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-2) var(--spacing-3);
+    flex-grow: 1;
+    word-break: break-all;
+}
+
+.json-formatter-viewer-theme .json-formatter-string { color: var(--syntax-string); }
+.json-formatter-viewer-theme .json-formatter-number { color: var(--syntax-number); }
+.json-formatter-viewer-theme .json-formatter-boolean { color: var(--syntax-boolean); }
+.json-formatter-viewer-theme .json-formatter-null { color: var(--syntax-null); }
+
+/*
+====================================================================
+    3. VERSCHACHTELTE OBJEKTE
+====================================================================
+*/
+
+.json-formatter-viewer-theme .json-formatter-children {
+    position: relative;
+    margin-top: var(--spacing-3);
+    padding-left: var(--spacing-5);
+}
+
+.json-formatter-viewer-theme .json-formatter-children::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--color-lineage);
+    border-radius: 2px;
+}
+
+.json-formatter-row .json-formatter-key {
+    color: #475569;
+    padding-right: 0.2rem;
+}
+
+.json-formatter-row .json-formatter-string,
+.json-formatter-row .json-formatter-stringifiable {
+    color: black;
+    white-space: pre;
+    word-wrap: break-word;
+}
+
+.json-formatter-row .json-formatter-toggler {
+    line-height: 1.2rem;
+    font-size: 0.9rem;
+    vertical-align: middle;
+    opacity: 0.6;
+    cursor: pointer;
+    padding-right: 0.3rem;
+}
+
+/*
+====================================================================
+    4. INTERAKTIVE STILE (überschreiben das Standard-Design)
+====================================================================
+*/
+
+.clickable-value { cursor: pointer; }
+.styled-key, .styled-value {
+    /* Basis-Klasse ohne Stile, nur als Haken für JS */
+}
+
+.key-style-status, .value-style-status { background-color: var(--theme-status-bg); color: var(--theme-status-text); border-color: #bbf7d0; }
+.key-style-hersteller { color: var(--theme-hersteller-text); }
+.value-style-hersteller { background-color: var(--theme-hersteller-bg); color: var(--theme-hersteller-text); border-color: #fedfcf;}
+.value-style-med-id { background-color: var(--theme-med-id-bg); color: var(--theme-med-id-text); border-color: #dbeafe;}
+.value-style-boolean { background-color: var(--theme-boolean-bg); color: var(--theme-boolean-text); border-color: #f2d3ff;}

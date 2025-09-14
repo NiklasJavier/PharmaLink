@@ -1,0 +1,141 @@
+/* src/main/resources/static/css/login.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.login-box {
+    background-color: #ffffff;
+    padding: 2.2em 2.5em;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* --- NEU: Logo-Styling für Login-Seite --- */
+.logo-container {
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
+.login-intro-text {
+    display: block;
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 0.5em;
+}
+
+.logo {
+    display: inline-flex; /* Damit es sich im Container zentriert */
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-title {
+    font-size: 2.2rem; /* Größer für den Login-Titel */
+    font-weight: 700;
+    color: #333;
+    line-height: 1.1;
+}
+
+.logo-subtitle {
+    font-size: 0.7rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #555;
+    opacity: 0.8;
+}
+
+/* --- RESTLICHES FORMULAR-STYLING --- */
+
+.message {
+    padding: 0.6em 0.8em;
+    margin-bottom: 1em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    text-align: center;
+    border: 1px solid transparent;
+    line-height: 1.4;
+}
+
+.success-message {
+    background-color: #e8f5e9;
+    color: #388e3c;
+    border-color: #c8e6c9;
+}
+
+.error-message {
+    background-color: #fbe9e7;
+    color: #d32f2f;
+    border-color: #ffccbc;
+}
+
+.form-group {
+    margin-bottom: 1em;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4em;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: #a0a0a0;
+    box-shadow: 0 0 0 1px #a0a0a0;
+    outline: none;
+}
+
+.form-group input[type="submit"] {
+    width: 100%;
+    padding: 14px 20px;
+    background-color: #1B1B1B;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1.5em;
+}
+
+.form-group input[type="submit"]:hover {
+    background-color: #333; /* Etwas heller im Hover für Feedback */
+}
+
+/* --- RESPONSIVE ANPASSUNGEN --- */
+@media (max-width: 480px) {
+    .login-box {
+        padding: 1.8em 2em;
+        margin: 15px;
+    }
+    .logo-title {
+        font-size: 1.8rem;
+    }
+}

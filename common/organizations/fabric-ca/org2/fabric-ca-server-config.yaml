@@ -1,0 +1,408 @@
+#############################################################################
+#   Dies ist eine Konfigurationsdatei für den Befehl fabric-ca-server.
+#
+#   BEFEHLSZEILENARGUMENTE UND UMGEBUNGSVARIABLEN
+#   ------------------------------------------------
+#   Jedes Konfigurationselement kann über Kommandozeilenargumente
+#   oder Umgebungsvariablen überschrieben werden. Die Rangfolge zur Bestimmung
+#   des Wertes jedes Elements ist wie folgt:
+#   1) Kommandozeilenargument
+#      Beispiele:
+#      a) --port 443
+#         Um den Listening-Port zu setzen
+#      b) --ca.keyfile ../mykey.pem
+#         Um das "keyfile"-Element im "ca"-Abschnitt unten zu setzen;
+#         beachten Sie das '.'-Trennzeichen.
+#   2) Umgebungsvariable
+#      Beispiele:
+#      a) FABRIC_CA_SERVER_PORT=443
+#         Um den Listening-Port zu setzen
+#      b) FABRIC_CA_SERVER_CA_KEYFILE="../mykey.pem"
+#         Um das "keyfile"-Element im "ca"-Abschnitt unten zu setzen;
+#         beachten Sie das '_'-Trennzeichen.
+#   3) Konfigurationsdatei
+#   4) Standardwert (falls vorhanden)
+#      Alle Standardwerte werden unten neben jedem Element angezeigt.
+#
+#   DATEINAMEN-ELEMENTE
+#   ------------------
+#   Der Wert aller Felder, deren Name auf "file" oder "files" endet, sind
+#   der Name oder die Namen anderer Dateien.
+#   Zum Beispiel, siehe "tls.certfile" und "tls.clientauth.certfiles".
+#   Der Wert jedes dieser Felder kann ein einfacher Dateiname, ein
+#   relativer Pfad oder ein absoluter Pfad sein. Wenn der Wert kein
+#   absoluter Pfad ist, wird er als relativ zum Speicherort
+#   dieser Konfigurationsdatei interpretiert.
+#
+#############################################################################
+
+# Version der Konfigurationsdatei
+version: 1.2.0
+
+# Listening-Port des Servers (Standard: 7054)
+port: 7054
+
+# Aktiviert Debug-Protokollierung (Standard: false)
+debug: false
+
+# Größenlimit einer akzeptablen CRL in Bytes (Standard: 512000)
+crlsizelimit: 512000
+
+#############################################################################
+#  TLS-Abschnitt für den Listening-Port des Servers
+#
+#  Die folgenden Typen werden für die Client-Authentifizierung unterstützt: NoClientCert,
+#  RequestClientCert, RequireAnyClientCert, VerifyClientCertIfGiven,
+#  und RequireAndVerifyClientCert.
+#
+#  Certfiles ist eine Liste von Stammzertifizierungsstellen, die der Server
+#  beim Überprüfen von Client-Zertifikaten verwendet.
+#############################################################################
+tls:
+  # TLS aktivieren (Standard: false)
+  enabled: true
+  # TLS für den Listening-Port des Servers
+  certfile:
+  keyfile:
+  clientauth:
+    type: noclientcert
+    certfiles:
+
+#############################################################################
+#  Der CA-Abschnitt enthält Informationen zur Zertifizierungsstelle (Certificate Authority),
+#  einschließlich des Namens der CA, der für alle Mitglieder
+#  eines Blockchain-Netzwerks eindeutig sein sollte. Er enthält auch die Schlüssel- und Zertifikatsdateien,
+#  die beim Ausstellen von Registrierungszertifikaten (ECerts) und Transaktions-
+#  zertifikaten (TCerts) verwendet werden.
+#  Die chainfile (falls vorhanden) enthält die Zertifikatskette, der für diese CA
+#  vertraut werden sollte, wobei das erste Zertifikat in der Kette immer das
+#  Stamm-CA-Zertifikat ist.
+#############################################################################
+ca:
+  # Name dieser CA
+  name: Org2CA
+  # Schlüssel-Datei (wird nur zum Importieren eines privaten Schlüssels in BCCSP verwendet)
+  keyfile:
+  # Zertifikatsdatei (Standard: ca-cert.pem)
+  certfile:
+  # Chain-Datei (Zertifikatskette)
+  chainfile:
+
+#############################################################################
+#  Der gencrl REST-Endpunkt wird verwendet, um eine CRL zu generieren, die widerrufene
+#  Zertifikate enthält. Dieser Abschnitt enthält Konfigurationsoptionen, die während
+#  der Verarbeitung von gencrl-Anfragen verwendet werden.
+#############################################################################
+crl:
+  # Legt das Ablaufdatum für die generierte CRL fest. Die Anzahl der Stunden,
+  # die durch diese Eigenschaft angegeben wird, wird zur UTC-Zeit addiert, die resultierende Zeit
+  # wird verwendet, um das 'Next Update'-Datum der CRL zu setzen.
+  expiry: 24h
+
+#############################################################################
+#  Der registry-Abschnitt steuert, wie der fabric-ca-server zwei Dinge tut:
+#  1) Authentifiziert Registrierungsanfragen, die einen Benutzernamen und ein Passwort
+#     enthalten (auch als Registrierungs-ID und Secret bekannt).
+#  2) Sobald authentifiziert, ruft er die Attributnamen und -werte der Identität ab,
+#     die der fabric-ca-server optional in TCerts einfügt,
+#     die er für Transaktionen auf der Hyperledger Fabric Blockchain ausstellt.
+#     Diese Attribute sind nützlich, um Zugriffskontrollentscheidungen im
+#     Chaincode zu treffen.
+#  Es gibt zwei Hauptkonfigurationsoptionen:
+#  1) Der fabric-ca-server ist die Registry.
+#     Dies ist der Fall, wenn "ldap.enabled" im ldap-Abschnitt unten auf false gesetzt ist.
+#  2) Ein LDAP-Server ist die Registry, in diesem Fall ruft der fabric-ca-server
+#     den LDAP-Server auf, um diese Aufgaben auszuführen.
+#     Dies ist der Fall, wenn "ldap.enabled" im ldap-Abschnitt unten auf true gesetzt ist,
+#     was bedeutet, dass dieser "registry"-Abschnitt ignoriert wird.
+#############################################################################
+registry:
+  # Maximale Anzahl, wie oft ein Passwort/Secret für die Registrierung wiederverwendet werden kann
+  # (Standard: -1, was bedeutet, dass es keine Begrenzung gibt)
+  maxenrollments: -1
+
+  # Enthält Identitätsinformationen, die verwendet werden, wenn LDAP deaktiviert ist
+  identities:
+    - name: admin
+      pass: adminpw
+      type: client
+      affiliation: ""
+      attrs:
+        hf.Registrar.Roles: "*"
+        hf.Registrar.DelegateRoles: "*"
+        hf.Revoker: true
+        hf.IntermediateCA: true
+        hf.GenCRL: true
+        hf.Registrar.Attributes: "*"
+        hf.AffiliationMgr: true
+
+#############################################################################
+#  Datenbank-Abschnitt
+#  Unterstützte Typen sind: "sqlite3", "postgres", und "mysql".
+#  Der Wert von "datasource" hängt vom Typ ab.
+#  Wenn der Typ "sqlite3" ist, ist der datasource-Wert ein Dateiname, der
+#  als Datenbankspeicher verwendet wird. Da "sqlite3" eine eingebettete Datenbank ist,
+#  darf sie nicht verwendet werden, wenn Sie den fabric-ca-server in einem Cluster betreiben möchten.
+#  Um den fabric-ca-server in einem Cluster zu betreiben, müssen Sie "postgres"
+#  oder "mysql" wählen.
+#############################################################################
+db:
+  type: sqlite3
+  datasource: fabric-ca-server.db
+  tls:
+    enabled: false
+    certfiles:
+    client:
+      certfile:
+      keyfile:
+
+#############################################################################
+#  LDAP-Abschnitt
+#  Wenn LDAP aktiviert ist, ruft der fabric-ca-server LDAP auf, um:
+#  1) die Registrierungs-ID und das Secret (d.h. Benutzername und Passwort)
+#     für Registrierungsanfragen zu authentifizieren;
+#  2) Identitätsattribute abzurufen.
+#############################################################################
+ldap:
+  # Aktiviert oder deaktiviert den LDAP-Client (Standard: false)
+  # Wenn dies auf true gesetzt ist, wird der "registry"-Abschnitt ignoriert.
+  enabled: false
+  # Die URL des LDAP-Servers
+  url: ldap://<adminDN>:<adminPassword>@<host>:<port>/<base>
+  # TLS-Konfiguration für die Client-Verbindung zum LDAP-Server
+  tls:
+    certfiles:
+    client:
+      certfile:
+      keyfile:
+  # Attributbezogene Konfiguration für die Zuordnung von LDAP-Einträgen zu Fabric-CA-Attributen
+  attribute:
+    # 'names' ist ein Array von Zeichenketten, das die LDAP-Attributnamen enthält, die
+    # vom LDAP-Server für den Eintrag einer LDAP-Identität angefordert werden.
+    names: ['uid','member']
+    # Der 'converters'-Abschnitt wird verwendet, um einen LDAP-Eintrag in den Wert
+    # eines Fabric-CA-Attributs zu konvertieren.
+    # Zum Beispiel konvertiert das folgende ein LDAP-'uid'-Attribut,
+    # dessen Wert mit 'revoker' beginnt, in ein Fabric-CA-Attribut
+    # namens "hf.Revoker" mit dem Wert "true" (weil der boolesche Ausdruck
+    # true ergibt).
+    #    converters:
+    #       - name: hf.Revoker
+    #         value: attr("uid") =~ "revoker*"
+    converters:
+      - name:
+        value:
+    # Der 'maps'-Abschnitt enthält benannte Zuordnungen, die von der 'map'-
+    # Funktion im 'converters'-Abschnitt referenziert werden können, um LDAP-Antworten
+    # auf beliebige Werte abzubilden.
+    # Zum Beispiel, nehmen wir an, ein Benutzer hat ein LDAP-Attribut namens 'member', das mehrere
+    # Werte hat, die jeweils ein Distinguished Name (d.h. ein DN) sind. Der Einfachheit halber nehmen wir an,
+    # die Werte des 'member'-Attributs sind 'dn1', 'dn2' und 'dn3'.
+    # Nehmen wir weiter die folgende Konfiguration an.
+    #    converters:
+    #       - name: hf.Registrar.Roles
+    #         value: map(attr("member"),"groups")
+    #    maps:
+    #       groups:
+    #          - name: dn1
+    #            value: peer
+    #          - name: dn2
+    #            value: client
+    # Der Wert des 'hf.Registrar.Roles'-Attributs des Benutzers wird dann als
+    # "peer,client,dn3" berechnet. Dies liegt daran, dass der Wert von 'attr("member")'
+    # "dn1,dn2,dn3" ist, und der Aufruf von 'map' mit einem zweiten Argument von
+    # "group" ersetzt "dn1" durch "peer" und "dn2" durch "client".
+    maps:
+      groups:
+        - name:
+          value:
+
+#############################################################################
+# Affiliations-Abschnitt. Der Fabric-CA-Server kann mit den
+# in diesem Abschnitt angegebenen Zugehörigkeiten (Affiliations) gebootstrappt werden. Affiliations werden als Maps angegeben.
+# Zum Beispiel:
+#   geschaeftsbereich1:
+#     abteilung1:
+#       - team1
+#   geschaeftsbereich2:
+#     - abteilung2
+#     - abteilung3
+#
+# Zugehörigkeiten sind hierarchischer Natur. Im obigen Beispiel ist
+# abteilung1 (verwendet als geschaeftsbereich1.abteilung1) das Kind von geschaeftsbereich1.
+# team1 (verwendet als geschaeftsbereich1.abteilung1.team1) ist das Kind von abteilung1.
+# abteilung2 (verwendet als geschaeftsbereich2.abteilung2) und abteilung3 (geschaeftsbereich2.abteilung3)
+# sind Kinder von geschaeftsbereich2.
+# Hinweis: Zugehörigkeiten sind case-sensitive, außer für die Nicht-Blatt-Zugehörigkeiten
+# (wie geschaeftsbereich1, abteilung1, geschaeftsbereich2), die in der Konfigurationsdatei angegeben sind,
+# die immer in Kleinbuchstaben gespeichert werden.
+#############################################################################
+affiliations:
+  org1:
+    - department1
+    - department2
+  org2:
+    - department1
+
+#############################################################################
+#  Signatur-Abschnitt (Signing)
+#
+#  Der "default"-Unterabschnitt wird zum Signieren von Registrierungszertifikaten verwendet;
+#  das Standard-Ablaufdatum ("expiry"-Feld) ist "8760h", was 1 Jahr in Stunden ist.
+#
+#  Der "ca"-Profil-Unterabschnitt wird zum Signieren von Zwischen-CA-Zertifikaten (Intermediate CA) verwendet;
+#  das Standard-Ablaufdatum ("expiry"-Feld) ist "43800h", was 5 Jahre in Stunden ist.
+#  Beachten Sie, dass "isca" true ist, was bedeutet, dass es ein CA-Zertifikat ausstellt.
+#  Ein maxpathlen von 0 bedeutet, dass die Zwischen-CA keine anderen
+#  Zwischen-CA-Zertifikate ausstellen kann, obwohl sie weiterhin End-Entitäts-Zertifikate ausstellen kann.
+#  (Siehe RFC 5280, Abschnitt 4.2.1.9)
+#
+#  Der "tls"-Profil-Unterabschnitt wird zum Signieren von TLS-Zertifikatsanfragen verwendet;
+#  das Standard-Ablaufdatum ("expiry"-Feld) ist "8760h", was 1 Jahr in Stunden ist.
+#############################################################################
+signing:
+  default:
+    usage:
+      - digital signature
+    expiry: 8760h
+  profiles:
+    ca:
+      usage:
+        - cert sign
+        - crl sign
+      expiry: 43800h
+      caconstraint:
+        isca: true
+        maxpathlen: 0
+    tls:
+      usage:
+        - signing
+        - key encipherment
+        - server auth
+        - client auth
+        - key agreement
+      expiry: 8760h
+
+###########################################################################
+#  Certificate Signing Request (CSR)-Abschnitt.
+#  Dies steuert die Erstellung des Stamm-CA-Zertifikats.
+#  Das Ablaufdatum für das Stamm-CA-Zertifikat wird mit dem
+#  "ca.expiry"-Feld unten konfiguriert, dessen Standardwert "131400h" ist,
+#  was 15 Jahre in Stunden sind.
+#  Das pathlength-Feld wird verwendet, um die Hierarchie der CA-Zertifikate zu begrenzen,
+#  wie in Abschnitt 4.2.1.9 von RFC 5280 beschrieben.
+#  Beispiele:
+#  1) Kein pathlength-Wert bedeutet, dass keine Begrenzung angefordert wird.
+#  2) pathlength == 1 bedeutet, dass eine Begrenzung von 1 angefordert wird, was der Standard für
+#     eine Stamm-CA ist. Dies bedeutet, die Stamm-CA kann Zwischen-CA-Zertifikate ausstellen,
+#     aber diese Zwischen-CAs dürfen ihrerseits keine weiteren CA-Zertifikate ausstellen,
+#     obwohl sie weiterhin End-Entitäts-Zertifikate ausstellen können.
+#  3) pathlength == 0 bedeutet, dass eine Begrenzung von 0 angefordert wird;
+#     dies ist der Standard für eine Zwischen-CA, was bedeutet, dass sie keine
+#     CA-Zertifikate ausstellen kann, obwohl sie weiterhin End-Entitäts-Zertifikate ausstellen kann.
+###########################################################################
+csr:
+  cn: ca.org2.example.com
+  names:
+    - C: UK
+      ST: "Hampshire"
+      L: "Hursley"
+      O: org2.example.com
+      OU:
+  hosts:
+    - localhost
+    - org2.example.com
+    - node.d1.navine.tech
+  ca:
+    expiry: 131400h
+    pathlength: 1
+
+#############################################################################
+# BCCSP (BlockChain Crypto Service Provider)-Abschnitt wird verwendet, um auszuwählen, welche
+# Krypto-Bibliotheksimplementierung verwendet werden soll
+#############################################################################
+bccsp:
+  default: SW
+  sw:
+    hash: SHA2
+    security: 256
+    filekeystore:
+      # Das Verzeichnis, das für den softwarebasierten, dateibasierten Keystore verwendet wird
+      keystore: msp/keystore
+
+#############################################################################
+# Multi-CA-Abschnitt
+#
+# Jeder Fabric-CA-Server enthält standardmäßig eine CA. Dieser Abschnitt wird verwendet,
+# um mehrere CAs auf einem einzigen Server zu konfigurieren.
+#
+# 1) --cacount <Anzahl-der-CAs>
+#    Generiert automatisch <Anzahl-der-CAs> nicht-Standard-CAs. Die Namen dieser
+#    zusätzlichen CAs sind "ca1", "ca2", ... "caN", wobei "N" <Anzahl-der-CAs> ist.
+#    Dies ist besonders nützlich in einer Entwicklungsumgebung, um schnell
+#    mehrere CAs einzurichten. Beachten Sie, dass diese Konfigurationsoption nicht für Zwischen-CA-Server
+#    anwendbar ist, d.h. für Fabric-CA-Server, die mit der Konfigurationsoption
+#    intermediate.parentserver.url (-u Kommandozeilenoption) gestartet werden.
+#
+# 2) --cafiles <CA-Konfigurationsdateien>
+#    Für jede CA-Konfigurationsdatei in der Liste wird eine separate Signatur-CA generiert. Jede CA-
+#    Konfigurationsdatei in dieser Liste KANN alle dieselben Elemente enthalten, die auch in
+#    der Server-Konfigurationsdatei zu finden sind, außer den Abschnitten port, debug und tls.
+#
+# Beispiele:
+# fabric-ca-server start -b admin:adminpw --cacount 2
+#
+# fabric-ca-server start -b admin:adminpw --cafiles ca/ca1/fabric-ca-server-application.yaml.template
+# --cafiles ca/ca2/fabric-ca-server-application.yaml.template
+#
+#############################################################################
+
+cacount:
+
+cafiles:
+
+#############################################################################
+# Zwischen-CA (Intermediate CA)-Abschnitt
+#
+# Die Beziehung zwischen Servern und CAs ist wie folgt:
+#   1) Ein einzelner Serverprozess kann eine oder mehrere CAs enthalten oder als solche fungieren.
+#      Dies wird durch den obigen "Multi-CA-Abschnitt" konfiguriert.
+#   2) Jede CA ist entweder eine Stamm-CA oder eine Zwischen-CA.
+#   3) Jede Zwischen-CA hat eine übergeordnete CA, die entweder eine Stamm-CA oder eine andere Zwischen-CA ist.
+#
+# Dieser Abschnitt bezieht sich auf die Konfiguration von #2 und #3.
+# Wenn die Eigenschaft "intermediate.parentserver.url" gesetzt ist,
+# dann ist dies eine Zwischen-CA mit der angegebenen übergeordneten
+# CA.
+#
+# parentserver-Abschnitt
+#    url - Die URL des übergeordneten Servers
+#    caname - Name der CA, bei der innerhalb des Servers registriert werden soll
+#
+# enrollment-Abschnitt, der zur Registrierung der Zwischen-CA bei der übergeordneten CA verwendet wird
+#    profile - Name des Signaturprofils, das bei der Ausstellung des Zertifikats verwendet werden soll
+#    label - Label, das bei HSM-Operationen verwendet werden soll
+#
+# tls-Abschnitt für eine sichere Socket-Verbindung
+#   certfiles - PEM-kodierte Liste von vertrauenswürdigen Stammzertifikatsdateien
+#   client:
+#     certfile - PEM-kodierte Zertifikatsdatei für den Fall, dass die Client-Authentifizierung
+#     auf dem Server aktiviert ist
+#     keyfile - PEM-kodierte Schlüsseldatei für den Fall, dass die Client-Authentifizierung
+#     auf dem Server aktiviert ist
+#############################################################################
+intermediate:
+  parentserver:
+    url:
+    caname:
+
+  enrollment:
+    hosts:
+    profile:
+    label:
+
+  tls:
+    certfiles:
+    client:
+      certfile:
+      keyfile:

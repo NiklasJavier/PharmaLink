@@ -1,0 +1,37 @@
+services:
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    container_name: ipfs-dev
+    restart: always
+    volumes:
+      - dev_ipfs_data:/data/ipfs
+    ports:
+      - "127.0.0.1:5001:5001"
+      - "127.0.0.1:8081:8080"
+      - "4001:4001/tcp"
+      - "4001:4001/udp"
+    networks:
+      - dev-net
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo-dev
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: user
+      MONGO_INITDB_DATABASE: pharmalinkdb
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - dev_mongo_data:/data/db
+    networks:
+      - dev-net
+
+volumes:
+  dev_mongo_data:
+  dev_ipfs_data:
+
+networks:
+  dev-net:
+    driver: bridge

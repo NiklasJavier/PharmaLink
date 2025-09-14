@@ -1,0 +1,119 @@
+name: Create Release and Push Docker Image
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    name: Build, Package, Push Docker Image and Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 24 for Frontend Application Build
+        uses: actions/setup-java@v4
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Frontend Application with Gradle
+        run: ./gradlew -p frontend bootJar -PnewVersion=${{ github.ref_name }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Frontend App Docker
+        id: meta-app
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/pharmalink-ui
+
+      - name: Build and push Frontend App Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-app.outputs.tags }}
+          labels: ${{ steps.meta-app.outputs.labels }}
+
+      - name: Set up JDK 11 for Chaincode Build
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Build and Package All Chaincodes
+        run: |
+          set -e
+          
+          FABRIC_VERSION="2.5.5"
+          echo "--- Downloading Fabric v${FABRIC_VERSION} ---"
+          curl -L "https://github.com/hyperledger/fabric/releases/download/v${FABRIC_VERSION}/hyperledger-fabric-linux-amd64-${FABRIC_VERSION}.tar.gz" | tar xz
+          
+          export PATH="$(pwd)/bin:$PATH"
+          export FABRIC_CFG_PATH="$(pwd)/config"
+          echo "--- PATH and FABRIC_CFG_PATH set. ---"
+          
+          mkdir -p staging/chaincode-packages
+          
+          echo "--- Finding, building, and packaging all chaincode projects ---"
+          for project in $(find chaincode -mindepth 1 -maxdepth 1 -type d -name "pharmalink*"); do
+            CC_NAME=$(basename ${project})
+            CC_VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//')
+          
+            echo "--> Building ${project} with Gradle"
+            ./gradlew -p "${project}" build
+          
+            echo "--> Packaging ${CC_NAME} with version ${{ github.ref_name }}"
+            peer lifecycle chaincode package "staging/chaincode-packages/${CC_NAME}-${{ github.ref_name }}.tar.gz" --path "${project}" --lang java --label "${CC_NAME}_${CC_VERSION}"
+          done
+
+      - name: Package Application and Chaincodes for Release
+        run: |
+          mkdir -p release-package/app
+          mkdir -p release-package/chaincode
+          
+          echo "--- Packaging frontend application ---"
+          cp frontend/build/libs/*.jar release-package/app/
+          cp -r scripts docker common release-package/
+          
+          echo "--- Packaging Fabric chaincodes (.tar.gz) ---"
+          cp -r staging/chaincode-packages/*.tar.gz release-package/chaincode/
+          
+          echo "--- Final package structure ---"
+          ls -R release-package
+          
+          cd release-package
+          zip -r ../pharmalink-${{ github.ref_name }}.zip .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          name: Release ${{ github.ref_name }}
+          body: |
+            Das Docker-Image wurde erfolgreich in die GitHub Container Registry (GHCR) gepusht.
+            - **App Image-Tags:** `${{ steps.meta-app.outputs.tags }}`
+            - **Image-Details ansehen:** [GHCR-Pakete](https://github.com/${{ github.repository }}/packages)
+            
+            Zusätzlich ist die `pharmalink-${{ github.ref_name }}.zip` Datei als Asset direkt an dieses Release angehängt.
+            Dieses Archiv enthält die Hauptanwendung sowie die für Fabric verpackten Chaincodes.
+            Die einzelnen Chaincode-Pakete (`.tar.gz`) sind ebenfalls als separate Assets verfügbar.
+          files: |
+            pharmalink-${{ github.ref_name }}.zip
+            staging/chaincode-packages/*.tar.gz
