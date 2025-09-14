@@ -110,7 +110,7 @@ bash /root/pharmalink/scripts/pharmalink_setup.sh up
 | Backend API                             | [http://localhost:8080](http://localhost:8080)         |
 | Frontend                                | [http://localhost:3000](http://localhost:3000)         |
 | IPFS Application                        | [http://localhost:5001](http://localhost:5001)         |
-| PostgreSQL Database                     | `localhost:5432`              |
+| Mongo Database                     | `localhost:27017`              |
 
 ##### Die Infrastruktur
 | **Service**                             | **Endpoint**                  |
