@@ -1,164 +1,159 @@
-# Pharmalink
-[![Latest Release](https://img.shields.io/github/v/release/NiklasJavier/pharmalink?logo=github)](https://github.com/NiklasJavier/pharmalink/releases/latest)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/NiklasJavier/pharmalink/pkgs/container/pharmalink)
+# PharmaLink
 
-## 🔹 Kurzübersicht
-Pharmalink ist eine **Blockchain-basierte Test-Plattform** zur **Rückverfolgung von Medikamenten** entlang der Lieferkette (Hersteller → Großhändler → Apotheke → Behörde).  
-Das System basiert auf **Hyperledger Fabric**, **Spring Boot** und **IPFS**.
+> **Permissioned blockchain proof-of-concept for end-to-end pharmaceutical supply-chain traceability (`Manufacturer → Wholesaler → Pharmacy → Authority`), built with Hyperledger Fabric 2.5, Spring Boot 3.5, IPFS, MongoDB, and Vaadin 24.**
+
+**Language:** **English** | [Deutsch](./README.de.md)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml)
+[![Java](https://img.shields.io/badge/Java-21%20%28App%29%20%7C%2011%20%28Chaincode%29-ED8B00?logo=openjdk&logoColor=white)](./build.gradle)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white)](./build.gradle)
+[![Hyperledger Fabric](https://img.shields.io/badge/Hyperledger%20Fabric-2.5-2F3134?logo=hyperledger&logoColor=white)](./chaincode/README.md)
+[![Vaadin](https://img.shields.io/badge/Vaadin-24.8-00B4F0?logo=vaadin&logoColor=white)](./frontend/README.md)
+[![IPFS](https://img.shields.io/badge/IPFS-Kubo-65C2CB?logo=ipfs&logoColor=white)](./docker/docker-compose-pharmalink.yaml)
+[![MongoDB](https://img.shields.io/badge/MongoDB-CQRS%20Read--Model-47A248?logo=mongodb&logoColor=white)](./docs/architecture.md)
+
+---
+
+> [!NOTE]
+> **Project Context:** PharmaLink is an early engineering prototype built as a test and evaluation platform for federated pharmaceutical traceability. The repository uses local Hyperledger Fabric test-network CAs and default development credentials documented in [`SECURITY.md`](./SECURITY.md); do not deploy unmodified defaults to production.
+
+## Visual Overview
 
 <table>
   <tr>
     <td align="center">
-      <a href="./docs/images/2_country-architecture_local.png">
-        <img src="./docs/images/2_country-architecture_local.png" width="360" alt="Architektur eines Landes">
+      <a href="./docs/images/1_network-overview_countries.png">
+        <img src="./docs/images/1_network-overview_countries.png" width="380" alt="Federated Multi-Country Channel Network">
       </a>
-      <br/><sub><b>Architektur eines Landes</b></sub>
+      <br/><sub><b>Federated Multi-Country Channel Network (<code>Länderverbund</code>)</b></sub>
     </td>
     <td align="center">
-      <a href="./docs/images/1_network-overview_countries.png">
-        <img src="./docs/images/1_network-overview_countries.png" width="360" alt="Länder-Detailübersicht">
+      <a href="./docs/images/2_country-architecture_local.png">
+        <img src="./docs/images/2_country-architecture_local.png" width="380" alt="Local Country Stack Architecture">
       </a>
-      <br/><sub><b>Länder-Detailübersicht</b></sub>
+      <br/><sub><b>Local Country Node Stack (Peers, CA, IPFS, Backend, MongoDB, UI)</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center">
       <a href="./docs/images/3_ui-medications.png">
-        <img src="./docs/images/3_ui-medications.png" width="360" alt="UI – Medikamente">
+        <img src="./docs/images/3_ui-medications.png" width="380" alt="Vaadin 24 Client UI Medications Workflow">
       </a>
-      <br/><sub><b>UI – Medikamente</b></sub>
+      <br/><sub><b>Vaadin 24 Client UI — Medication Details, IPFS Data &amp; Approval</b></sub>
     </td>
     <td align="center">
       <a href="./docs/images/4_transaction-sequence_med-create.png">
-        <img src="./docs/images/4_transaction-sequence_med-create.png" width="360" alt="Transaktionsablauf – Medikament erstellen">
+        <img src="./docs/images/4_transaction-sequence_med-create.png" width="380" alt="Transaction Sequence Diagram for Medication Creation">
       </a>
-      <br/><sub><b>Transaktionsablauf – Medikament erstellen</b></sub>
+      <br/><sub><b>Transaction Sequence — Medication Creation &amp; IPFS Pinning</b></sub>
     </td>
   </tr>
 </table>
 
+## Key Engineering Highlights
 
----
+- **X.509 Certificate-Driven RBAC:** Every caller identity derives deterministically from the Fabric MSP ID, client X.509 identity, and `role` certificate attribute (`role-<sha256(mspId-clientId)>`), enforced inside the Java chaincode across 30 `@Transaction` entry points.
+- **Event-Driven CQRS Read-Model:** `SystemStateService` checkpoints the latest processed ledger block in MongoDB and subscribes to all 14 chaincode events over gRPC, keeping query caches synchronized without polling the peer on every read.
+- **IPFS Off-Chain Storage & Dual Cache:** Extended medication leaflets, unit batch metadata, and actor profiles live in IPFS (`IpfsClient`), paired with SHA-256 leaflet hash tracking, a MongoDB positive cache (`IpfsCacheEntry`), and a 5-minute negative lookup cooldown.
+- **Cold-Chain & Range Custody Tracking:** Manufacturers register medications (`angelegt`), authorities approve or reject (`freigegeben` / `abgelehnt`), and owners mint numbered batches, log timestamped temperature readings, or transfer individual units and contiguous serial ranges (`transferUnitRange`).
+- **4-Layer Audit Trail:** Dedicated MongoDB collections log HTTP API calls (`ApiTransaction`), Fabric gRPC calls (`GrpcTransaction`), raw chaincode events (`ChaincodeEventLog`), and authentication attempts (`LoginAttempt`).
+- **Dual Web Interfaces + OpenAPI:** Ships with a role-aware Vaadin 24 desktop/web client (including ZXing QR codes for actor IDs and a light/dark theme toggle), an embedded Thymeleaf backend diagnostics dashboard, and a 28-path / 31-operation OpenAPI specification.
 
-### 🏗️ 1. Architektur
+## Architecture at a Glance
 
-Die Plattform besteht aus drei Hauptkomponenten:
-
-* **Spring Backend (`./src`):** Ein Java-basiertes Backend, das eine REST-API bereitstellt. Es dient als Schnittstelle für Benutzer und externe Systeme und kommuniziert per gRPC mit dem Hyperledger Fabric Netzwerk.
-* **Spring Frontend (`./frontend/src`):** Eine auf Java sowie Vaadin-basiertes Frontend, um die Interaktionen visuell zu erläutern.
-* **Chaincode (`./chaincode/pharmalink_chaincode_main`):** Der ChainCode, geschrieben in Java, der die gesamte Geschäftslogik enthält. Er definiert die Datenstrukturen (Assets) und die Regeln für deren Erstellung und Veränderung auf der Blockchain.
-* **Hyperledger Fabric Test-Netzwerk (`./docker`, `./scripts`):** Eine Sammlung von Docker-Containern und Skripten, um eine lokale Blockchain-Umgebung mit mehreren Organisationen, Peers und einem Orderer zu starten und zu verwalten.
-
------
-
-### ⚙️ 2. Voraussetzungen einrichten
-
-Bevor Sie mit dem Projekt beginnen, müssen einige grundlegende Tools auf Ihrem System installiert werden.
-
-#### Docker Installation
-
-```bash
-curl -fsSL [https://get.docker.com](https://get.docker.com) -o get-docker.sh && sh get-docker.sh
+```mermaid
+flowchart LR
+    UI["Vaadin 24 Client UI<br/>(port 3000 / 8083)"] -->|REST + JWT| API["Spring Boot Backend<br/>(port 8080)"]
+    API -->|Thymeleaf| Diag["Embedded Node<br/>Diagnostics UI"]
+    API -->|gRPC / Fabric Gateway| Peer["Hyperledger Fabric Peer<br/>(channel: pharmalink)"]
+    Peer --> Chaincode["Java Chaincode + CouchDB<br/>(30 tx · 7 indexes · 14 events)"]
+    API -->|HTTP /api/v0| IPFS["IPFS Kubo Node<br/>(port 5001 / 8081)"]
+    Peer -.->|Chaincode Events| API
+    API -->|CQRS Cache & Audit| Mongo[("MongoDB<br/>(port 27017)")]
 ```
 
-#### Weitere Abhängigkeiten (Ubuntu)
+| Component | Path | Stack | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **Backend API & Sync** | [`./src`](./src) | Java 21, Spring Boot 3.5, Fabric Gateway, MongoDB, Thymeleaf | REST API (`/api/v1/**`), JWT + form auth, IPFS caching, CQRS block sync, 4-layer audit trail |
+| **Client Frontend** | [`./frontend`](./frontend) | Java 21, Vaadin 24.8, WebFlux, ZXing | Interactive client UI (Dashboard + QR codes, Actor Explorer, Medications, Unit TreeGrid) |
+| **Smart Contract** | [`./chaincode/pharmalink_chaincode_main`](./chaincode/pharmalink_chaincode_main) | Java 11, Hyperledger Fabric Chaincode Shim 2.5, Genson | On-chain business logic, X.509 RBAC, CouchDB rich queries, event emission |
+| **Network & Containers** | [`./scripts`](./scripts), [`./docker`](./docker), [`./common`](./common) | Bash, Docker Compose, Fabric 2.5.13, CouchDB, Kubo | Local multi-org Fabric test network, CA consortium provisioning, app stack orchestration |
+
+## Supply-Chain Roles
+
+On-chain permissions and certificate attributes use German domain identifiers mapped directly in `PharmaSupplyChainContract`:
+
+| On-Chain Role (`role` attr) | English Equivalent | Core Permissions |
+| :--- | :--- | :--- |
+| `hersteller` | Manufacturer | Register medications, update own medication metadata, tag own medications, mint & transfer units for approved products |
+| `behoerde` | Regulatory Authority | Approve or reject medications (`freigegeben` / `abgelehnt`), tag any medication, manually create/update/delete actors or medications |
+| `grosshaendler` | Wholesaler | Hold custody of units, append cold-chain temperature readings, transfer individual units or serial ranges downstream |
+| `apotheke` | Pharmacy | Receive and inspect units, append temperature logs, verify full chain of custody and leaflet hashes |
+
+## Quickstart (Local Test Stack)
+
+**Prerequisites:** Docker + Docker Compose v2, Java 11 & Java 21 (e.g. via [SDKMAN](https://sdkman.io/)), `curl`, `git`, `jq`, and `unzip`. See [docs/getting-started.md](./docs/getting-started.md) for OS-specific setup and IDE development workflows.
 
 ```bash
-sudo apt-get install curl git docker-compose zip jq -y
+# 1. Clone the repository
+git clone https://github.com/NiklasJavier/PharmaLink.git
+cd PharmaLink
+
+# 2. Load Fabric environment helpers (auto-resolves repo root)
+source ./scripts/fabric_setEnv.sh
+
+# 3. Start Hyperledger Fabric test-network (channel: pharmalink, stateDB: CouchDB)
+./scripts/fabric_setup_test.sh up
+
+# 4. Build (JDK 11) and deploy the Java chaincode
+./scripts/fabric_setup_test.sh cc
+
+# 5. Provision consortium identities (3 users per role) and run initCall
+./scripts/fabric_setup_test_consortium.sh
+
+# 6. Start Backend, Vaadin UI, IPFS, and MongoDB via Docker Compose
+./scripts/pharmalink_setup.sh up
 ```
 
-#### Zum Bauen (App + Chaincode)
+### Default Local Endpoints
 
-Der empfohlene Weg zur Installation von Java ist **SDKMAN\!**.
+| Service | Endpoint | Notes |
+| :--- | :--- | :--- |
+| **Vaadin Client UI** | `http://localhost:3000` | Primary supply-chain web UI (`LoginView`: `admin` / `admin123`) |
+| **Backend REST API** | `http://localhost:8080/api/v1` | Stateless JWT-protected API (`/api/v1/auth/login` open) |
+| **Swagger UI / OpenAPI** | `http://localhost:8080/api/swagger` | Interactive API docs (raw JSON at `/api/api-docs` or [`evaluation/openapi/openapi.json`](./evaluation/openapi/openapi.json)) |
+| **Backend Diagnostics UI** | `http://localhost:8080/app/dashboard` | Embedded Thymeleaf audit & state viewer (`admin` / `admin123`) |
+| **IPFS RPC / Gateway** | `http://localhost:5001` / `http://localhost:8081` | Off-chain document storage (`ipfs/kubo:v0.29.0`) |
+| **MongoDB** | `mongodb://localhost:27017` | CQRS read-model, IPFS cache, and audit collections (`user` / `user`) |
+| **Fabric Peer / Orderer / CA** | `localhost:7051` (`Org1`), `9051` (`Org2`) / `7050` / `7054` | Local Fabric test-network endpoints |
+
+### Switching CLI Roles & Resetting
 
 ```bash
-# SDKMAN! installieren
-curl -s "[https://get.sdkman.io](https://get.sdkman.io)" | bash
+# Switch peer CLI identity without triggering initCall when sourced
+source ./scripts/roles/fabric_role_behoerde.sh
 
-# SDKMAN! für die aktuelle Terminalsitzung laden
-source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-# Java 11 für die Chaincodes installieren und als Standard festlegen
-sdk install java 11.0.27-tem
-sdk default java 11.0.27-tem
-
-# Java 21 für die SpringBoot-Applikation installieren
-sdk install java 21.0.7-tem
+# Stop the PharmaLink Compose stack and Fabric test-network cleanly
+./scripts/manage/repo_reset.sh
 ```
 
-> 💡 **Hinweis:** Der Chaincode muss mit Java 11 gebaut werden, während die Applikation Java 21 benötigt. Wechsel bei Bedarf die Version mit `sdk use java ...`.
+## Documentation Map
 
------
-
-### 🚀 3. Entwicklungsumgebung starten
-
-Die folgenden Befehle klonen das Repository, richten das Fabric-Netzwerk ein, initialisieren den Chaincode und starten die Pharmalink-Anwendung. Führen Sie diesen Block als Ganzes aus.
-
-```bash
-cd ~ && sudo rm -rf ./pharmalink && \
-git clone git@github.com:NiklasJavier/pharmalink.git && \
-source /root/pharmalink/scripts/fabric_setEnv.sh && \
-bash /root/pharmalink/scripts/fabric_setup_test.sh up && \
-bash /root/pharmalink/scripts/fabric_setup_test.sh cc && \
-bash /root/pharmalink/scripts/fabric_setup_test_consortium.sh && \
-cd /root/pharmalink/scripts && \
-bash /root/pharmalink/scripts/pharmalink_setup.sh up
-```
-##### Die Anwendung
-| **Service**                             | **Endpoint**                  |
-|-----------------------------------------|-------------------------------|
-| Backend API                             | [http://localhost:8080](http://localhost:8080)         |
-| Frontend                                | [http://localhost:3000](http://localhost:3000)         |
-| IPFS Application                        | [http://localhost:5001](http://localhost:5001)         |
-| Mongo Database                     | `localhost:27017`              |
-
-##### Die Infrastruktur
-| **Service**                             | **Endpoint**                  |
-|-----------------------------------------|-------------------------------|
-| Hyperledger Peer                        | `localhost:9051`              |
-| Hyperledger Orderer                     | `localhost:7050`              |
-| Hyperledger Certificate Authority (CA)  | `localhost:9054`              |
-
------
-
-### 👥 4. Akteure im Netzwerk
-
-Das Test-Netzwerk simuliert eine Lieferkette mit den folgenden vordefinierten Rollen und Organisationen. Sie können die Identität in Ihrer Kommandozeile jederzeit wechseln, indem Sie das entsprechende Skript ausführen.
-
-| Akteur / Rolle | CLI-Skript |
+| Document | Audience & Content |
 | :--- | :--- |
-| **Hersteller** | `source /root/pharmalink/scripts/roles/fabric_role_hersteller.sh` |
-| **Großhändler**| `source /root/pharmalink/scripts/roles/fabric_role_grosshaendler.sh` |
-| **Apotheke** | `source /root/pharmalink/scripts/roles/fabric_role_apotheke.sh` |
-| **Behörde** | `source /root/pharmalink/scripts/roles/fabric_role_behoerde.sh` |
+| [docs/README.md](./docs/README.md) | Documentation index across guides, architecture, decisions, and evaluation |
+| [docs/getting-started.md](./docs/getting-started.md) | Step-by-step setup, IDE local dev mode, environment variables, troubleshooting |
+| [docs/architecture.md](./docs/architecture.md) | Federated network topology, CQRS sync, IPFS caching, dual security, 4-layer audit trail |
+| [docs/domain-model.md](./docs/domain-model.md) | Chaincode entities, medication & unit state machines, RBAC matrix, 13 error codes |
+| [docs/api-reference.md](./docs/api-reference.md) | Complete reference for all 28 REST paths (31 operations) with `curl` workflows |
+| [docs/decisions/](./docs/decisions) | Architecture Decision Records (ADR-001 through ADR-003) |
+| [chaincode/README.md](./chaincode/README.md) | Smart contract specification: 30 transactions, 7 CouchDB indexes, 14 events |
+| [frontend/README.md](./frontend/README.md) | Vaadin 24 client UI routes, state management, QR generation, and theme setup |
+| [evaluation/README.md](./evaluation/README.md) | Captured ledger block snapshots, MSP archive, and OpenAPI artifact guide |
 
------
+## Contributing, Security & License
 
-### ⛓️ 5. Mit dem Chaincode per CLI interagieren
-
-Nachdem das Netzwerk läuft, können Sie mit dem `peer`-CLI direkt mit dem Smart Contract interagieren. Stellen Sie sicher, dass Sie zuvor die passende Rolle mit einem der Skripte aus der obigen Tabelle gesetzt haben.
-
-Eine detaillierte Beschreibung aller verfügbaren Chaincode-Funktionen und deren Parameter finden Sie in der [`README` des Chaincode-Verzeichnisses](./chaincode/README.md).
-
-**Beispiel: `initCall`**
-
-```bash
-# Identität als Behörde setzen
-source /root/pharmalink/scripts/roles/fabric_role_behoerde.sh
-
-# Chaincode-Funktion aufrufen
-peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n $CHAINCODE \
---peerAddresses $PEER0_ORG1_ADDRESS --tlsRootCertFiles $PEER0_ORG1_CA \
---peerAddresses $PEER0_ORG2_ADDRESS --tlsRootCertFiles $PEER0_ORG2_CA \
--c '{"function":"initCall","Args":[""]}'
-```
-
------
-
-### 🛑 6. Umgebung zurücksetzen und löschen
-
-Um alle Docker-Container zu stoppen, das erstellte Netzwerk zu bereinigen und das Repository zu entfernen, verwenden Sie das `repo_reset.sh`-Skript.
-
-```bash
-cd /root/pharmalink/scripts/manage && bash ./repo_reset.sh
-```
+- Contributions and cleanups are welcome via [CONTRIBUTING.md](./CONTRIBUTING.md).
+- For security posture and test-credential boundaries, read [SECURITY.md](./SECURITY.md).
+- Released under the [MIT License](./LICENSE).
