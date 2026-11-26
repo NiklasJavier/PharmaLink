@@ -14,7 +14,7 @@ case "${OS}" in
         FABRIC_OS="darwin"
         ;;
     *)
-        echo "Fehler: Nicht unterstütztes Betriebssystem '${OS}'. Unterstützt werden: Linux und macOS (Darwin)."
+        echo "Error: Unsupported operating system '${OS}'. Supported: Linux and macOS (Darwin)."
         exit 1
         ;;
 esac
@@ -28,7 +28,7 @@ case "${ARCH}" in
         FABRIC_ARCH="arm64"
         ;;
     *)
-        echo "Fehler: Nicht unterstützte Architektur '${ARCH}'. Unterstützt werden: x86_64 (amd64) und aarch64/arm64."
+        echo "Error: Unsupported architecture '${ARCH}'. Supported: x86_64 (amd64) and aarch64/arm64."
         exit 1
         ;;
 esac
@@ -38,29 +38,29 @@ FABRIC_TAR_GZ_URL="https://github.com/hyperledger/fabric/releases/download/v${FA
 DOWNLOAD_FILENAME="hyperledger-fabric-${FABRIC_PLATFORM}-${FABRIC_VERSION}.tar.gz"
 ARCHIVE_PATH="${HOME}/${DOWNLOAD_FILENAME}"
 
-echo "Starte Einrichtung der Hyperledger Fabric Binaries..."
-echo "Plattform: ${FABRIC_PLATFORM}"
-echo "Download-URL: ${FABRIC_TAR_GZ_URL}"
-echo "Installationsverzeichnis: ${INSTALL_DIR}"
+echo "Starting setup of Hyperledger Fabric binaries..."
+echo "Platform: ${FABRIC_PLATFORM}"
+echo "Download URL: ${FABRIC_TAR_GZ_URL}"
+echo "Installation directory: ${INSTALL_DIR}"
 
-echo "1. Lade Hyperledger Fabric Binaries herunter..."
+echo "1. Downloading Hyperledger Fabric binaries..."
 curl -fL "${FABRIC_TAR_GZ_URL}" -o "${ARCHIVE_PATH}"
-echo "Download abgeschlossen: ${ARCHIVE_PATH}"
+echo "Download complete: ${ARCHIVE_PATH}"
 
 if [ -d "${INSTALL_DIR}" ]; then
-    echo "2. Vorhandenes Installationsverzeichnis '${INSTALL_DIR}' wird entfernt..."
+    echo "2. Removing existing installation directory '${INSTALL_DIR}'..."
     rm -rf "${INSTALL_DIR}"
 fi
 
-echo "3. Entpacke Fabric Binaries nach '${INSTALL_DIR}'..."
+echo "3. Extracting Fabric binaries to '${INSTALL_DIR}'..."
 mkdir -p "${INSTALL_DIR}"
 tar -xzf "${ARCHIVE_PATH}" -C "${INSTALL_DIR}"
-echo "Entpacken abgeschlossen."
+echo "Extraction complete."
 
-echo "4. Lösche die heruntergeladene Tar-Datei: ${ARCHIVE_PATH}..."
+echo "4. Deleting downloaded tar archive: ${ARCHIVE_PATH}..."
 rm -f "${ARCHIVE_PATH}"
 
-echo "5. Binde den Fabric 'bin'-Pfad in die Shell-Konfiguration ein..."
+echo "5. Adding the Fabric 'bin' path to the shell configuration..."
 
 SHELL_CONFIG_FILE=""
 case "${SHELL:-}" in
@@ -71,7 +71,7 @@ case "${SHELL:-}" in
         SHELL_CONFIG_FILE="${HOME}/.bashrc"
         ;;
     *)
-        echo "Warnung: Unbekannte Shell '${SHELL:-}'. Verwende ~/.bashrc als Fallback."
+        echo "Warning: Unknown shell '${SHELL:-}'. Using ~/.bashrc as fallback."
         SHELL_CONFIG_FILE="${HOME}/.bashrc"
         ;;
 esac
@@ -79,18 +79,18 @@ esac
 touch "${SHELL_CONFIG_FILE}"
 if ! grep -q "export PATH=\"\$PATH:${BIN_PATH}\"" "${SHELL_CONFIG_FILE}"; then
     printf '\n# Add Hyperledger Fabric binaries to PATH\nexport PATH="$PATH:%s"\n' "${BIN_PATH}" >> "${SHELL_CONFIG_FILE}"
-    echo "${SHELL_CONFIG_FILE} wurde aktualisiert."
+    echo "${SHELL_CONFIG_FILE} has been updated."
 else
-    echo "Der Fabric 'bin'-Pfad ist bereits in ${SHELL_CONFIG_FILE} vorhanden. Keine Änderung vorgenommen."
+    echo "The Fabric 'bin' path is already present in ${SHELL_CONFIG_FILE}. No changes made."
 fi
 
 echo ""
 echo "---------------------------------------------------------"
-echo "Einrichtung der Hyperledger Fabric Binaries abgeschlossen."
-echo "Öffnen Sie ein NEUES Terminal oder führen Sie aus:"
+echo "Hyperledger Fabric binaries setup complete."
+echo "Open a NEW terminal or run:"
 echo "  source \"${SHELL_CONFIG_FILE}\""
 echo ""
-echo "Testen Sie die Installation mit:"
+echo "Test the installation with:"
 echo "  peer version"
 echo "  fabric-ca-client version"
 echo "---------------------------------------------------------"

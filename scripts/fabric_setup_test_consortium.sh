@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "--> Lade Basis-Konfiguration aus fabric_setEnv.sh..."
+echo "--> Loading base configuration from fabric_setEnv.sh..."
 # shellcheck source=./fabric_setEnv.sh
 source "${SCRIPT_DIR}/fabric_setEnv.sh"
 
@@ -12,7 +12,7 @@ NUM_USERS_PER_ROLE=3
 AFFILIATIONS=("hersteller" "grosshaendler" "apotheke" "behoerde")
 
 if [ ! -f "${FABRIC_CA_CLIENT_PATH}" ]; then
-    echo "FEHLER: fabric-ca-client nicht gefunden unter: ${FABRIC_CA_CLIENT_PATH}"
+    echo "ERROR: fabric-ca-client not found at: ${FABRIC_CA_CLIENT_PATH}"
     exit 1
 fi
 
@@ -20,36 +20,36 @@ export FABRIC_CA_CLIENT_HOME="${FABRIC_CA_CLIENT_HOME_ORG1}"
 CA_TLS_CERTFILE="${CA_ORG1_TLS_CERTFILE}"
 CA_SERVER_URL="${CA_ORG1_URL}"
 
-echo "INFO: Alle Identitäten werden bei der zentralen CA unter ${CA_SERVER_URL} erstellt."
+echo "INFO: All identities will be created with the central CA at ${CA_SERVER_URL}."
 
-echo -e "\n1. Einloggen als CA-Admin für Org1..."
+echo -e "\n1. Logging in as CA admin for Org1..."
 "${FABRIC_CA_CLIENT_PATH}" enroll -u "${CA_SERVER_URL/https:\/\//https:\/\/admin:adminpw@}" --tls.certfiles "${CA_TLS_CERTFILE}"
 
 ADMIN_CERT_PATH="${ORG_DIR}/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem"
 
 if [ ! -f "${ADMIN_CERT_PATH}" ]; then
-    echo "FEHLER: Das Admin-Zertifikat für Org1 wurde nicht gefunden unter: ${ADMIN_CERT_PATH}"
-    echo "Stellen Sie sicher, dass die Admin-Identität für Org1 bereits erstellt wurde (z.B. durch registerEnroll.sh)."
+    echo "ERROR: Org1 admin certificate not found at: ${ADMIN_CERT_PATH}"
+    echo "Make sure the Org1 admin identity has already been created (e.g. via registerEnroll.sh)."
     exit 1
 fi
 
 for aff in "${AFFILIATIONS[@]}"; do
   echo -e "\n========================================================"
-  echo "Verarbeite: '${aff}' in Org1"
+  echo "Processing: '${aff}' in Org1"
   echo "========================================================"
 
   AFFILIATION_PATH="org1.${aff}"
-  echo "--> Erstelle Affiliation: '${AFFILIATION_PATH}'..."
+  echo "--> Creating affiliation: '${AFFILIATION_PATH}'..."
   "${FABRIC_CA_CLIENT_PATH}" affiliation add "${AFFILIATION_PATH}" --force --tls.certfiles "${CA_TLS_CERTFILE}"
 
-  echo "--> Registriere und enrolle ${NUM_USERS_PER_ROLE} Benutzer für die Rolle '${aff}'..."
+  echo "--> Registering and enrolling ${NUM_USERS_PER_ROLE} users for role '${aff}'..."
   for i in $(seq 1 "${NUM_USERS_PER_ROLE}"); do
     USERNAME="${aff}-user${i}"
     PASSWORD="${aff}-pw${i}"
 
-    echo -e "\n    -> Verarbeite '${USERNAME}'..."
+    echo -e "\n    -> Processing '${USERNAME}'..."
 
-    echo "       -> Registriere '${USERNAME}' bei der CA..."
+    echo "       -> Registering '${USERNAME}' with the CA..."
     "${FABRIC_CA_CLIENT_PATH}" register \
       --id.name "${USERNAME}" \
       --id.secret "${PASSWORD}" \
@@ -59,7 +59,7 @@ for aff in "${AFFILIATIONS[@]}"; do
       --tls.certfiles "${CA_TLS_CERTFILE}"
 
     MSP_DIR="${ORG_DIR}/peerOrganizations/org1.example.com/users/${USERNAME}@org1.example.com/msp"
-    echo "       -> Schließe '${USERNAME}' ein (enroll) und speichere Zertifikate nach:"
+    echo "       -> Enrolling '${USERNAME}' and saving certificates to:"
     echo "          ${MSP_DIR}"
 
     "${FABRIC_CA_CLIENT_PATH}" enroll \
@@ -67,15 +67,15 @@ for aff in "${AFFILIATIONS[@]}"; do
       --mspdir "${MSP_DIR}" \
       --tls.certfiles "${CA_TLS_CERTFILE}"
 
-    echo "       -> Erstelle 'admincerts' Ordner und kopiere Admin-Zertifikat..."
+    echo "       -> Creating 'admincerts' directory and copying admin certificate..."
     mkdir -p "${MSP_DIR}/admincerts"
     cp "${ADMIN_CERT_PATH}" "${MSP_DIR}/admincerts/org1-admin-cert.pem"
   done
 done
 
 for file in "${SCRIPT_DIR}/roles/"*.sh; do
-  echo "Führe initCall-Skript aus: ${file}"
+  echo "Running initCall script: ${file}"
   bash "${file}"
 done
 
-echo "Alle Identitäten für das PharmaLink-Konsortium erfolgreich erstellt und eingeschrieben."
+echo "All identities for the PharmaLink consortium have been successfully created and enrolled."

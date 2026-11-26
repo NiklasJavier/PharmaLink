@@ -19,7 +19,7 @@ export CORE_PEER_LOCALMSPID="Org1MSP"
 export CORE_PEER_TLS_ENABLED=true
 export CORE_PEER_ADDRESS="${PEER0_ORG1_ADDRESS}"
 
-echo "Prüfe Umgebungsvariablen (hersteller-user3):"
+echo "Checking environment variables (hersteller-user3):"
 echo "CORE_PEER_MSPCONFIGPATH: ${CORE_PEER_MSPCONFIGPATH}"
 echo "CORE_PEER_LOCALMSPID: ${CORE_PEER_LOCALMSPID}"
 echo "CORE_PEER_TLS_ENABLED: ${CORE_PEER_TLS_ENABLED}"

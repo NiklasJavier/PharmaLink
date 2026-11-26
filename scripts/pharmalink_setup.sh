@@ -9,9 +9,9 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 usage() {
-    echo "Nutzung: $0 {up|down}"
-    echo "  up:   Startet die PharmaLink-Umgebung mit Docker Compose."
-    echo "  down: Stoppt und bereinigt die PharmaLink-Umgebung."
+    echo "Usage: $0 {up|down}"
+    echo "  up:   Starts the PharmaLink environment with Docker Compose."
+    echo "  down: Stops and cleans up the PharmaLink environment."
 }
 
 detect_compose() {
@@ -20,31 +20,31 @@ detect_compose() {
     elif command -v docker-compose >/dev/null 2>&1; then
         COMPOSE_CMD=(docker-compose)
     else
-        echo -e "${RED}Fehler: Weder 'docker compose' noch 'docker-compose' gefunden.${NC}"
+        echo -e "${RED}Error: Neither 'docker compose' nor 'docker-compose' found.${NC}"
         exit 1
     fi
 }
 
 start_services() {
-    echo -e "${GREEN}Starte PharmaLink-Dienste...${NC}"
+    echo -e "${GREEN}Starting PharmaLink services...${NC}"
     if [ ! -f "${COMPOSE_FILE}" ]; then
-        echo -e "${RED}Fehler: Docker-Compose-Datei nicht unter ${COMPOSE_FILE} gefunden.${NC}"
+        echo -e "${RED}Error: Docker Compose file not found at ${COMPOSE_FILE}.${NC}"
         exit 1
     fi
     detect_compose
     "${COMPOSE_CMD[@]}" -f "${COMPOSE_FILE}" up -d
-    echo -e "${GREEN}Dienste gestartet. Mit 'docker ps' können Sie den Status prüfen.${NC}"
+    echo -e "${GREEN}Services started. Check status with 'docker ps'.${NC}"
 }
 
 stop_services() {
-    echo -e "${GREEN}Stoppe und bereinige PharmaLink-Dienste...${NC}"
+    echo -e "${GREEN}Stopping and cleaning up PharmaLink services...${NC}"
     if [ ! -f "${COMPOSE_FILE}" ]; then
-        echo -e "${RED}Fehler: Docker-Compose-Datei nicht unter ${COMPOSE_FILE} gefunden.${NC}"
+        echo -e "${RED}Error: Docker Compose file not found at ${COMPOSE_FILE}.${NC}"
         exit 1
     fi
     detect_compose
     "${COMPOSE_CMD[@]}" -f "${COMPOSE_FILE}" down
-    echo -e "${GREEN}Umgebung wurde bereinigt.${NC}"
+    echo -e "${GREEN}Environment cleaned up.${NC}"
 }
 
 if [ "$#" -ne 1 ]; then
@@ -62,7 +62,7 @@ case "${ACTION}" in
         stop_services
         ;;
     *)
-        echo -e "${RED}Fehler: Ungültiges Argument '${ACTION}'${NC}"
+        echo -e "${RED}Error: Invalid argument '${ACTION}'${NC}"
         usage
         exit 1
         ;;
