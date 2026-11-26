@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend:
+    name: Backend Compile & Test (JDK 21)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile and run backend tests
+        run: ./gradlew compileJava compileTestJava test --no-daemon
+
+  frontend:
+    name: Vaadin Frontend Compile (JDK 21)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile frontend Java sources
+        run: ./gradlew -p frontend compileJava --no-daemon
+
+  chaincode:
+    name: Chaincode Compile & Checkstyle (JDK 11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile chaincode and run Checkstyle
+        run: ./gradlew -p chaincode/pharmalink_chaincode_main compileJava checkstyleMain --no-daemon
+
+  quality:
+    name: Scripts, JSON & YAML Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate shell script syntax
+        run: |
+          set -e
+          for f in scripts/*.sh scripts/*/*.sh common/organizations/fabric-ca/registerEnroll.sh; do
+            echo "Checking $f"
+            bash -n "$f"
+          done
+
+      - name: Validate JSON specs and CouchDB indexes
+        run: |
+          python3 -c '
+          import glob, json
+          files = ["evaluation/openapi/openapi.json"] + sorted(glob.glob("chaincode/pharmalink_chaincode_main/src/main/resources/META-INF/statedb/couchdb/indexes/*.json"))
+          for f in files:
+              with open(f, encoding="utf-8") as fh:
+                  json.load(fh)
+              print("JSON OK:", f)
+          '
+
+      - name: Validate YAML files
+        run: |
+          ruby -ryaml -e '
+            files = Dir.glob(".github/workflows/*.yml") +
+                    ["docker/docker-compose-pharmalink.yaml",
+                     "docker/pharmalink/application.yaml",
+                     "docker/pharmalink/application.yaml.template",
+                     "src/main/resources/application.yaml"] +
+                    Dir.glob("common/organizations/fabric-ca/*/fabric-ca-server-config.yaml")
+            files.sort.each do |f|
+              YAML.safe_load(File.read(f), aliases: true)
+              puts "YAML OK: #{f}"
+            end
+          '
