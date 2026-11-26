@@ -225,6 +225,6 @@ Only use `--all-docker` if you intentionally want to wipe **every** Docker conta
 | :--- | :--- | :--- |
 | Chaincode build fails looking for JDK 11 | Local environment only has JDK 17/21+ | Install JDK 11 via SDKMAN (`sdk install java 11.0.27-tem`) |
 | Chaincode `build`/`installDist` fails on JaCoCo | `build.gradle` enforces 90% coverage while no unit tests exist yet | Scripts pass `-x jacocoTestCoverageVerification` automatically |
-| Backend fails startup on `TLS Zertifikats-Datei nicht gefunden` | Fabric test-network has not generated `fabric-samples/test-network/organizations` yet | Run `./scripts/fabric_setup_test.sh up` before starting the backend |
+| Backend fails startup on `TLS certificate file not found` | Fabric test-network has not generated `fabric-samples/test-network/organizations` yet | Run `./scripts/fabric_setup_test.sh up` before starting the backend |
 | Backend starts before `initCall` has run | `AppDataInitializer` logs warning and continues without cached `actorId` | Run `./scripts/fabric_setup_test_consortium.sh` or restart backend after chaincode init |
 | Docker backend cannot reach Peer on Linux | `host.docker.internal` not resolved on older Docker engines | Compose configures `extra_hosts: host.docker.internal:host-gateway` (Docker >= 20.10 required) |

@@ -4,7 +4,7 @@
 
 ## Read Order
 
-1. [`README.md`](../README.md) (or [`README.de.md`](../README.de.md)) — overview, architecture diagram, roles, and service endpoints.
+1. [`README.md`](../README.md) — overview, architecture diagram, roles, and service endpoints.
 2. [`justfile`](../justfile) & [`flake.nix`](../flake.nix) — canonical command surface and reproducible devShell (`JDK 21` + `JDK 11` + `just`).
 3. [`.agents/skills/pharmalink-navigator/SKILL.md`](./skills/pharmalink-navigator/SKILL.md) — module lookup table, commands, pitfalls, and boundaries.
 4. [`docs/architecture.md`](../docs/architecture.md) & [`docs/domain-model.md`](../docs/domain-model.md) — CQRS sync, IPFS cache, RBAC, and on-chain states.

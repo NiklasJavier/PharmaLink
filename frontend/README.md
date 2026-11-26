@@ -8,9 +8,9 @@ Standalone **Vaadin 24.8** + **Spring Boot 3.5** web interface for supply-chain 
 | :--- | :--- | :--- |
 | `/login` | `LoginView` | Authenticates via `POST /api/v1/auth/login` and establishes Vaadin session security context |
 | `/` | `DashboardView` | Displays active username/role, CQRS cache stats, click-to-copy fields, and a **ZXing** QR code for `actorId` |
-| `/medikamente` | `MedikamenteView` | Browse/filter medications (`Ohne Filter`, `angelegt`, `freigegeben`, `abgelehnt`), inspect IPFS details & manufacturer info, approve/reject status, create units |
+| `/medikamente` | `MedikamenteView` | Browse/filter medications (`No Filter`, `angelegt`, `freigegeben`, `abgelehnt`), inspect IPFS details & manufacturer info, approve/reject status, create units |
 | `/units` | `UnitsView` | 3-level `TreeGrid` (`Medikament → Charge → Unit`) with "My Units" & "Global Search" tabs, temperature logs, and custody transfer actions |
-| `/actorExplorer` | `ActorExplorerView` | Master-detail explorer of supply-chain actors (`Hersteller`, `Großhändler`, `Apotheke`, `Behörde`) with search and profile updates |
+| `/actorExplorer` | `ActorExplorerView` | Master-detail explorer of supply-chain actors (`Manufacturer`, `Wholesaler`, `Pharmacy`, `Authority`) with search and profile updates |
 
 `MainLayout` includes a two-row navigation header, session menu, and a persistent **Light / Dark Lumo theme toggle**.
 

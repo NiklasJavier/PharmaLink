@@ -52,7 +52,7 @@ flowchart TB
 
 ## 2. Federated & Local Network Diagrams
 
-The target topology models national/regional supply-chain networks (**`Länderverbund`**) joined on a shared Fabric channel (`pharmalink`) defined in `common/configtx.yaml`.
+The target topology models national/regional supply-chain networks joined on a shared Fabric channel (`pharmalink`) defined in `common/configtx.yaml`.
 
 ### 2.1 Federated Multi-Country Channel (`1_network-overview_countries.png`)
 
@@ -70,7 +70,7 @@ Each country domain manages local orderers, peer sets, enrolled client/device id
 
 ![Local Country Architecture](./images/2_country-architecture_local.png)
 
-Inside a country/organization boundary, the participant application (`Hersteller`, `Großhändler`, `Apotheke`, or `Behörde`) runs a Spring Boot `Backend` backed by `MongoDB`, connects to an `IPFS` peer, authenticates via its CA identity (`DC1`), submits gRPC transactions to the Fabric peer, and serves a `Frontend` over REST.
+Inside a country/organization boundary, the participant application (`Manufacturer`, `Wholesaler`, `Pharmacy`, or `Authority`) runs a Spring Boot `Backend` backed by `MongoDB`, connects to an `IPFS` peer, authenticates via its CA identity (`DC1`), submits gRPC transactions to the Fabric peer, and serves a `Frontend` over REST.
 
 ### 2.4 End-to-End Transaction Sequence (`4_transaction-sequence_med-create.png`)
 
@@ -85,7 +85,7 @@ Inside a country/organization boundary, the participant application (`Hersteller
 
 ![Vaadin 24 Client UI Medications](./images/3_ui-medications.png)
 
-The Vaadin 24 `MedikamenteView` lets users filter medications (`Ohne Filter`, `angelegt`, `freigegeben`, `abgelehnt`), inspect batch counts and manufacturer details, expand off-chain IPFS attributes (`Darreichungsform`, `Packungsgröße`), and submit regulatory approval decisions (`freigegeben` / `abgelehnt`).
+The Vaadin 24 `MedikamenteView` lets users filter medications (`No Filter`, `angelegt`, `freigegeben`, `abgelehnt`), inspect batch counts and manufacturer details, expand off-chain IPFS attributes (`Dosage Form`, `Package Size`), and submit regulatory approval decisions (`freigegeben` / `abgelehnt`).
 
 ---
 

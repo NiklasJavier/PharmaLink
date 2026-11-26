@@ -111,8 +111,8 @@ curl -s -X POST http://localhost:8080/api/v1/medications \
     "bezeichnung": "Ibuprofen 400",
     "infoblattHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "ipfsData": {
-      "Darreichungsform": "Filmtabletten",
-      "Packungsgröße": "50 Stk."
+      "Dosage Form": "Film-coated tablets",
+      "Package Size": "50 pcs"
     }
   }' | jq
 ```

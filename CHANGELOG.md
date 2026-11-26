@@ -9,7 +9,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Added
 - Declarative Nix Flake dev shell (`flake.nix`, `flake.lock`, `.envrc`) provisioning both JDK 21 and JDK 11, paired with a `justfile` command surface (`just doctor`, `just check`, `just up`, `just down`, `just role`).
 - Repository agent orientation under `.agents/` (`.agents/README.md` and `.agents/skills/pharmalink-navigator/SKILL.md`).
-- Bilingual root presentation: English primary `README.md` with Mermaid architecture diagram, verified visual gallery, and German mirror `README.de.md`.
+- Overhauled root `README.md` with Mermaid architecture diagram, verified visual gallery, and end-to-end verification quickstart.
 - Structured documentation under `docs/`: `README.md`, `getting-started.md`, `architecture.md`, `domain-model.md`, `api-reference.md`, and ADRs (`ADR-001` through `ADR-003`).
 - Module guides (`frontend/README.md`, `evaluation/README.md`) and rewritten `chaincode/pharmalink_chaincode_main/README.md`.
 - Community & repository governance files (`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, GitHub issue/PR templates).

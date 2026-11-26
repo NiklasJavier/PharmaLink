@@ -12,7 +12,7 @@ description: >-
 
 ## Repository Scope
 
-PharmaLink is a completed hands-on demo built alongside a Bachelor's thesis (`Hersteller → Großhändler → Apotheke → Behörde`). Treat it as an evaluation and architectural reference, not a production-hardened deployment.
+PharmaLink is a completed hands-on demo built alongside a Bachelor's thesis (`Manufacturer → Wholesaler → Pharmacy → Authority`). Treat it as an evaluation and architectural reference, not a production-hardened deployment.
 
 ## Canonical Entry Points
 

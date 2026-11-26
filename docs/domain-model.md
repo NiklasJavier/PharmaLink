@@ -74,11 +74,11 @@ stateDiagram-v2
 
 ```mermaid
 sequenceDiagram
-    participant M as Hersteller (Manufacturer)
-    participant A as Behörde (Authority)
+    participant M as Manufacturer (hersteller)
+    participant A as Authority (behoerde)
     participant L as Fabric Ledger
-    participant W as Großhändler (Wholesaler)
-    participant P as Apotheke (Pharmacy)
+    participant W as Wholesaler (grosshaendler)
+    participant P as Pharmacy (apotheke)
 
     M->>L: createMedikament(...) → status: angelegt
     A->>L: approveMedikament(medId, "freigegeben")

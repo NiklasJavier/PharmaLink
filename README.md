@@ -2,8 +2,6 @@
 
 > **Permissioned blockchain proof-of-concept for end-to-end pharmaceutical supply-chain traceability (`Manufacturer → Wholesaler → Pharmacy → Authority`), built with Hyperledger Fabric 2.5, Spring Boot 3.5, IPFS, MongoDB, and Vaadin 24.**
 
-**Language:** **English** | [Deutsch](./README.de.md)
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 ![Status: Archived Demo (Reference)](https://img.shields.io/badge/Status-Archived%20Demo%20%28Reference%29-6c757d)
 [![CI](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml)
@@ -28,7 +26,7 @@
       <a href="./docs/images/1_network-overview_countries.png">
         <img src="./docs/images/1_network-overview_countries.png" width="380" alt="Federated Multi-Country Channel Network">
       </a>
-      <br/><sub><b>Federated Multi-Country Channel Network (<code>Länderverbund</code>)</b></sub>
+      <br/><sub><b>Federated Multi-Country Channel Network</b></sub>
     </td>
     <td align="center">
       <a href="./docs/images/2_country-architecture_local.png">

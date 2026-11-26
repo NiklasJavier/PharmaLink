@@ -37,7 +37,7 @@ system:
 springdoc:
   info:
     title: Pharmalink API
-    description: API-Dokumentation für die Pharmalink Lieferkettenanwendung auf Hyperledger Fabric.
+    description: API documentation for the PharmaLink supply-chain application on Hyperledger Fabric.
     path: /api/swagger
   api-docs:
     path: /api/api-docs
