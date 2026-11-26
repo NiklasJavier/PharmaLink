@@ -312,7 +312,6 @@ csr:
   hosts:
     - localhost
     - example.com
-    - node.d1.navine.tech
   ca:
     expiry: 131400h
     pathlength: 1
