@@ -5,7 +5,7 @@
 **Sprache:** [English](./README.md) | **Deutsch**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-![Status: Abgeschlossen (Bachelorarbeit)](https://img.shields.io/badge/Status-Abgeschlossen%20%28Bachelorarbeit%29-6c757d)
+![Status: Abgeschlossene Demo (Referenz)](https://img.shields.io/badge/Status-Abgeschlossene%20Demo%20%28Referenz%29-6c757d)
 [![CI](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml)
 [![Java](https://img.shields.io/badge/Java-21%20%28App%29%20%7C%2011%20%28Chaincode%29-ED8B00?logo=openjdk&logoColor=white)](./build.gradle)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white)](./build.gradle)
@@ -17,7 +17,7 @@
 ---
 
 > [!NOTE]
-> **Projektkontext:** PharmaLink entstand im Rahmen einer Bachelorarbeit zur Rückverfolgbarkeit pharmazeutischer Lieferketten auf Basis permissionierter Blockchains. Das Projekt ist **abgeschlossen und wird nicht aktiv weiterentwickelt**; es bleibt als Architektur- und Evaluationsreferenz öffentlich zugänglich. Das Repository nutzt lokale Fabric-Testnetzwerk-CAs und Standard-Entwicklungszugangsdaten (siehe [`SECURITY.md`](./SECURITY.md)) — nicht unverändert produktiv einsetzen.
+> **Projektkontext:** PharmaLink entstand als praxisnahe Demo begleitend zur Bachelorarbeit, um die Konzepte permissionierter Blockchains in der pharmazeutischen Lieferkette praktisch zu durchdringen. Das Projekt ist **abgeschlossen und wird nicht aktiv weiterentwickelt**; es bleibt als Referenz öffentlich zugänglich. Das Repository nutzt lokale Fabric-Testnetzwerk-CAs und Standard-Entwicklungszugangsdaten (siehe [`SECURITY.md`](./SECURITY.md)) — nicht unverändert produktiv einsetzen.
 
 ## Visuelle Übersicht
 
@@ -153,6 +153,6 @@ source ./scripts/roles/fabric_role_behoerde.sh
 
 ## Projektstatus, Sicherheit & Lizenz
 
-- **Status:** Abgeschlossener Bachelorarbeits-Prototyp ohne aktive Weiterentwicklung; Hinweise für eigene Forks und lokale Build-Checks stehen in [CONTRIBUTING.md](./CONTRIBUTING.md).
+- **Status:** Abgeschlossene Praxis-Demo aus dem Umfeld der Bachelorarbeit ohne aktive Weiterentwicklung; Hinweise für eigene Forks und lokale Build-Checks stehen in [CONTRIBUTING.md](./CONTRIBUTING.md).
 - **Sicherheit:** Abgrenzung der Test-Credentials und Härtungshinweise stehen in [SECURITY.md](./SECURITY.md).
 - **Lizenz:** Veröffentlicht unter der [MIT-Lizenz](./LICENSE).

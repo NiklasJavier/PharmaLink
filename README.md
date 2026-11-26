@@ -5,7 +5,7 @@
 **Language:** **English** | [Deutsch](./README.de.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-![Status: Completed (Bachelor's Thesis)](https://img.shields.io/badge/Status-Completed%20%28Bachelor%27s%20Thesis%29-6c757d)
+![Status: Archived Demo (Reference)](https://img.shields.io/badge/Status-Archived%20Demo%20%28Reference%29-6c757d)
 [![CI](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml)
 [![Java](https://img.shields.io/badge/Java-21%20%28App%29%20%7C%2011%20%28Chaincode%29-ED8B00?logo=openjdk&logoColor=white)](./build.gradle)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white)](./build.gradle)
@@ -17,7 +17,7 @@
 ---
 
 > [!NOTE]
-> **Project Context:** PharmaLink originated as a Bachelor's thesis project exploring permissioned blockchain traceability in pharmaceutical supply chains. The repository is **completed and no longer actively maintained or developed further**, and remains public as a reference implementation. It uses local Hyperledger Fabric test-network CAs and default development credentials documented in [`SECURITY.md`](./SECURITY.md); do not deploy unmodified defaults to production.
+> **Project Context:** PharmaLink was built as a hands-on demo while preparing for a Bachelor's thesis to work through permissioned blockchain supply-chain concepts in practice. The project is **completed and no longer actively maintained or developed further**, and remains public as a reference. It uses local Hyperledger Fabric test-network CAs and default development credentials documented in [`SECURITY.md`](./SECURITY.md); do not deploy unmodified defaults to production.
 
 ## Visual Overview
 
@@ -155,6 +155,6 @@ source ./scripts/roles/fabric_role_behoerde.sh
 
 ## Reference Status, Security & License
 
-- **Status:** Completed Bachelor's thesis prototype; preserved as an open reference with no ongoing development (see [CONTRIBUTING.md](./CONTRIBUTING.md) for local build checks when experimenting on a fork).
+- **Status:** Completed hands-on demo from Bachelor's thesis preparation; preserved as an open reference with no ongoing development (see [CONTRIBUTING.md](./CONTRIBUTING.md) for local build checks when experimenting on a fork).
 - **Security:** Test-credential boundaries and hardening notes are documented in [SECURITY.md](./SECURITY.md).
 - **License:** Released under the [MIT License](./LICENSE).
