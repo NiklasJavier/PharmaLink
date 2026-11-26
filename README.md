@@ -1,7 +1,5 @@
 # PharmaLink
 
-> **Permissioned blockchain proof-of-concept for end-to-end pharmaceutical supply-chain traceability (`Manufacturer → Wholesaler → Pharmacy → Authority`), built with Hyperledger Fabric 2.5, Spring Boot 3.5, IPFS, MongoDB, and Vaadin 24.**
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 ![Status: Archived Demo (Reference)](https://img.shields.io/badge/Status-Archived%20Demo%20%28Reference%29-6c757d)
 [![CI](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml)
