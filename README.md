@@ -13,6 +13,7 @@
 [![Vaadin](https://img.shields.io/badge/Vaadin-24.8-00B4F0?logo=vaadin&logoColor=white)](./frontend/README.md)
 [![IPFS](https://img.shields.io/badge/IPFS-Kubo-65C2CB?logo=ipfs&logoColor=white)](./docker/docker-compose-pharmalink.yaml)
 [![MongoDB](https://img.shields.io/badge/MongoDB-CQRS%20Read--Model-47A248?logo=mongodb&logoColor=white)](./docs/architecture.md)
+[![Nix Flake](https://img.shields.io/badge/Nix-Flake-5277C3?logo=nixos&logoColor=white)](./flake.nix)
 
 ---
 
@@ -94,26 +95,31 @@ On-chain permissions and certificate attributes use German domain identifiers ma
 
 ## Quickstart (Local Test Stack)
 
-**Prerequisites:** Docker + Docker Compose v2, Java 11 & Java 21 (e.g. via [SDKMAN](https://sdkman.io/)), `curl`, `git`, `jq`, and `unzip`. See [docs/getting-started.md](./docs/getting-started.md) for OS-specific setup and IDE development workflows.
+**Prerequisites:** Docker + Docker Compose v2, plus either [Nix](https://nixos.org/download/) (`flake.nix` provides **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip`) or manual Java 11 & Java 21 via [SDKMAN](https://sdkman.io/). See [docs/getting-started.md](./docs/getting-started.md) for OS setup and IDE workflows.
+
+### With Nix + `just` (Recommended)
 
 ```bash
-# 1. Clone the repository
+# 1. Clone and enter the reproducible dev shell (JDK 21 + JDK 11 + just)
 git clone https://github.com/NiklasJavier/PharmaLink.git
 cd PharmaLink
+nix develop
 
-# 2. Load Fabric environment helpers (auto-resolves repo root)
+# 2. Verify local toolchain and run build/script/config/doc checks
+just doctor
+just check
+
+# 3. Boot Fabric test-network, deploy chaincode, enroll consortium, and start containers
+just up
+```
+
+### Without Nix (Direct Scripts)
+
+```bash
 source ./scripts/fabric_setEnv.sh
-
-# 3. Start Hyperledger Fabric test-network (channel: pharmalink, stateDB: CouchDB)
 ./scripts/fabric_setup_test.sh up
-
-# 4. Build (JDK 11) and deploy the Java chaincode
 ./scripts/fabric_setup_test.sh cc
-
-# 5. Provision consortium identities (3 users per role) and run initCall
 ./scripts/fabric_setup_test_consortium.sh
-
-# 6. Start Backend, Vaadin UI, IPFS, and MongoDB via Docker Compose
 ./scripts/pharmalink_setup.sh up
 ```
 
@@ -132,17 +138,20 @@ source ./scripts/fabric_setEnv.sh
 ### Switching CLI Roles & Resetting
 
 ```bash
-# Switch peer CLI identity without triggering initCall when sourced
+# Show the exact source command for a role (hersteller, grosshaendler, apotheke, behoerde)
+just role behoerde
 source ./scripts/roles/fabric_role_behoerde.sh
 
 # Stop the PharmaLink Compose stack and Fabric test-network cleanly
-./scripts/manage/repo_reset.sh
+just down   # or: ./scripts/manage/repo_reset.sh
 ```
 
 ## Documentation Map
 
 | Document | Audience & Content |
 | :--- | :--- |
+| [.agents/README.md](./.agents/README.md) | Agent & contributor orientation hub, module map, and `pharmalink-navigator` skill |
+| [justfile](./justfile) · [flake.nix](./flake.nix) | Canonical command surface (`just --list`) and reproducible Nix devShell |
 | [docs/README.md](./docs/README.md) | Documentation index across guides, architecture, decisions, and evaluation |
 | [docs/getting-started.md](./docs/getting-started.md) | Step-by-step setup, IDE local dev mode, environment variables, troubleshooting |
 | [docs/architecture.md](./docs/architecture.md) | Federated network topology, CQRS sync, IPFS caching, dual security, 4-layer audit trail |

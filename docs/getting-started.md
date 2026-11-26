@@ -7,10 +7,23 @@ This guide covers full local setup of the Hyperledger Fabric test network, Java 
 | Tool | Required Version | Purpose |
 | :--- | :--- | :--- |
 | **Docker & Docker Compose** | Docker Engine + Compose v2 (or `docker-compose` v1) | Fabric peers, orderer, CouchDB, MongoDB, Kubo IPFS, app containers |
-| **Java (JDK)** | **JDK 11** (chaincode) + **JDK 21** (backend & Vaadin UI) | Gradle toolchain & Spring Boot compilation |
-| **CLI Utilities** | `bash`/`zsh`, `curl`, `git`, `jq`, `unzip` | Fabric install scripts and consortium provisioning |
+| **Nix (Recommended)** | Nix with Flakes (`nix develop`) | Reproducible dev shell providing **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip` |
+| **Java (Manual Fallback)** | **JDK 11** (chaincode) + **JDK 21** (backend & Vaadin UI) | Used when running outside `nix develop` |
 
-### Installing Java 11 and Java 21 with SDKMAN
+### Recommended: Nix + `just` Dev Shell
+
+Enter the declarative dev shell from `flake.nix` (or let `direnv allow` load `.envrc` automatically):
+
+```bash
+nix develop
+just --list
+just doctor
+just check
+```
+
+From inside `nix develop` (or via `nix develop -c just ...`), `just up` and `just down` manage the complete Fabric + Docker Compose stack, and `just` automatically passes `JDK21_HOME` and `JDK11_HOME` to Gradle.
+
+### Manual Fallback: Installing Java 11 and Java 21 with SDKMAN
 
 ```bash
 curl -s "https://get.sdkman.io" | bash
@@ -21,7 +34,7 @@ sdk install java 21.0.7-tem
 sdk default java 21.0.7-tem
 ```
 
-> **Toolchain note:** The chaincode module (`chaincode/pharmalink_chaincode_main/build.gradle`) pins `JavaLanguageVersion.of(11)`. Ensure JDK 11 is installed locally when building or deploying chaincode.
+> **Toolchain note:** The chaincode module (`chaincode/pharmalink_chaincode_main/build.gradle`) pins `JavaLanguageVersion.of(11)`. If you do not use `nix develop`, ensure JDK 11 is installed locally when building or deploying chaincode.
 
 ### Optional: Standalone Fabric CLI Binaries
 

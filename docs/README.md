@@ -21,6 +21,7 @@ Core documentation for **PharmaLink** follows a clean split between architecture
 
 ## Module & Artifact Docs
 
+- [Agent Orientation & Repo Skill (`pharmalink-navigator`)](../.agents/README.md) · [`justfile`](../justfile) · [`flake.nix`](../flake.nix)
 - [Chaincode Reference](../chaincode/README.md) & [Java Chaincode Module](../chaincode/pharmalink_chaincode_main/README.md)
 - [Vaadin 24 Frontend Client](../frontend/README.md)
 - [Evaluation Artifacts (Ledger Blocks, MSPs, OpenAPI)](../evaluation/README.md)

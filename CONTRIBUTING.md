@@ -10,7 +10,14 @@
 
 ## Local Build Checks
 
-Before opening a pull request, verify affected modules from the repository root:
+Before opening a pull request, run the full check suite inside the Nix dev shell (automatically provides JDK 21, JDK 11, `just`, `python3`, and `ruby`):
+
+```bash
+nix develop -c just doctor
+nix develop -c just check
+```
+
+Without Nix (requires local JDK 21 + JDK 11):
 
 ```bash
 # Backend (JDK 21)

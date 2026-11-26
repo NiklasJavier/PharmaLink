@@ -13,6 +13,7 @@
 [![Vaadin](https://img.shields.io/badge/Vaadin-24.8-00B4F0?logo=vaadin&logoColor=white)](./frontend/README.md)
 [![IPFS](https://img.shields.io/badge/IPFS-Kubo-65C2CB?logo=ipfs&logoColor=white)](./docker/docker-compose-pharmalink.yaml)
 [![MongoDB](https://img.shields.io/badge/MongoDB-CQRS%20Read--Model-47A248?logo=mongodb&logoColor=white)](./docs/architecture.md)
+[![Nix Flake](https://img.shields.io/badge/Nix-Flake-5277C3?logo=nixos&logoColor=white)](./flake.nix)
 
 ---
 
@@ -92,26 +93,31 @@ flowchart LR
 
 ## Schnellstart (Lokales Testnetzwerk)
 
-**Voraussetzungen:** Docker + Docker Compose v2, Java 11 & Java 21 (z. B. über [SDKMAN](https://sdkman.io/)), `curl`, `git`, `jq` und `unzip`. Details zu IDE-Entwicklung und Umgebungsvariablen stehen in [docs/getting-started.md](./docs/getting-started.md).
+**Voraussetzungen:** Docker + Docker Compose v2 sowie entweder [Nix](https://nixos.org/download/) (`flake.nix` liefert **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip`) oder manuelles Java 11 & Java 21 per [SDKMAN](https://sdkman.io/). Details zu IDE-Entwicklung und Umgebungsvariablen stehen in [docs/getting-started.md](./docs/getting-started.md).
+
+### Mit Nix + `just` (Empfohlen)
 
 ```bash
-# 1. Repository klonen
+# 1. Repository klonen und reproduzierbare Dev-Shell betreten (JDK 21 + JDK 11 + just)
 git clone https://github.com/NiklasJavier/PharmaLink.git
 cd PharmaLink
+nix develop
 
-# 2. Fabric-Umgebungsvariablen laden (Pfad wird dynamisch erkannt)
+# 2. Toolchain prüfen und Builds, Skripte, Configs sowie Doku-Links validieren
+just doctor
+just check
+
+# 3. Fabric-Testnetzwerk starten, Chaincode deployen, Konsortium anlegen, Container starten
+just up
+```
+
+### Ohne Nix (Direkte Skripte)
+
+```bash
 source ./scripts/fabric_setEnv.sh
-
-# 3. Hyperledger Fabric Test-Netzwerk starten (Channel: pharmalink, StateDB: CouchDB)
 ./scripts/fabric_setup_test.sh up
-
-# 4. Java-Chaincode bauen (JDK 11) und deployen
 ./scripts/fabric_setup_test.sh cc
-
-# 5. Konsortiums-Identitäten (3 Nutzer je Rolle) anlegen und initCall ausführen
 ./scripts/fabric_setup_test_consortium.sh
-
-# 6. Backend, Vaadin-UI, IPFS und MongoDB per Docker Compose starten
 ./scripts/pharmalink_setup.sh up
 ```
 
@@ -130,17 +136,20 @@ source ./scripts/fabric_setEnv.sh
 ### CLI-Rolle wechseln & Umgebung zurücksetzen
 
 ```bash
-# Identität im aktuellen Terminal setzen (löst beim Sourcen kein initCall aus)
+# Passenden source-Befehl für eine Rolle anzeigen (hersteller, grosshaendler, apotheke, behoerde)
+just role behoerde
 source ./scripts/roles/fabric_role_behoerde.sh
 
 # PharmaLink-Compose-Stack und Fabric-Testnetzwerk sauber beenden
-./scripts/manage/repo_reset.sh
+just down   # oder: ./scripts/manage/repo_reset.sh
 ```
 
 ## Dokumentation
 
 | Dokument | Inhalt |
 | :--- | :--- |
+| [.agents/README.md](./.agents/README.md) | Orientierungs-Hub für Agenten & Mitwirkende plus `pharmalink-navigator`-Skill |
+| [justfile](./justfile) · [flake.nix](./flake.nix) | Zentrale Kommando-Oberfläche (`just --list`) und reproduzierbare Nix-DevShell |
 | [docs/README.md](./docs/README.md) | Navigationsübersicht aller technischen Dokumente |
 | [docs/getting-started.md](./docs/getting-started.md) | Installation, lokaler Dev-Modus, Konfigurationsvariablen, Fehlerbehebung |
 | [docs/architecture.md](./docs/architecture.md) | Föderierte Netzwerktopologie, CQRS-Sync, IPFS-Caching, Sicherheit & 4-Schicht-Audit |
