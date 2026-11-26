@@ -21,7 +21,7 @@ public final class PharmaEvent {
     public PharmaEvent() {
     }
 
-    // Parameter im Konstruktor umbenannt, um das Verbergen von Feldern zu vermeiden
+    // Parameters renamed in constructor to avoid field hiding
     public PharmaEvent(@JsonProperty("entityType") final String newEntityType,
                        @JsonProperty("entityId") final String newEntityId,
                        @JsonProperty("operation") final String newOperation) {
@@ -30,12 +30,12 @@ public final class PharmaEvent {
         this.operation = newOperation;
     }
 
-    // Getter und Setter
+    // Getters and setters
     public String getEntityType() {
         return entityType;
     }
 
-    // Parameter im Setter umbenannt, um das Verbergen von Feldern zu vermeiden
+    // Parameter renamed in setter to avoid field hiding
     public void setEntityType(final String newEntityType) {
         this.entityType = newEntityType;
     }
@@ -44,7 +44,7 @@ public final class PharmaEvent {
         return entityId;
     }
 
-    // Parameter im Setter umbenannt, um das Verbergen von Feldern zu vermeiden
+    // Parameter renamed in setter to avoid field hiding
     public void setEntityId(final String newEntityId) {
         this.entityId = newEntityId;
     }
@@ -53,14 +53,14 @@ public final class PharmaEvent {
         return operation;
     }
 
-    // Parameter im Setter umbenannt, um das Verbergen von Feldern zu vermeiden
+    // Parameter renamed in setter to avoid field hiding
     public void setOperation(final String newOperation) {
         this.operation = newOperation;
     }
 
     @Override
     public boolean equals(final Object o) {
-        // Geschweifte Klammern bei if-Anweisungen hinzugefügt
+        // Added braces to if statements
         if (this == o) {
             return true;
         }
