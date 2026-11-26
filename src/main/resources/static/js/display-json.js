@@ -5,34 +5,34 @@ const clickableRules = [
         label: 'Status',
         styles: { value: 'value-style-status' },
         action: (currentValue, label) => {
-            const options = ['geliefert', 'in Bearbeitung', 'storniert'];
-            const selection = prompt(`Neuen ${label} wählen:\n(${options.join(', ')})`, currentValue);
+            const options = ['delivered', 'in progress', 'cancelled'];
+            const selection = prompt(`Select new ${label}:\n(${options.join(', ')})`, currentValue);
             return options.includes(selection) ? selection : null;
         }
     },
     {
         type: 'key',
         value: 'versiegelt',
-        label: 'Versiegelungs-Status',
+        label: 'Seal Status',
         styles: { value: 'value-style-boolean' },
         action: (currentValue, label) => {
             const isSealed = JSON.parse(currentValue);
-            return confirm(`Soll der ${label} umgeschaltet werden? Aktuell: ${isSealed}`) ? !isSealed : null;
+            return confirm(`Toggle ${label}? Current: ${isSealed}`) ? !isSealed : null;
         }
     },
     {
         type: 'prefix',
         value: 'med-',
-        label: 'Medizinische ID',
+        label: 'Medication ID',
         styles: { value: 'value-style-med-id' },
-        action: (currentValue, label) => prompt(`Aktion für ${label} "${currentValue}":`, currentValue)
+        action: (currentValue, label) => prompt(`Action for ${label} "${currentValue}":`, currentValue)
     },
     {
         type: 'prefix',
         value: 'hersteller-',
-        label: 'Hersteller-ID',
+        label: 'Manufacturer ID',
         styles: { key: 'key-style-hersteller', value: 'value-style-hersteller' },
-        action: (currentValue, label) => prompt(`Aktion für ${label} "${currentValue}":`, currentValue)
+        action: (currentValue, label) => prompt(`Action for ${label} "${currentValue}":`, currentValue)
     }
 ];
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderAllJsonContainers() {
     const containers = document.querySelectorAll('.json-container-item:not(.json-rendered)');
-    let isFirstContainer = true; // NEU: Flag, um den ersten Container zu identifizieren
+    let isFirstContainer = true; // NEW: Flag to identify the first container
 
     containers.forEach(container => {
         const jsonDataScript = container.querySelector('script[type="application/json"]');
@@ -50,8 +50,8 @@ function renderAllJsonContainers() {
             try {
                 const jsonObj = JSON.parse(jsonDataScript.textContent);
                 if (typeof JSONFormatter !== 'undefined') {
-                    // NEU: Setze initialExpandedLevel basierend auf dem Flag
-                    const initialLevel = isFirstContainer ? 2 : 0; // 2 für den ersten, 0 für alle anderen (vollständig eingeklappt)
+                    // NEW: Set initialExpandedLevel based on the flag
+                    const initialLevel = isFirstContainer ? 2 : 0; // 2 for the first, 0 for all others (fully collapsed)
 
                     const formatter = new JSONFormatter(jsonObj, initialLevel, { theme: 'viewer-theme' });
                     container.innerHTML = '';
@@ -61,12 +61,12 @@ function renderAllJsonContainers() {
                     removeQuotesFromValues(container);
 
                     container.classList.add('json-rendered');
-                    isFirstContainer = false; // Setze das Flag auf false, nachdem der erste Container verarbeitet wurde
+                    isFirstContainer = false; // Set flag to false after processing the first container
                 } else {
-                    container.textContent = 'Fehler: Renderer-Bibliothek fehlt.';
+                    container.textContent = 'Error: Renderer library is missing.';
                 }
             } catch (e) {
-                container.textContent = 'Fehler: Ungültiges JSON-Format.';
+                container.textContent = 'Error: Invalid JSON format.';
                 console.error('JSON Parse Error:', e);
             }
         }
@@ -109,8 +109,8 @@ function makeValuesInteractive(container) {
 }
 
 /**
- * Entfernt die umschließenden Anführungszeichen von allen String-Werten.
- * @param {HTMLElement} container Der Container, in dem gesucht werden soll.
+ * Removes enclosing quotation marks from all string values.
+ * @param {HTMLElement} container The container element to search within.
  */
 function removeQuotesFromValues(container) {
     const stringElements = container.querySelectorAll('.json-formatter-string');

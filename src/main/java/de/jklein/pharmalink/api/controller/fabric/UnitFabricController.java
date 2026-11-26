@@ -52,7 +52,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Erstellen der Units: " + e.getMessage()));
+                    .body(Map.of("error", "Error creating units: " + e.getMessage()));
         }
     }
 
@@ -72,7 +72,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Abrufen der gruppierten Units: " + e.getMessage()));
+                    .body(Map.of("error", "Error retrieving grouped units: " + e.getMessage()));
         }
     }
 
@@ -88,7 +88,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Transfer der Unit: " + e.getMessage()));
+                    .body(Map.of("error", "Error transferring unit: " + e.getMessage()));
         }
     }
 
@@ -108,7 +108,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Hinzufügen der Temperaturdaten: " + e.getMessage()));
+                    .body(Map.of("error", "Error adding temperature reading: " + e.getMessage()));
         }
     }
 
@@ -120,7 +120,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Löschen der Charge: " + e.getMessage()));
+                    .body(Map.of("error", "Error deleting unit: " + e.getMessage()));
         }
     }
 
@@ -132,7 +132,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Batch-Löschen der Chargen: " + e.getMessage()));
+                    .body(Map.of("error", "Error batch-deleting units: " + e.getMessage()));
         }
     }
 
@@ -150,7 +150,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler bei der Bereichsübertragung: " + e.getMessage()));
+                    .body(Map.of("error", "Error transferring unit range: " + e.getMessage()));
         }
     }
 
@@ -162,7 +162,7 @@ public class UnitFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Abrufen der Chargenanzahlen: " + e.getMessage()));
+                    .body(Map.of("error", "Error retrieving batch counts: " + e.getMessage()));
         }
     }
 

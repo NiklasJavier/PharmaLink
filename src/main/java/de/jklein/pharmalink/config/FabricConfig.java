@@ -1,9 +1,9 @@
 package de.jklein.pharmalink.config;
 
 import java.time.LocalDateTime;
-import com.google.gson.Gson; // Import hinzugefügt
-import com.google.gson.GsonBuilder; // Import hinzugefügt
-import de.jklein.pharmalink.util.LocalDateTimeAdapter; // Import Ihres Adapters
+import com.google.gson.Gson; // Added import
+import com.google.gson.GsonBuilder; // Added import
+import de.jklein.pharmalink.util.LocalDateTimeAdapter; // Import of custom adapter
 
 import io.grpc.ChannelCredentials;
 import io.grpc.Grpc;
@@ -62,12 +62,12 @@ public class FabricConfig {
 
     @Bean
     public ManagedChannel grpcChannel() throws IOException {
-        System.out.println("--> Initialisiere gRPC-Verbindung...");
+        System.out.println("--> Initializing gRPC connection...");
 
         Path resolvedTlsCertPath = cryptoPath.resolve(tlsCertPath);
 
         if (!Files.exists(resolvedTlsCertPath)) {
-            throw new IOException("TLS Zertifikats-Datei nicht gefunden unter: " + resolvedTlsCertPath);
+            throw new IOException("TLS certificate file not found at: " + resolvedTlsCertPath);
         }
         ChannelCredentials credentials = TlsChannelCredentials.newBuilder()
                 .trustManager(resolvedTlsCertPath.toFile())
@@ -75,7 +75,7 @@ public class FabricConfig {
         this.grpcChannel = Grpc.newChannelBuilder(peerEndpoint, credentials)
                 .overrideAuthority(overrideAuth)
                 .build();
-        System.out.println("--> gRPC-Verbindung initialisiert.");
+        System.out.println("--> gRPC connection initialized.");
         return this.grpcChannel;
     }
 
@@ -107,7 +107,7 @@ public class FabricConfig {
 
     @Bean
     public Gateway gateway(ManagedChannel grpcChannel, Identity identity, Signer signer) {
-        System.out.println("--> Initialisiere Hyperledger Fabric Gateway...");
+        System.out.println("--> Initializing Hyperledger Fabric Gateway...");
         Gateway gateway = Gateway.newInstance()
                 .identity(identity)
                 .signer(signer)
@@ -119,7 +119,7 @@ public class FabricConfig {
                 .commitStatusOptions(options -> options.withDeadlineAfter(1, TimeUnit.MINUTES))
                 .connect();
 
-        System.out.println("--> Gateway erfolgreich verbunden.");
+        System.out.println("--> Gateway connected successfully.");
         return gateway;
     }
 
@@ -131,18 +131,18 @@ public class FabricConfig {
     @PreDestroy
     public void closeConnection() throws InterruptedException {
         if (this.grpcChannel != null) {
-            System.out.println("--> Schließe gRPC-Verbindung...");
+            System.out.println("--> Closing gRPC connection...");
             this.grpcChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
-            System.out.println("--> gRPC-Verbindung geschlossen.");
+            System.out.println("--> gRPC connection closed.");
         }
     }
 
     private Path getFirstFilePath(Path dirPath) throws IOException {
         if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
-            throw new IOException("Verzeichnis nicht gefunden oder ist keine Datei: " + dirPath);
+            throw new IOException("Directory not found or not a directory: " + dirPath);
         }
         try (var files = Files.list(dirPath)) {
-            return files.findFirst().orElseThrow(() -> new IOException("Keine Datei im Verzeichnis: " + dirPath));
+            return files.findFirst().orElseThrow(() -> new IOException("No file found in directory: " + dirPath));
         }
     }
 }

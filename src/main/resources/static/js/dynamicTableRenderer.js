@@ -1,20 +1,20 @@
 // src/main/resources/static/js/dynamicTableRenderer.js
 
 /**
- * Rendert dynamisch eine HTML-Tabelle aus einem JSON-Array von Objekten.
- * Spaltennamen werden von den Keys des ersten Objekts abgeleitet.
- * Die Tabelle wird scrollbar, wenn sie eine bestimmte maximale Höhe überschreitet.
+ * Dynamically renders an HTML table from a JSON array of objects.
+ * Column names are derived from the keys of the first object.
+ * The table becomes scrollable when it exceeds a specified maximum height.
  *
- * @param {string} jsonString Der JSON-String, der ein Array von Objekten darstellt.
- * @param {string} targetElementId Die ID des HTML-Elements, in das die Tabelle gerendert werden soll.
- * @param {number} maxBodyHeight Die maximale Höhe (in Pixeln) des Tabellenkörpers, bevor gescrollt wird.
- * @param {string} tableTitle Optionaler Titel für die Tabelle (wird hier nicht gerendert, da das Fragment dies tut).
+ * @param {string} jsonString The JSON string representing an array of objects.
+ * @param {string} targetElementId The ID of the HTML element where the table should be rendered.
+ * @param {number} maxBodyHeight The maximum height (in pixels) of the table body before scrolling.
+ * @param {string} tableTitle Optional title for the table (not rendered here, as the fragment handles it).
  */
 function renderDynamicTableFromJson(jsonString, targetElementId, maxBodyHeight, tableTitle = '') {
     const targetElement = document.getElementById(targetElementId);
 
     if (!targetElement) {
-        console.error(`Fehler: Zielelement mit ID '${targetElementId}' nicht gefunden.`);
+        console.error(`Error: Target element with ID '${targetElementId}' not found.`);
         return;
     }
 
@@ -22,20 +22,20 @@ function renderDynamicTableFromJson(jsonString, targetElementId, maxBodyHeight, 
     try {
         data = JSON.parse(jsonString);
     } catch (e) {
-        console.error(`Fehler: Ungültiges JSON-Format für Element mit ID '${targetElementId}'.`, e);
-        targetElement.innerHTML = `<p style="color: red;">Fehler: Ungültiges JSON-Format für Daten.</p>`;
+        console.error(`Error: Invalid JSON format for element with ID '${targetElementId}'.`, e);
+        targetElement.innerHTML = `<p style="color: red;">Error: Invalid JSON format for data.</p>`;
         return;
     }
 
     if (!Array.isArray(data) || data.length === 0) {
-        targetElement.innerHTML = `<p>Keine Daten verfügbar.</p>`;
+        targetElement.innerHTML = `<p>No data available.</p>`;
         return;
     }
 
     const headers = (typeof data[0] === 'object' && data[0] !== null) ? Object.keys(data[0]) : [];
 
     if (headers.length === 0) {
-        targetElement.innerHTML = `<p>Keine Spalten für die Daten gefunden.</p>`;
+        targetElement.innerHTML = `<p>No columns found for the data.</p>`;
         return;
     }
 
@@ -60,18 +60,18 @@ function renderDynamicTableFromJson(jsonString, targetElementId, maxBodyHeight, 
             const MAX_CHARS_DISPLAY = 30;
             const TRUNCATE_SUFFIX = '...';
 
-            // NEU: Styling für 'successful' Spalte
+            // NEW: Styling for the 'successful' column
             if (headerKey === 'successful') {
                 if (typeof cellValue === 'boolean') {
                     if (cellValue === true) {
                         cell.classList.add('cell-successful-true');
-                        cell.textContent = 'True'; // Standardisiert die Anzeige auf 'True'/'False'
+                        cell.textContent = 'True'; // Standardize display to 'True'/'False'
                     } else {
                         cell.classList.add('cell-successful-false');
                         cell.textContent = 'False';
                     }
                 } else {
-                    // Falls der Wert nicht boolean ist, einfach den Wert anzeigen
+                    // If the value is not a boolean, simply display it as a string
                     cell.textContent = String(cellValue);
                 }
             } else if (typeof cellValue === 'object' && cellValue !== null) {
@@ -86,7 +86,7 @@ function renderDynamicTableFromJson(jsonString, targetElementId, maxBodyHeight, 
                     }
                     cell.classList.add('json-cell-content');
                 } catch (e) {
-                    cell.textContent = '[Ungültiges Objekt]';
+                    cell.textContent = '[Invalid object]';
                 }
             } else if (cellValue === null || cellValue === undefined || (typeof cellValue === 'string' && cellValue.trim() === '')) {
                 cell.textContent = '-';

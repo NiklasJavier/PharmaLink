@@ -44,11 +44,11 @@ public class AppSecDataInitializer implements CommandLineRunner {
             User adminUser = new User();
             adminUser.setUsername(benutzername);
             adminUser.setPassword(passwordEncoder.encode(passwort.toString()));
-            adminUser.setRoles(Collections.singleton(adminRole)); // Korrekte Zuweisung der Rolle zum User
+            adminUser.setRoles(Collections.singleton(adminRole)); // Correct assignment of role to user
             userRepository.save(adminUser);
-            log.info("Admin-Benutzer '{}' erstellt.", benutzername);
+            log.info("Admin user '{}' created.", benutzername);
         } else {
-            log.info("Admin-Benutzer '{}' existiert bereits.", benutzername);
+            log.info("Admin user '{}' already exists.", benutzername);
         }
     }
 
@@ -58,9 +58,9 @@ public class AppSecDataInitializer implements CommandLineRunner {
             role = new Role();
             role.setName(roleName);
             role = roleRepository.save(role);
-            log.info("Rolle '{}' erstellt.", roleName);
+            log.info("Role '{}' created.", roleName);
         } else {
-            log.info("Rolle '{}' existiert bereits.", roleName);
+            log.info("Role '{}' already exists.", roleName);
         }
         return role;
     }

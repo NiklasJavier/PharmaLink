@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <div th:fragment="dynamicKPIs (kpiTitle, kpiJsonString, idPrefix)"
@@ -7,27 +7,27 @@
      class="dynamic-kpi-fragment-container card">
 
     <div class="card-header">
-        <h3 th:text="${kpiTitle}">Dynamische Kennzahlen</h3>
+        <h3 th:text="${kpiTitle}">Dynamic KPIs</h3>
     </div>
 
     <div class="card-body">
         <div th:id="${idPrefix + '-render-root'}" class="kpi-render-root">
-            Lade Kennzahlen...
+            Loading KPIs...
         </div>
 
         <script th:inline="javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                // Parameter aus dem Thymeleaf-Modell sicher an JavaScript übergeben
+                // Safely pass parameters from the Thymeleaf model to JavaScript
                 const dataJsonString = /*[[${kpiJsonString}]]*/ '{}';
                 const rootElementId = [[${idPrefix + '-render-root'}]];
                 const title = [[${kpiTitle}]];
 
-                // Nur rendern, wenn tatsächlich Daten vorhanden sind
+                // Only render when data is actually present
                 if (dataJsonString && dataJsonString !== 'null' && dataJsonString !== '{}') {
-                    // Rufe die neue, separate Render-Funktion auf
+                    // Invoke the separate render function
                     renderDynamicKPIsFromJson(dataJsonString, rootElementId, title);
                 } else {
-                    document.getElementById(rootElementId).innerHTML = '<p>Keine Kennzahlen verfügbar.</p>';
+                    document.getElementById(rootElementId).innerHTML = '<p>No KPIs available.</p>';
                 }
             });
         </script>

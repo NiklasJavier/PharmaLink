@@ -7,7 +7,7 @@ import java.util.Map;
 @Data
 public class CreateMedikamentRequestDto {
 
-    @NotBlank(message = "Die Bezeichnung darf nicht leer sein.")
+    @NotBlank(message = "Designation must not be blank.")
     private String bezeichnung;
 
     private String infoblattHash;

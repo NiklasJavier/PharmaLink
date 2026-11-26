@@ -40,10 +40,10 @@ public class MedicationFabricService {
         String finalIpfsLink = "";
 
         if (requestDto.getIpfsData() != null && !requestDto.getIpfsData().isEmpty()) {
-            logger.info("Verarbeite 'ipfsData', um einen neuen IPFS-Link zu erstellen...");
+            logger.info("Processing 'ipfsData' to create a new IPFS link...");
             String ipfsJson = fabricClient.getGson().toJson(requestDto.getIpfsData());
             finalIpfsLink = ipfsClient.addObject(ipfsJson);
-            logger.info("Neuer IPFS-Link erfolgreich erstellt: {}", finalIpfsLink);
+            logger.info("New IPFS link created successfully: {}", finalIpfsLink);
         }
 
         String resultJson = fabricClient.submitGenericTransaction(
@@ -61,7 +61,7 @@ public class MedicationFabricService {
             Medikament medikament = fabricClient.evaluateTransaction("queryMedikamentById", Medikament.class, medId);
             return Optional.ofNullable(enrichSingleMedikamentWithIpfs(medikament));
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen des Medikaments mit ID '{}': {}", medId, e.getMessage(), e);
+            logger.error("Error retrieving medication with ID '{}': {}", medId, e.getMessage(), e);
             return Optional.empty();
         }
     }
@@ -87,7 +87,7 @@ public class MedicationFabricService {
             List<Medikament> medikamente = fabricClient.getGson().fromJson(resultJson, listType);
             return enrichMedikamentList(medikamente);
         } catch (Exception e) {
-            logger.error("Fehler bei der Suche nach Medikamenten mit der Anfrage '{}': {}", searchQuery, e.getMessage(), e);
+            logger.error("Error searching medications with query '{}': {}", searchQuery, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -99,7 +99,7 @@ public class MedicationFabricService {
             List<Medikament> medikamente = fabricClient.getGson().fromJson(resultJson, listType);
             return enrichMedikamentList(medikamente);
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen aller Medikamente vom Chaincode: {}", e.getMessage(), e);
+            logger.error("Error retrieving all medications from chaincode: {}", e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -130,10 +130,10 @@ public class MedicationFabricService {
                     Type dataType = new TypeToken<Map<String, Object>>() {}.getType();
                     Map<String, Object> ipfsData = ipfsClient.getObject(cleanHash, dataType);
                     medikament.setIpfsData(ipfsData);
-                    logger.debug("Medikament {} erfolgreich mit IPFS-Daten angereichert.", medikament.getMedId());
+                    logger.debug("Medication {} successfully enriched with IPFS data.", medikament.getMedId());
                 }
             } catch (IOException e) {
-                logger.warn("Konnte IPFS-Daten für Medikament {} nicht abrufen oder verarbeiten: {}", medikament.getMedId(), e.getMessage());
+                logger.warn("Could not retrieve or process IPFS data for medication {}: {}", medikament.getMedId(), e.getMessage());
             }
         }
         return medikament;
@@ -143,13 +143,13 @@ public class MedicationFabricService {
         String finalIpfsLink = "";
 
         if (ipfsData != null && !ipfsData.isEmpty()) {
-            logger.info("Verarbeite neue 'ipfsData' für Medikament-ID: {}", medId);
+            logger.info("Processing new 'ipfsData' for medication ID: {}", medId);
             String ipfsJson = fabricClient.getGson().toJson(ipfsData);
             finalIpfsLink = ipfsClient.addObject(ipfsJson);
-            logger.info("Neuer IPFS-Link für Update erstellt: {}", finalIpfsLink);
+            logger.info("New IPFS link created for update: {}", finalIpfsLink);
         }
 
-        logger.debug("Sende 'updateMedikament'-Transaktion für ID: {}", medId);
+        logger.debug("Submitting 'updateMedikament' transaction for ID: {}", medId);
         String resultJson = fabricClient.submitGenericTransaction(
                 "updateMedikament",
                 medId,
@@ -161,8 +161,8 @@ public class MedicationFabricService {
     }
 
     public void deleteMedikamentIfNoUnits(String medId) throws Exception {
-        logger.debug("Sende 'deleteMedikamentIfNoUnits'-Transaktion für ID: {}", medId);
+        logger.debug("Submitting 'deleteMedikamentIfNoUnits' transaction for ID: {}", medId);
         fabricClient.submitGenericTransaction("deleteMedikamentIfNoUnits", medId);
-        logger.info("Medikament {} erfolgreich zur bedingten Löschung eingereicht.", medId);
+        logger.info("Medication {} successfully submitted for conditional deletion.", medId);
     }
 }

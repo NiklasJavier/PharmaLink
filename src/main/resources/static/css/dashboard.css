@@ -1,12 +1,12 @@
-/* Beispiel für Styling einer Datentabelle */
+/* Example styling for a data table */
 .data-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    border-radius: 8px; /* Optional: abgerundete Ecken für die Tabelle selbst */
-    overflow: hidden; /* Für abgerundete Ecken und Schatten */
+    border-radius: 8px; /* Optional: rounded corners for the table itself */
+    overflow: hidden; /* For rounded corners and shadows */
 }
 
 .data-table th, .data-table td {
@@ -24,11 +24,11 @@
 }
 
 .data-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Streifenmuster */
+    background-color: #f9f9f9; /* Striped pattern */
 }
 
 .data-table tbody tr:hover {
-    background-color: #e9f5ff; /* Hellblauer Hover-Effekt */
+    background-color: #e9f5ff; /* Light blue hover effect */
 }
 
 .data-table td {
@@ -36,7 +36,7 @@
     font-size: 0.9em;
 }
 
-.error-message { /* Wenn noch nicht definiert, als generische Fehlermeldung */
+.error-message { /* Generic error message fallback if not defined elsewhere */
     color: #dc3545;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;

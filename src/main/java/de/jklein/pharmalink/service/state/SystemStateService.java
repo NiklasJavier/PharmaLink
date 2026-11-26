@@ -94,7 +94,7 @@ public class SystemStateService {
 
     @PostConstruct
     public void init() {
-        logger.info("Initialisiere System-Status-Dienst...");
+        logger.info("Initializing System State Service...");
         loadStateFromDatabase();
         synchronizeWithChaincode();
         startEventListening();
@@ -104,47 +104,47 @@ public class SystemStateService {
         systemStateRepository.findById(SYSTEM_STATE_ID).ifPresent(state -> {
             currentActorId.set(state.getCurrentActorId());
             lastProcessedBlock.set(state.getLastProcessedBlockNumber());
-            logger.info("Gespeicherten Systemzustand geladen. Aktuelle Akteur-ID: {}, Letzter Block: {}",
+            logger.info("Loaded persisted system state. Current actor ID: {}, Last block: {}",
                     state.getCurrentActorId(), state.getLastProcessedBlockNumber());
         });
     }
 
     @Transactional
     public void synchronizeWithChaincode() {
-        logger.info("Synchronisiere globalen Zustand (Akteure, Medikamente) mit dem Chaincode...");
+        logger.info("Synchronizing global state (actors, medications) with chaincode...");
         try {
             List<Actor> actorsFromChaincode = actorFabricService.getAllActors();
             actorRepository.deleteAll();
             actorRepository.saveAll(actorsFromChaincode);
-            logger.info("{} Akteure erfolgreich mit der Datenbank synchronisiert.", actorsFromChaincode.size());
+            logger.info("{} actors successfully synchronized with the database.", actorsFromChaincode.size());
 
             List<Medikament> medikamenteFromChaincode = medicationFabricService.getAllMedikamente();
             medikamentRepository.deleteAll();
             medikamentRepository.saveAll(medikamenteFromChaincode);
-            logger.info("{} Medikamente erfolgreich mit der Datenbank synchronisiert.", medikamenteFromChaincode.size());
+            logger.info("{} medications successfully synchronized with the database.", medikamenteFromChaincode.size());
 
             if (StringUtils.hasText(currentActorId.get())) {
                 synchronizeUnitsForActor(currentActorId.get());
             }
         } catch (Exception e) {
-            logger.error("KRITISCH: Globaler Zustand konnte nicht mit dem Chaincode synchronisiert werden. Grund: {}", e.getMessage(), e);
+            logger.error("CRITICAL: Failed to synchronize global state with chaincode. Reason: {}", e.getMessage(), e);
         }
     }
 
     @PreDestroy
     public void shutdown() {
-        logger.info("Fahre System-Status-Dienst herunter...");
+        logger.info("Shutting down System State Service...");
         saveStateToDatabase();
         fabricClient.shutdownEventExecutor();
     }
 
     private void startEventListening() {
         try {
-            logger.info("Starte ausfallsichere Chaincode-Ereignisüberwachung...");
+            logger.info("Starting fault-tolerant chaincode event listener...");
             fabricClient.startEventListeningWithRetry(chaincodeName, () -> this.lastProcessedBlock.get() + 1, this::handleChaincodeEvent);
-            logger.info("Ausfallsichere Chaincode-Ereignisüberwachung für Chaincode '{}' erfolgreich gestartet.", chaincodeName);
+            logger.info("Fault-tolerant chaincode event listener for chaincode '{}' started successfully.", chaincodeName);
         } catch (Exception e) {
-            logger.error("Fehler beim Starten der Chaincode-Ereignisüberwachung: {}", e.getMessage(), e);
+            logger.error("Error starting chaincode event listener: {}", e.getMessage(), e);
         }
     }
 
@@ -153,7 +153,7 @@ public class SystemStateService {
         logEventForAudit(event);
         try {
             if (event.getPayload() == null || event.getPayload().length == 0) {
-                logger.warn("Ereignis '{}' mit leerem Inhalt empfangen. Wird übersprungen.", event.getEventName());
+                logger.warn("Received event '{}' with empty payload. Skipping.", event.getEventName());
                 return;
             }
 
@@ -176,13 +176,13 @@ public class SystemStateService {
                         handleUnitTransfer(payload);
                 case UNIT_DELETED_EVENT ->
                         handleUnitDelete(getIdFromPayload(payload, "unitId"));
-                default -> logger.warn("Unbehandeltes Ereignis empfangen: {}. Inhalt: {}", event.getEventName(), payload.toString());
+                default -> logger.warn("Received unhandled event: {}. Payload: {}", event.getEventName(), payload.toString());
             }
 
             updateAndPersistCheckpoint(event.getBlockNumber());
 
         } catch (IOException e) {
-            logger.error("Fehler beim Verarbeiten des Ereignisinhalts für Ereignis '{}': {}", event.getEventName(), e.getMessage(), e);
+            logger.error("Error processing event payload for event '{}': {}", event.getEventName(), e.getMessage(), e);
         }
     }
 
@@ -201,7 +201,7 @@ public class SystemStateService {
             ChaincodeEventLog logEntry = new ChaincodeEventLog(event.getEventName(), event.getTransactionId(), event.getBlockNumber(), payloadAsString);
             eventLogRepository.save(logEntry);
         } catch (Exception e) {
-            logger.error("!!! FEHLER BEI DER PRÜFUNG DES CHAINCODE-EREIGNISSES !!! Tx-ID: {}. Grund: {}", event.getTransactionId(), e.getMessage(), e);
+            logger.error("!!! ERROR AUDITING CHAINCODE EVENT !!! Tx ID: {}. Reason: {}", event.getTransactionId(), e.getMessage(), e);
         }
     }
 
@@ -217,14 +217,14 @@ public class SystemStateService {
                 actorToSave.setIpfsData(actorFromChaincode.getIpfsData());
             }
             actorRepository.save(actorToSave);
-            logger.info("Akteur {} in der Datenbank erstellt/aktualisiert.", actorId);
+            logger.info("Actor {} created/updated in the database.", actorId);
         }));
     }
 
     private void handleActorDelete(Optional<String> actorIdOpt) {
         actorIdOpt.ifPresent(actorId -> {
             actorRepository.deleteByActorId(actorId);
-            logger.info("Akteur {} aus der Datenbank entfernt.", actorId);
+            logger.info("Actor {} removed from the database.", actorId);
         });
     }
 
@@ -242,28 +242,28 @@ public class SystemStateService {
                 medikamentToSave.setIpfsData(medikamentFromChaincode.getIpfsData());
             }
             medikamentRepository.save(medikamentToSave);
-            logger.info("Medikament {} in der Datenbank erstellt/aktualisiert.", medId);
+            logger.info("Medication {} created/updated in the database.", medId);
         }));
     }
 
     private void handleMedikamentDelete(Optional<String> medIdOpt) {
         medIdOpt.ifPresent(medId -> {
             medikamentRepository.deleteByMedId(medId);
-            logger.info("Medikament {} aus der Datenbank entfernt.", medId);
+            logger.info("Medication {} removed from the database.", medId);
         });
     }
 
     private void handleUnitBatchCreation(JsonNode payload) {
         Optional<String> unitIdOpt = getIdFromPayload(payload, "unitId");
         if (unitIdOpt.isEmpty()) {
-            logger.error("UnitCreated-Ereignis ohne unitId erhalten. Payload: {}", payload.toString());
+            logger.error("Received UnitCreated event without unitId. Payload: {}", payload.toString());
             return;
         }
 
         String exampleUnitId = unitIdOpt.get();
         int lastDash = exampleUnitId.lastIndexOf('-');
         if (lastDash == -1) {
-            logger.error("Ungültiges Format der Unit-ID für die Chargen-Erstellung: {}", exampleUnitId);
+            logger.error("Invalid unitId format for batch creation: {}", exampleUnitId);
             handleUnitUpdate(Optional.of(exampleUnitId));
             return;
         }
@@ -272,7 +272,7 @@ public class SystemStateService {
             String idPrefix = exampleUnitId.substring(0, lastDash + 1);
             int count = Integer.parseInt(exampleUnitId.substring(lastDash + 1));
 
-            logger.info("Starte Chargen-Erstellung für {} Einheiten mit Präfix '{}'.", count, idPrefix);
+            logger.info("Starting batch creation for {} units with prefix '{}'.", count, idPrefix);
 
             List<Unit> batch = new ArrayList<>(count);
             for (int i = 1; i <= count; i++) {
@@ -282,10 +282,10 @@ public class SystemStateService {
             }
 
             unitRepository.saveAll(batch);
-            logger.info("{} Einheiten erfolgreich in der Datenbank erstellt.", batch.size());
+            logger.info("{} units successfully created in the database.", batch.size());
 
         } catch (NumberFormatException | IOException e) {
-            logger.error("Fehler beim Parsen der Unit-ID für Charge, versuche Fallback. ID: {}, Fehler: {}", exampleUnitId, e.getMessage());
+            logger.error("Error parsing unitId for batch, attempting fallback. ID: {}, Error: {}", exampleUnitId, e.getMessage());
             handleUnitUpdate(Optional.of(exampleUnitId));
         }
     }
@@ -303,11 +303,11 @@ public class SystemStateService {
         }
 
         if (StringUtils.hasText(fromActorId) && StringUtils.hasText(newOwnerId)) {
-            logger.info("Unit-Transfer erkannt. Synchronisiere Inventar für Sender {} und Empfänger {}.", fromActorId, newOwnerId);
+            logger.info("Unit transfer detected. Synchronizing inventory for sender {} and recipient {}.", fromActorId, newOwnerId);
             synchronizeUnitsForActor(fromActorId);
             synchronizeUnitsForActor(newOwnerId);
         } else {
-            logger.warn("Konnte Sender oder Empfänger aus Transfer-Ereignis nicht extrahieren. Payload: {}", payload.toString());
+            logger.warn("Could not extract sender or recipient from transfer event. Payload: {}", payload.toString());
             handleUnitUpdate(getIdFromPayload(payload, "unitId"));
         }
     }
@@ -327,21 +327,21 @@ public class SystemStateService {
                 unitToSave.setIpfsData(unitFromChaincode.getIpfsData());
             }
             unitRepository.save(unitToSave);
-            logger.info("Einheit {} in der Datenbank erstellt/aktualisiert.", unitId);
+            logger.info("Unit {} created/updated in the database.", unitId);
         }));
     }
 
     private void handleUnitDelete(Optional<String> unitIdOpt) {
         unitIdOpt.ifPresent(unitId -> {
             unitRepository.deleteByUnitId(unitId);
-            logger.info("Einheit {} aus der Datenbank entfernt.", unitId);
+            logger.info("Unit {} removed from the database.", unitId);
         });
     }
 
     @Transactional
     public void reconcileAndCacheActorId(String actorId) {
         if (!Objects.equals(currentActorId.get(), actorId)) {
-            logger.info("Aktuelle Akteur-ID von {} auf {} geändert.", currentActorId.get(), actorId);
+            logger.info("Current actor ID changed from {} to {}.", currentActorId.get(), actorId);
             currentActorId.set(actorId);
             saveStateToDatabase();
 
@@ -356,7 +356,7 @@ public class SystemStateService {
         if (!StringUtils.hasText(actorId)) return;
 
         try {
-            logger.info("Starte schnelle Synchronisierung der Einheiten für Akteur {}.", actorId);
+            logger.info("Starting fast synchronization of units for actor {}.", actorId);
 
             List<Unit> unitsFromChaincode = unitFabricService.getUnitsByOwner(actorId);
 
@@ -366,10 +366,10 @@ public class SystemStateService {
                 unitRepository.saveAll(unitsFromChaincode);
             }
 
-            logger.info("{} Einheiten für Akteur {} erfolgreich synchronisiert.", unitsFromChaincode.size(), actorId);
+            logger.info("{} units successfully synchronized for actor {}.", unitsFromChaincode.size(), actorId);
 
         } catch (Exception e) {
-            logger.error("Fehler bei der Synchronisierung der Einheiten für Akteur {}: {}", actorId, e.getMessage(), e);
+            logger.error("Error synchronizing units for actor {}: {}", actorId, e.getMessage(), e);
         }
     }
 
@@ -379,7 +379,7 @@ public class SystemStateService {
         state.setCurrentActorId(currentActorId.get());
         state.setLastProcessedBlockNumber(lastProcessedBlock.get());
         systemStateRepository.save(state);
-        logger.info("Systemzustand (currentActorId: {}, lastBlock: {}) in der Datenbank gespeichert.",
+        logger.info("System state (currentActorId: {}, lastBlock: {}) saved to the database.",
                 currentActorId.get(), lastProcessedBlock.get());
     }
 }

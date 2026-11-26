@@ -8,10 +8,10 @@ import java.util.Map;
 @Data
 public class CreateUnitsRequestDto {
 
-    @NotBlank(message = "Die Chargenbezeichnung darf nicht leer sein.")
+    @NotBlank(message = "Batch designation must not be blank.")
     private String chargeBezeichnung;
 
-    @Min(value = 1, message = "Es muss mindestens eine Einheit erstellt werden.")
+    @Min(value = 1, message = "At least one unit must be created.")
     private int anzahl;
 
     private Map<String, Object> ipfsData;

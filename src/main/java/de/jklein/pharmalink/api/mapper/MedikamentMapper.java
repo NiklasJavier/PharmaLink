@@ -3,7 +3,7 @@ package de.jklein.pharmalink.api.mapper;
 import de.jklein.pharmalink.api.dto.MedikamentResponseDto;
 import de.jklein.pharmalink.domain.Medikament;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping; // Import für @Mapping hinzufügen
+import org.mapstruct.Mapping; // Import for @Mapping
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;

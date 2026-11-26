@@ -64,7 +64,7 @@ public class FabricClient {
         this.objectMapper = objectMapper;
         this.grpcTransactionRepository = grpcTransactionRepository;
 
-        logger.info("Fabric-Client initialisiert für MSP: {}, Benutzer: {}. Verbunden mit Kanal: {}, Chaincode: {}",
+        logger.info("Fabric client initialized for MSP: {}, User: {}. Connected to channel: {}, Chaincode: {}",
                 fabricConfig.getMspId(),
                 identity.getMspId(),
                 channelName,
@@ -82,11 +82,11 @@ public class FabricClient {
             byte[] result = contract.submitTransaction(transactionName, args);
             responsePayload = new String(result);
             success = true;
-            logger.info("Transaktion '{}' erfolgreich übermittelt. Ergebnis: {}", transactionName, responsePayload);
+            logger.info("Transaction '{}' successfully submitted. Result: {}", transactionName, responsePayload);
             return responsePayload;
         } catch (GatewayException e) {
             errorMessage = e.getMessage();
-            logger.error("Fehler beim Übermitteln der Transaktion '{}': {}", transactionName, errorMessage, e);
+            logger.error("Error submitting transaction '{}': {}", transactionName, errorMessage, e);
             throw e;
         } finally {
             logGrpcTransaction(transactionName, transactionArgsJson, startTime, success, errorMessage, responsePayload);
@@ -104,11 +104,11 @@ public class FabricClient {
             byte[] result = contract.evaluateTransaction(transactionName, args);
             responsePayload = new String(result);
             success = true;
-            logger.info("Transaktion '{}' erfolgreich ausgewertet. Ergebnis: {}", transactionName, responsePayload);
+            logger.info("Transaction '{}' successfully evaluated. Result: {}", transactionName, responsePayload);
             return responsePayload;
         } catch (GatewayException e) {
             errorMessage = e.getMessage();
-            logger.error("Fehler beim Auswerten der Transaktion '{}': {}", transactionName, errorMessage, e);
+            logger.error("Error evaluating transaction '{}': {}", transactionName, errorMessage, e);
             throw e;
         } finally {
             logGrpcTransaction(transactionName, transactionArgsJson, startTime, success, errorMessage, responsePayload);
@@ -128,11 +128,11 @@ public class FabricClient {
             responsePayload = new String(result);
             deserializedResult = gson.fromJson(responsePayload, valueType);
             success = true;
-            logger.info("Transaktion '{}' erfolgreich ausgewertet. Ergebnis: {}", transactionName, responsePayload);
+            logger.info("Transaction '{}' successfully evaluated. Result: {}", transactionName, responsePayload);
             return deserializedResult;
         } catch (GatewayException e) {
             errorMessage = e.getMessage();
-            logger.error("Fehler beim Auswerten der Transaktion '{}': {}", transactionName, errorMessage, e);
+            logger.error("Error evaluating transaction '{}': {}", transactionName, errorMessage, e);
             throw e;
         } finally {
             logGrpcTransaction(transactionName, transactionArgsJson, startTime, success, errorMessage, responsePayload);
@@ -143,9 +143,9 @@ public class FabricClient {
         GrpcTransaction transaction = new GrpcTransaction(transactionName, argsJson, timestamp, successful, errorMessage, responsePayload);
         try {
             grpcTransactionRepository.save(transaction);
-            logger.debug("gRPC-Transaktion protokolliert: {}", transactionName);
+            logger.debug("gRPC transaction logged: {}", transactionName);
         } catch (Exception e) {
-            logger.error("Fehler beim Speichern des gRPC-Transaktionsprotokolls für {}: {}", transactionName, e.getMessage());
+            logger.error("Error saving gRPC transaction log for {}: {}", transactionName, e.getMessage());
         }
     }
 
@@ -156,8 +156,8 @@ public class FabricClient {
         try {
             return objectMapper.writeValueAsString(args);
         } catch (JsonProcessingException e) {
-            logger.error("Fehler beim Konvertieren der Transaktionsargumente in JSON: {}", e.getMessage());
-            return "[\"Fehler beim Konvertieren der Argumente\"]";
+            logger.error("Error converting transaction arguments to JSON: {}", e.getMessage());
+            return "[\"Error converting arguments\"]";
         }
     }
 
@@ -171,22 +171,22 @@ public class FabricClient {
             while (!Thread.currentThread().isInterrupted()) {
                 long startBlock = startBlockSupplier.get() > 0 ? startBlockSupplier.get() + 1 : 0L;
                 try (CloseableIterator<ChaincodeEvent> eventIter = listenFromBlock(chaincodeName, startBlock)) {
-                    logger.info("Verbindung zur Chaincode-Ereignisüberwachung hergestellt, starte bei Block {}.", startBlock);
+                    logger.info("Connected to chaincode event listener, starting at block {}.", startBlock);
                     backoffMillis = 1000;
 
                     while (eventIter.hasNext()) {
                         eventHandler.accept(eventIter.next());
                     }
                 } catch (StatusRuntimeException e) {
-                    logger.error("gRPC-Verbindungsfehler bei der Ereignisüberwachung: {}. Versuche erneute Verbindung in {}s.", e.getStatus(), backoffMillis / 1000);
+                    logger.error("gRPC connection error in event listener: {}. Retrying connection in {}s.", e.getStatus(), backoffMillis / 1000);
                     sleep(backoffMillis);
                     backoffMillis = Math.min(backoffMillis * 2, 20000);
                 } catch (Exception e) {
-                    logger.error("Unerwarteter Fehler bei der Ereignisüberwachung. Breche ab.", e);
+                    logger.error("Unexpected error in event listener. Aborting.", e);
                     break;
                 }
             }
-            logger.warn("Event-Listening-Schleife wurde beendet.");
+            logger.warn("Event listening loop terminated.");
         });
     }
 
@@ -209,7 +209,7 @@ public class FabricClient {
         eventExecutor.shutdownNow();
         try {
             if (!eventExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-                logger.warn("Event-Executor wurde nicht innerhalb von 5 Sekunden beendet.");
+                logger.warn("Event executor did not terminate within 5 seconds.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

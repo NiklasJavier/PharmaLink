@@ -1,7 +1,7 @@
 package de.jklein.pharmalink.api.dto;
 
 import lombok.Data;
-import java.util.Map; // Import für Map
+import java.util.Map; // Import for Map
 
 @Data
 public class ActorResponseDto {

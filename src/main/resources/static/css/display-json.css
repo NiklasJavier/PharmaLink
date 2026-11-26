@@ -1,29 +1,29 @@
 /*
 ====================================================================
-    1. LOKALE VARIABLEN & BASIS-STILE FÜR DEN JSON-VIEWER
+    1. LOCAL VARIABLES & BASE STYLES FOR THE JSON VIEWER
 ====================================================================
 */
-/* KORREKTUR: Der Klassenname wurde zu .json-formatter-viewer-theme geändert */
+/* FIX: The class name was changed to .json-formatter-viewer-theme */
 .json-formatter-viewer-theme {
-    /* -- Definierte Variablen für dieses Bauteil -- */
+    /* -- Defined variables for this component -- */
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
     --radius-sm: 6px;
     --spacing-2: 0.5rem;
     --spacing-3: 0.8rem;
     --spacing-5: 1.5rem;
     --color-bg-content: #ffffff;
-    --color-bg-subtle: #f8fafc; /* Hellgrau für Value-Boxen */
+    --color-bg-subtle: #f8fafc; /* Light gray for value boxes */
     --color-border: #eef2f7;
     --color-text-key: #475569;
     --color-lineage: #1B1B1B;
 
-    /* Syntax-Farben */
+    /* Syntax colors */
     --syntax-string: #222;
     --syntax-number: #8b5cf6;
     --syntax-boolean: #ec4899;
     --syntax-null: #ef4444;
 
-    /* Interaktive Themen-Farben */
+    /* Interactive theme colors */
     --theme-status-bg: #ecfdf5;
     --theme-status-text: #10b981;
     --theme-hersteller-bg: #fffbeb;
@@ -39,7 +39,7 @@
 
 /*
 ====================================================================
-    2. NEUES DESIGN: KEY/VALUE ALS SEPARATE BOXEN
+    2. NEW DESIGN: KEY/VALUE AS SEPARATE BOXES
 ====================================================================
 */
 
@@ -81,7 +81,7 @@
 
 /*
 ====================================================================
-    3. VERSCHACHTELTE OBJEKTE
+    3. NESTED OBJECTS
 ====================================================================
 */
 
@@ -125,13 +125,13 @@
 
 /*
 ====================================================================
-    4. INTERAKTIVE STILE (überschreiben das Standard-Design)
+    4. INTERACTIVE STYLES (override the default design)
 ====================================================================
 */
 
 .clickable-value { cursor: pointer; }
 .styled-key, .styled-value {
-    /* Basis-Klasse ohne Stile, nur als Haken für JS */
+    /* Base class without styles, used only as a JS hook */
 }
 
 .key-style-status, .value-style-status { background-color: var(--theme-status-bg); color: var(--theme-status-text); border-color: #bbf7d0; }

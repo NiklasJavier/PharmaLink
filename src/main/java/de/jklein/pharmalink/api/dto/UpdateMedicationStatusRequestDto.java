@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class UpdateMedicationStatusRequestDto {
 
-    @NotBlank(message = "Der neue Status darf nicht leer sein.")
-    @Pattern(regexp = "freigegeben|abgelehnt", message = "Status muss 'freigegeben' oder 'abgelehnt' sein.")
+    @NotBlank(message = "The new status must not be blank.")
+    @Pattern(regexp = "freigegeben|abgelehnt", message = "Status must be 'freigegeben' or 'abgelehnt'.")
     private String newStatus;
 }

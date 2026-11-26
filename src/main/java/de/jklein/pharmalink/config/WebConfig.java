@@ -1,7 +1,7 @@
 package de.jklein.pharmalink.config;
 
 import de.jklein.pharmalink.api.audit.ApiTransactionInterceptor;
-import de.jklein.pharmalink.filter.RequestCachingFilter; // NEU: Import Ihres benutzerdefinierten Filters
+import de.jklein.pharmalink.filter.RequestCachingFilter; // NEW: Import of custom filter
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final ApiTransactionInterceptor apiTransactionInterceptor;
     @Autowired
-    public WebConfig(ApiTransactionInterceptor apiTransactionInterceptor, RequestCachingFilter requestCachingFilter) { // NEU: Filter im Konstruktor hinzufügen
+    public WebConfig(ApiTransactionInterceptor apiTransactionInterceptor, RequestCachingFilter requestCachingFilter) { // NEW: Add filter in constructor
         this.apiTransactionInterceptor = apiTransactionInterceptor;
     }
 

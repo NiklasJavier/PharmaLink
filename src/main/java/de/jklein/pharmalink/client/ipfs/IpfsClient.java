@@ -41,7 +41,7 @@ public class IpfsClient {
         this.ipfs = new IPFS(ipfsConfig.getHost(), ipfsConfig.getPort(), "/api/v0/", timeoutMillis, timeoutMillis, false);
         this.objectMapper = objectMapper;
         this.ipfsCacheRepository = ipfsCacheRepository;
-        logger.info("IPFS-Client initialisiert mit Host: {}, Port: {} und Timeout: {}s",
+        logger.info("IPFS client initialized with host: {}, port: {} and timeout: {}s",
                 ipfsConfig.getHost(), ipfsConfig.getPort(), ipfsConfig.getTimeout());
     }
 
@@ -53,28 +53,28 @@ public class IpfsClient {
             try {
                 objectMapper.readTree(inputString);
                 jsonStringToSend = inputString;
-                logger.debug("Eingabeobjekt ist bereits ein gültiger JSON-String. Wird direkt verwendet.");
+                logger.debug("Input object is already a valid JSON string. Using directly.");
             } catch (JsonProcessingException e) {
                 jsonStringToSend = objectMapper.writeValueAsString(data);
-                logger.debug("Eingabeobjekt ist ein Nicht-JSON-String. Wird als JSON-String-Literal serialisiert.");
+                logger.debug("Input object is a non-JSON string. Serializing as JSON string literal.");
             }
         } else {
             jsonStringToSend = objectMapper.writeValueAsString(data);
-            logger.debug("Eingabeobjekt ist ein Java-Objekt. Wird zu JSON serialisiert.");
+            logger.debug("Input object is a Java object. Serializing to JSON.");
         }
 
         byte[] jsonBytes = jsonStringToSend.getBytes(StandardCharsets.UTF_8);
         NamedStreamable.ByteArrayWrapper file = new NamedStreamable.ByteArrayWrapper(jsonBytes);
         MerkleNode addResult = ipfs.add(file).get(0);
         String ipfsHash = addResult.hash.toBase58();
-        logger.info("Objekt erfolgreich zu IPFS mit Hash {} hinzugefügt.", ipfsHash);
+        logger.info("Object successfully added to IPFS with hash {}.", ipfsHash);
 
         try {
             IpfsCacheEntry cacheEntry = new IpfsCacheEntry(ipfsHash, jsonStringToSend);
             ipfsCacheRepository.save(cacheEntry);
-            logger.debug("Korrekt formatiertes JSON für Hash {} in der Datenbank zwischengespeichert.", ipfsHash);
+            logger.debug("Properly formatted JSON for hash {} cached in database.", ipfsHash);
         } catch (Exception e) {
-            logger.error("Fehler beim Zwischenspeichern des IPFS-Inhalts für Hash {} nach dem Hinzufügen: {}", ipfsHash, e.getMessage());
+            logger.error("Error caching IPFS content for hash {} after adding: {}", ipfsHash, e.getMessage());
         }
 
         return ipfsHash;
@@ -82,7 +82,7 @@ public class IpfsClient {
 
     public String getObject(String ipfsHash) throws IOException {
         if (!isValidIpfsHashFormat(ipfsHash)) {
-            logger.warn("Ungültiges IPFS-Hash-Format angegeben: '{}'. Abruf wird übersprungen.", ipfsHash);
+            logger.warn("Invalid IPFS hash format provided: '{}'. Skipping retrieval.", ipfsHash);
             return null;
         }
 
@@ -97,7 +97,7 @@ public class IpfsClient {
         if (failedHashesCache.containsKey(ipfsHash)) {
             LocalDateTime failedTime = failedHashesCache.get(ipfsHash);
             if (failedTime.plus(sperrfristFehlgeschlagenerHash, ChronoUnit.MINUTES).isAfter(LocalDateTime.now())) {
-                logger.trace("IPFS-Abruf für Hash {} wird übersprungen (negativer Cache).", ipfsHash);
+                logger.trace("Skipping IPFS retrieval for hash {} (negative cache).", ipfsHash);
                 return null;
             } else {
                 failedHashesCache.remove(ipfsHash);
@@ -113,14 +113,14 @@ public class IpfsClient {
                 IpfsCacheEntry newCacheEntry = new IpfsCacheEntry(ipfsHash, content);
                 ipfsCacheRepository.save(newCacheEntry);
             } catch (Exception e) {
-                logger.error("Fehler beim Zwischenspeichern des IPFS-Inhalts für Hash {}: {}", ipfsHash, e.getMessage());
+                logger.error("Error caching IPFS content for hash {}: {}", ipfsHash, e.getMessage());
             }
 
             return content;
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen des IPFS-Inhalts für Hash {}: {}", ipfsHash, e.getMessage());
+            logger.error("Error retrieving IPFS content for hash {}: {}", ipfsHash, e.getMessage());
             failedHashesCache.put(ipfsHash, LocalDateTime.now());
-            throw new IOException("Abrufen des IPFS-Inhalts für Hash fehlgeschlagen: " + ipfsHash, e);
+            throw new IOException("Failed to retrieve IPFS content for hash: " + ipfsHash, e);
         }
     }
 
@@ -136,17 +136,17 @@ public class IpfsClient {
         try {
             String unwrapped = objectMapper.readValue(contentToParse, String.class);
             if (unwrapped.trim().startsWith("{") && unwrapped.trim().endsWith("}")) {
-                logger.warn("Doppelt serialisiertes JSON für Hash {} erkannt und repariert.", ipfsHash);
+                logger.warn("Double-serialized JSON detected and repaired for hash {}.", ipfsHash);
                 contentToParse = unwrapped;
             }
         } catch (JsonProcessingException e) {
-            logger.debug("Inhalt für Hash {} ist nicht doppelt serialisiert. Fortfahren mit normaler Verarbeitung.", ipfsHash);
+            logger.debug("Content for hash {} is not double-serialized. Proceeding with normal processing.", ipfsHash);
         }
 
         try {
             return objectMapper.readValue(contentToParse, objectMapper.getTypeFactory().constructType(valueType));
         } catch (IOException e) {
-            logger.error("FINALE DESERIALISIERUNG FEHLGESCHLAGEN für Hash {} und Typ {}. Inhalt war: '{}'", ipfsHash, valueType.getTypeName(), contentToParse, e);
+            logger.error("FINAL DESERIALIZATION FAILED for hash {} and type {}. Content was: '{}'", ipfsHash, valueType.getTypeName(), contentToParse, e);
             throw e;
         }
     }

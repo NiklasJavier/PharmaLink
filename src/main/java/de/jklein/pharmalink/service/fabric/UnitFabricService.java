@@ -41,7 +41,7 @@ public class UnitFabricService {
             Unit unit = fabricClient.evaluateTransaction("queryUnitById", Unit.class, unitId);
             return Optional.ofNullable(enrichSingleUnitWithIpfs(unit));
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen der Einheit mit ID '{}': {}", unitId, e.getMessage(), e);
+            logger.error("Error retrieving unit with ID '{}': {}", unitId, e.getMessage(), e);
             return Optional.empty();
         }
     }
@@ -67,7 +67,7 @@ public class UnitFabricService {
             List<Unit> units = fabricClient.getGson().fromJson(resultJson, listType);
             return enrichUnitList(units);
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen der Einheiten für Eigentümer '{}': {}", ownerActorId, e.getMessage(), e);
+            logger.error("Error retrieving units for owner '{}': {}", ownerActorId, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -80,7 +80,7 @@ public class UnitFabricService {
             List<Unit> enrichedUnits = enrichUnitList(units);
             return enrichedUnits.stream().collect(Collectors.groupingBy(Unit::getChargeBezeichnung));
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen der gruppierten Einheiten für Medikamenten-ID '{}': {}", medId, e.getMessage(), e);
+            logger.error("Error retrieving grouped units for medication ID '{}': {}", medId, e.getMessage(), e);
             return Collections.emptyMap();
         }
     }
@@ -92,45 +92,45 @@ public class UnitFabricService {
     }
 
     public Unit addTemperatureReading(String unitId, String temperature, String timestamp) throws Exception {
-        logger.debug("Sende 'addTemperatureReading'-Transaktion für Einheit-ID: {}", unitId);
+        logger.debug("Submitting 'addTemperatureReading' transaction for unit ID: {}", unitId);
         String resultJson = fabricClient.submitGenericTransaction("addTemperatureReading", unitId, temperature, timestamp);
-        logger.info("Temperaturmesswert erfolgreich für Einheit {} hinzugefügt.", unitId);
+        logger.info("Temperature reading successfully added for unit {}.", unitId);
         return fabricClient.getGson().fromJson(resultJson, Unit.class);
     }
 
     public void deleteUnit(String unitId) throws Exception {
-        logger.debug("Sende 'deleteUnits'-Transaktion für einzelne ID: {}", unitId);
+        logger.debug("Submitting 'deleteUnits' transaction for single ID: {}", unitId);
         deleteUnits(Collections.singletonList(unitId));
     }
 
 
 
     public void deleteUnits(List<String> unitIds) throws Exception {
-        logger.debug("Sende 'deleteUnits'-Transaktion für {} Einheiten.", unitIds.size());
+        logger.debug("Submitting 'deleteUnits' transaction for {} units.", unitIds.size());
         String unitIdsJson = fabricClient.getGson().toJson(unitIds);
         fabricClient.submitGenericTransaction("deleteUnits", unitIdsJson);
-        logger.info("{} Einheiten erfolgreich zur Löschung eingereicht.", unitIds.size());
+        logger.info("{} units successfully submitted for deletion.", unitIds.size());
     }
 
     public String transferUnitRange(String medId, String chargeBezeichnung, int start, int end, String newOwnerId) throws Exception {
-        logger.debug("Sende 'transferUnitRange'-Transaktion für Bereich {}-{}", start, end);
+        logger.debug("Submitting 'transferUnitRange' transaction for range {}-{}", start, end);
         String timestamp = Instant.now().toString();
         String result = fabricClient.submitGenericTransaction(
                 "transferUnitRange", medId, chargeBezeichnung,
                 String.valueOf(start), String.valueOf(end), newOwnerId, timestamp
         );
-        logger.info("Chargenbereich erfolgreich zur Übertragung eingereicht.");
+        logger.info("Batch range successfully submitted for transfer.");
         return result;
     }
 
     public Map<String, Integer> getChargeCountsByMedId(String medId) {
         try {
-            logger.debug("Rufe 'queryChargeCountsByMedId' für Medikamenten-ID '{}' auf.", medId);
+            logger.debug("Calling 'queryChargeCountsByMedId' for medication ID '{}'.", medId);
             String resultJson = fabricClient.evaluateGenericTransaction("queryChargeCountsByMedId", medId);
             Type mapType = new TypeToken<Map<String, Integer>>() {}.getType();
             return fabricClient.getGson().fromJson(resultJson, mapType);
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen der Chargenanzahl für Medikamenten-ID '{}': {}", medId, e.getMessage(), e);
+            logger.error("Error retrieving batch counts for medication ID '{}': {}", medId, e.getMessage(), e);
             return Collections.emptyMap();
         }
     }
@@ -157,7 +157,7 @@ public class UnitFabricService {
                 unit.setIpfsData(ipfsData);
             }
         } catch (IOException e) {
-            logger.warn("Konnte IPFS-Daten für Einheit {} nicht abrufen oder verarbeiten: {}", unit.getUnitId(), e.getMessage());
+            logger.warn("Could not retrieve or process IPFS data for unit {}: {}", unit.getUnitId(), e.getMessage());
         }
         return unit;
     }

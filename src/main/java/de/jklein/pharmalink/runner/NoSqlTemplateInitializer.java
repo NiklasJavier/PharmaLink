@@ -33,7 +33,7 @@ public class NoSqlTemplateInitializer implements CommandLineRunner {
     private void createOrReplaceView(String viewName, String sourceCollection, List<Document> pipeline) {
         if (mongoTemplate.getCollectionNames().contains(viewName)) {
             mongoTemplate.getDb().getCollection(viewName).drop();
-            logger.info("Bestehende View '{}' wurde entfernt.", viewName);
+            logger.info("Existing view '{}' removed.", viewName);
         }
 
         Document createViewCommand = new Document("create", viewName)
@@ -41,7 +41,7 @@ public class NoSqlTemplateInitializer implements CommandLineRunner {
                 .append("pipeline", pipeline);
 
         mongoTemplate.getDb().runCommand(createViewCommand);
-        logger.info("View '{}' erfolgreich erstellt.", viewName);
+        logger.info("View '{}' created successfully.", viewName);
     }
 
     private void createUnitPassportView() {

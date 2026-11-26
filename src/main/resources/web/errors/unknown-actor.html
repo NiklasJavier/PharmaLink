@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default-layout}">
 <head>
-    <title>Fehler - Unbekannter Akteur</title>
+    <title>Error - Unknown Actor</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1 style="color: #dc3545;">Fehler: Unbekannter Akteurstyp</h1>
-    <p>Ihre Actor ID konnte keinem bekannten Akteurstyp zugeordnet werden.</p>
-    <p>Bitte kontaktieren Sie den Support oder überprüfen Sie Ihre Anmeldedaten.</p>
-    <p th:if="${initialActorId}">Ihre ID: <strong th:text="${initialActorId}"></strong></p>
-    <p><a th:href="@{/app/login}" style="color: #007bff;">Zurück zur Anmeldeseite</a></p>
+    <h1 style="color: #dc3545;">Error: Unknown Actor Type</h1>
+    <p>Your Actor ID could not be matched to any known actor type.</p>
+    <p>Please contact support or verify your login credentials.</p>
+    <p th:if="${initialActorId}">Your ID: <strong th:text="${initialActorId}"></strong></p>
+    <p><a th:href="@{/app/login}" style="color: #007bff;">Back to Login Page</a></p>
 </div>
 </body>
 </html>

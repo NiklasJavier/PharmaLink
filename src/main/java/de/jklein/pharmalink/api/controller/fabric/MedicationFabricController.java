@@ -45,7 +45,7 @@ public class MedicationFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Erstellen des Medikaments: " + e.getMessage()));
+                    .body(Map.of("error", "Error creating medication: " + e.getMessage()));
         }
     }
 
@@ -63,7 +63,7 @@ public class MedicationFabricController {
 
         if (herstellerId == null || herstellerId.isEmpty()) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body(Map.of("error", "Die Anwendung wurde nicht korrekt mit einer Hersteller-ID initialisiert."));
+                    .body(Map.of("error", "The application was not properly initialized with a manufacturer ID."));
         }
 
         try {
@@ -73,7 +73,7 @@ public class MedicationFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler bei der Abfrage der Medikamente: " + e.getMessage()));
+                    .body(Map.of("error", "Error retrieving medications: " + e.getMessage()));
         }
     }
 
@@ -89,7 +89,7 @@ public class MedicationFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler bei der Statusänderung: " + e.getMessage()));
+                    .body(Map.of("error", "Error updating medication status: " + e.getMessage()));
         }
     }
 
@@ -116,11 +116,11 @@ public class MedicationFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Aktualisieren des Medikaments: " + e.getMessage()));
+                    .body(Map.of("error", "Error updating medication: " + e.getMessage()));
         }
     }
 
-    @DeleteMapping("/{medId}/conditional-delete") // nicht aktualisiert im state
+    @DeleteMapping("/{medId}/conditional-delete") // not updated in state
     public ResponseEntity<?> deleteMedikamentIfNoUnits(@PathVariable String medId) {
         try {
             medicationFabricService.deleteMedikamentIfNoUnits(medId);
@@ -128,11 +128,11 @@ public class MedicationFabricController {
         } catch (Exception e) {
             if (e.getMessage().contains("MEDIKAMENT_HAS_UNITS")) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("error", "Löschen nicht möglich, da bereits Chargen für dieses Medikament existieren."));
+                        .body(Map.of("error", "Cannot delete because batches already exist for this medication."));
             }
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Löschen des Medikaments: " + e.getMessage()));
+                    .body(Map.of("error", "Error deleting medication: " + e.getMessage()));
         }
     }
 }

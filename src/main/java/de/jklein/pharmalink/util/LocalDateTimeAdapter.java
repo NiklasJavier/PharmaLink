@@ -28,7 +28,7 @@ public class LocalDateTimeAdapter implements JsonSerializer<LocalDateTime>, Json
         try {
             return LocalDateTime.parse(json.getAsString(), FORMATTER);
         } catch (Exception e) {
-            throw new JsonParseException("Konnte Datum und Uhrzeit (LocalDateTime) nicht umwandeln: " + json.getAsString(), e);
+            throw new JsonParseException("Could not parse date and time (LocalDateTime): " + json.getAsString(), e);
         }
     }
 }

@@ -31,14 +31,14 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
             if (model.containsAttribute("initialActorId")) {
                 model.addAttribute("path", model.getAttribute("initialActorId"));
             }
-            model.addAttribute("pageTitle", "Akteur nicht gefunden");
+            model.addAttribute("pageTitle", "Actor Not Found");
             return "errors/unknown-actor";
         }
 
-        String statusString = (status != null) ? status.toString() : "Unbekannt";
+        String statusString = (status != null) ? status.toString() : "Unknown";
         model.addAttribute("status", statusString);
-        model.addAttribute("error", (errorType != null) ? errorType.toString() : "Unbekannter Fehler");
-        model.addAttribute("path", (path != null && !path.toString().isEmpty()) ? path.toString() : "Unbekannter Pfad");
+        model.addAttribute("error", (errorType != null) ? errorType.toString() : "Unknown Error");
+        model.addAttribute("path", (path != null && !path.toString().isEmpty()) ? path.toString() : "Unknown Path");
         model.addAttribute("timestamp", new java.util.Date());
 
         if (exception instanceof Throwable) {
@@ -52,29 +52,29 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         if (status instanceof Integer) {
             int statusCode = (Integer) status;
             if (statusCode == HttpStatus.UNAUTHORIZED.value()) { // 401 Unauthorized
-                model.addAttribute("pageTitle", "Nicht autorisiert");
-                model.addAttribute("errorMessage", "Sie sind nicht angemeldet oder Ihre Sitzung ist abgelaufen.");
-                model.addAttribute("message", "Bitte melden Sie sich an, um fortzufahren."); // Zusätzliche Anweisung
+                model.addAttribute("pageTitle", "Unauthorized");
+                model.addAttribute("errorMessage", "You are not signed in or your session has expired.");
+                model.addAttribute("message", "Please sign in to continue."); // Additional instruction
             } else if (statusCode == HttpStatus.FORBIDDEN.value()) { // 403 Forbidden
-                model.addAttribute("pageTitle", "Zugriff verweigert");
-                model.addAttribute("errorMessage", "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen.");
-                model.addAttribute("message", null); // Keine zusätzliche Nachricht für 403
+                model.addAttribute("pageTitle", "Access Denied");
+                model.addAttribute("errorMessage", "You do not have permission to access this resource.");
+                model.addAttribute("message", null); // No additional message for 403
             } else if (statusCode == HttpStatus.NOT_FOUND.value()) { // 404 Not Found
-                model.addAttribute("pageTitle", "Seite nicht gefunden");
-                model.addAttribute("errorMessage", "Die angefragte URL wurde auf diesem Server nicht gefunden.");
-                model.addAttribute("message", (message != null) ? message.toString() : null); // Ursprüngliche Nachricht beibehalten oder null
+                model.addAttribute("pageTitle", "Page Not Found");
+                model.addAttribute("errorMessage", "The requested URL was not found on this server.");
+                model.addAttribute("message", (message != null) ? message.toString() : null); // Keep original message or null
             } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) { // 500 Internal Server Error
-                model.addAttribute("pageTitle", "Interner Serverfehler");
-                model.addAttribute("errorMessage", "Entschuldigen Sie die Unannehmlichkeiten. Es ist ein unerwarteter Serverfehler aufgetreten.");
-                model.addAttribute("message", "Unser Team wurde benachrichtigt und arbeitet bereits an einer Lösung.");
-            } else { // Andere Statuscodes
-                model.addAttribute("pageTitle", "Fehler " + statusCode);
-                model.addAttribute("errorMessage", "Ein Fehler ist aufgetreten: " + (message != null ? message.toString() : "Details unbekannt."));
+                model.addAttribute("pageTitle", "Internal Server Error");
+                model.addAttribute("errorMessage", "We apologize for the inconvenience. An unexpected server error occurred.");
+                model.addAttribute("message", "Our team has been notified and is already working on a solution.");
+            } else { // Other status codes
+                model.addAttribute("pageTitle", "Error " + statusCode);
+                model.addAttribute("errorMessage", "An error occurred: " + (message != null ? message.toString() : "Details unknown."));
                 model.addAttribute("message", null);
             }
-        } else { // Fallback, wenn Status null oder kein Integer ist
-            model.addAttribute("pageTitle", "Fehler");
-            model.addAttribute("errorMessage", "Ein unerwarteter Fehler ist aufgetreten.");
+        } else { // Fallback when status is null or not an Integer
+            model.addAttribute("pageTitle", "Error");
+            model.addAttribute("errorMessage", "An unexpected error occurred.");
             model.addAttribute("message", null);
         }
 
@@ -89,20 +89,20 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         model.addAttribute("timestamp", new java.util.Date());
 
         if (code == HttpStatus.UNAUTHORIZED.value()) {
-            model.addAttribute("pageTitle", "Nicht autorisiert");
-            model.addAttribute("errorMessage", "Sie sind nicht angemeldet oder Ihre Sitzung ist abgelaufen.");
+            model.addAttribute("pageTitle", "Unauthorized");
+            model.addAttribute("errorMessage", "You are not signed in or your session has expired.");
         } else if (code == HttpStatus.FORBIDDEN.value()) {
-            model.addAttribute("pageTitle", "Zugriff verweigert");
-            model.addAttribute("errorMessage", "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen.");
+            model.addAttribute("pageTitle", "Access Denied");
+            model.addAttribute("errorMessage", "You do not have permission to access this resource.");
         } else if (code == HttpStatus.NOT_FOUND.value()) {
-            model.addAttribute("pageTitle", "Seite nicht gefunden");
-            model.addAttribute("errorMessage", "Die angefragte URL konnte nicht gefunden werden.");
+            model.addAttribute("pageTitle", "Page Not Found");
+            model.addAttribute("errorMessage", "The requested URL could not be found.");
         } else if (code == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-            model.addAttribute("pageTitle", "Interner Serverfehler");
-            model.addAttribute("errorMessage", "Es ist ein unerwarteter Serverfehler aufgetreten.");
+            model.addAttribute("pageTitle", "Internal Server Error");
+            model.addAttribute("errorMessage", "An unexpected server error occurred.");
         } else {
-            model.addAttribute("pageTitle", "Fehler " + code);
-            model.addAttribute("errorMessage", "Ein spezifischer Fehler ist aufgetreten.");
+            model.addAttribute("pageTitle", "Error " + code);
+            model.addAttribute("errorMessage", "A specific error occurred.");
         }
         return "errors/error";
     }

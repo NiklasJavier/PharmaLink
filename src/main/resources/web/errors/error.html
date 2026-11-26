@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default-layout}">
 <head>
-    <title th:text="${pageTitle != null ? pageTitle : 'Fehler'}">Fehler</title>
+    <title th:text="${pageTitle != null ? pageTitle : 'Error'}">Error</title>
     <th:block layout:fragment="pageCss">
         <link rel="stylesheet" th:href="@{/css/error.css}">
     </th:block>
@@ -13,12 +13,12 @@
     <div class="error-container">
         <div class="error-details">
             <h1 th:text="${status}">404</h1>
-            <p th:text="${errorMessage != null ? errorMessage : 'Das ist ein Fehler.'}"></p>
+            <p th:text="${errorMessage != null ? errorMessage : 'An error has occurred.'}"></p>
             <p th:if="${message != null and message != ''}" th:text="${message}"></p>
-            <p th:if="${path != null and path != ''}">Die angefragte URL <code th:text="${path}"></code> wurde auf diesem Server nicht gefunden.</p>
+            <p th:if="${path != null and path != ''}">The requested URL <code th:text="${path}"></code> was not found on this server.</p>
             <p th:if="${exceptionMessage != null and exceptionMessage != ''}" class="exception-message" th:text="${exceptionMessage}"></p>
-            <p>Das ist alles, was wir wissen.</p>
-            <a th:href="@{/app/dashboard}" class="back-to-home">Zurück</a> </div>
+            <p>That is all we know.</p>
+            <a th:href="@{/app/dashboard}" class="back-to-home">Back</a> </div>
     </div>
 </div>
 </body>

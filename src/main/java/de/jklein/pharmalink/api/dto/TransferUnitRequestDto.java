@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class TransferUnitRequestDto {
 
-    @NotBlank(message = "Die ID des neuen Besitzers (newOwnerActorId) darf nicht leer sein.")
+    @NotBlank(message = "The new owner ID (newOwnerActorId) must not be blank.")
     private String newOwnerActorId;
 }

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/display-json.css}">
     <style>
-        /* Bestehendes Styling von vorheriger Antwort (könnte in main.css oder display-json.css sein) */
+        /* Existing styling from previous implementation (could live in main.css or display-json.css) */
         .api-url-display {
             color: #0056b3;
             font-family: monospace;
@@ -49,22 +49,22 @@
 <div th:fragment="dashboardContent">
     <div class="card" th:if="${currentActorInfo}">
         <div class="card-header">
-            <h3>Generelle Informationen</h3>
+            <h3>General Information</h3>
         </div>
         <div class="card-body">
             <div class="info-section">
                 <p>ActorID: <strong class="copy-on-click" th:text="${currentActorInfo.actorId}"></strong></p>
             </div>
             <div class="info-section actor-details">
-                <p>Benutzer: <strong class="copy-on-click" th:text="${#authentication.name}"></strong></p>
+                <p>User: <strong class="copy-on-click" th:text="${#authentication.name}"></strong></p>
                 <p>Company: <strong class="copy-on-click" th:text="${currentActorInfo.bezeichnung}"></strong></p>
-                <p>Rolle: <strong class="copy-on-click" th:text="${currentActorInfo.getRole()}"></strong></p>
+                <p>Role: <strong class="copy-on-click" th:text="${currentActorInfo.getRole()}"></strong></p>
             </div>
         </div>
     </div>
     <div class="my-4" th:if="${kpiDataJson}">
         <div th:replace="~{fragments/dynamic-kpis :: dynamicKPIs(
-        kpiTitle='Statistiken',
+        kpiTitle='Statistics',
         kpiJsonString=${kpiDataJson},
         idPrefix='dashboard-kpis'
     )}"></div>
@@ -83,13 +83,13 @@
             <div th:replace="~{fragments/details/behoerde :: behoerdeDetails}"></div>
         </th:block>
         <th:block th:case="*">
-            <p>Für Ihre Rolle ist keine Ansicht hinterlegt.</p>
+            <p>No view is configured for your role.</p>
         </th:block>
     </div>
 
     <div th:if="${loginAttemptsJson != null and !loginAttemptsJson.isEmpty()}">
         <div th:replace="~{fragments/dynamicTable :: dynamicTable(
-            tableTitle='Authentifizierungsversuche',
+            tableTitle='Authentication Attempts',
             tableJsonString=${loginAttemptsJson},  idPrefix='login-attempts-table',
             maxBodyHeight=400
         )}"></div>
@@ -97,7 +97,7 @@
 
     <div th:if="${apiTransactionsJson != null and !apiTransactionsJson.isEmpty()}">
         <div th:replace="~{fragments/dynamicTable :: dynamicTable(
-            tableTitle='API Transaktionen',
+            tableTitle='API Transactions',
             tableJsonString=${apiTransactionsJson},  idPrefix='api-transactions-table',
             maxBodyHeight=400
         )}"></div>
@@ -105,7 +105,7 @@
 
     <div th:if="${grpcTransactionsJson != null and !grpcTransactionsJson.isEmpty()}">
         <div th:replace="~{fragments/dynamicTable :: dynamicTable(
-            tableTitle='Grcp Transaktionen',
+            tableTitle='gRPC Transactions',
             tableJsonString=${grpcTransactionsJson},  idPrefix='grcp-transactions-table',
             maxBodyHeight=400
         )}"></div>

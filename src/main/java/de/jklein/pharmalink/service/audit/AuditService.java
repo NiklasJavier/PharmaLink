@@ -65,8 +65,8 @@ public class AuditService {
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonCompatibleList);
         } catch (JsonProcessingException e) {
-            logger.error("Fehler beim Konvertieren der API-Transaktionen in JSON: {}", e.getMessage(), e);
-            return "{\"error\": \"Fehler beim Erstellen der Transaktionsübersicht.\"}";
+            logger.error("Error converting API transactions to JSON: {}", e.getMessage(), e);
+            return "{\"error\": \"Error creating transaction overview.\"}";
         }
     }
 
@@ -95,8 +95,8 @@ public class AuditService {
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonCompatibleList);
         } catch (JsonProcessingException e) {
-            logger.error("Fehler beim Konvertieren der gRPC-Transaktionen in JSON: {}", e.getMessage(), e);
-            return "{\"error\": \"Fehler beim Erstellen der gRPC-Transaktionsübersicht.\"}";
+            logger.error("Error converting gRPC transactions to JSON: {}", e.getMessage(), e);
+            return "{\"error\": \"Error creating gRPC transaction overview.\"}";
         }
     }
 
@@ -124,8 +124,8 @@ public class AuditService {
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonCompatibleList);
         } catch (JsonProcessingException e) {
-            logger.error("Fehler beim Konvertieren der Login-Versuche in JSON: {}", e.getMessage(), e);
-            return "{\"error\": \"Fehler beim Erstellen der Login-Übersicht.\"}";
+            logger.error("Error converting login attempts to JSON: {}", e.getMessage(), e);
+            return "{\"error\": \"Error creating login overview.\"}";
         }
     }
 }

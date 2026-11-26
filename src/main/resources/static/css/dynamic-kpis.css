@@ -1,24 +1,25 @@
-/* Styling für das KPI-Fragment */
+/* Styling for the KPI fragment */
 
 .dynamic-kpi-fragment-container .card-body {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
 
-/* * Das Grid-Layout sorgt für eine responsive Anordnung der Karten.
- * - `repeat(auto-fit, ...)`: Erstellt so viele Spalten, wie in den Container passen.
- * - `minmax(150px, 1fr)`: Jede Spalte ist mindestens 150px breit und teilt sich den
- * verfügbaren Platz (1fr) mit den anderen.
+/*
+ * The grid layout ensures a responsive arrangement of the cards.
+ * - `repeat(auto-fit, ...)`: Creates as many columns as fit inside the container.
+ * - `minmax(150px, 1fr)`: Each column is at least 150px wide and shares the
+ * available space (1fr) equally with the others.
  */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem; /* Abstand zwischen den Karten */
+    gap: 1rem; /* Gap between cards */
     width: 100%;
 }
 
 .kpi-card {
-    background-color: #f8f9fa; /* Heller Hintergrund */
+    background-color: #f8f9fa; /* Light background */
     border-radius: 8px;
     border: 1px solid #dee2e6;
     padding: 1.25rem 1rem;
@@ -28,20 +29,20 @@
 }
 
 .kpi-card:hover {
-    transform: translateY(-5px); /* Leichter Schwebe-Effekt */
+    transform: translateY(-5px); /* Subtle hover lift effect */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .kpi-value {
-    font-size: 2.5rem; /* Große Schrift für die Zahl */
+    font-size: 2.5rem; /* Large font for the metric number */
     font-weight: 700;
-    color: #1B1B1B; /* Blau, passend zu Bootstrap Primary */
+    color: #1B1B1B; /* Dark accent matching theme */
     line-height: 1.2;
 }
 
 .kpi-key {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #6c757d; /* Grauer Text für die Beschreibung */
+    color: #6c757d; /* Gray text for the label */
     margin-top: 0.25rem;
 }

@@ -42,7 +42,7 @@ public class ActorFabricController {
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
-                    .body(Map.of("error", "Fehler beim Aktualisieren des Akteurs: " + e.getMessage()));
+                    .body(Map.of("error", "Error updating actor: " + e.getMessage()));
         }
     }
 

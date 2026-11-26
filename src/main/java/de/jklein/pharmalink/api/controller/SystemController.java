@@ -51,7 +51,7 @@ public class SystemController {
     }
 
     @GetMapping("/current-actor-id")
-    @Operation(summary = "Aktuelle Akteur-ID abrufen", description = "Ruft die ID des Akteurs ab.")
+    @Operation(summary = "Get current actor ID", description = "Retrieves the ID of the current actor.")
     public ResponseEntity<Map<String, String>> getCurrentActorId() {
         String actorId = systemStateService.getCurrentActorId().get();
 
@@ -62,7 +62,7 @@ public class SystemController {
     }
 
     @GetMapping("/cache/stats")
-    @Operation(summary = "Statistiken abrufen", description = "Gibt eine schnelle Zusammenfassung der Daten in der Datenbank.")
+    @Operation(summary = "Get statistics", description = "Returns a quick summary of the data stored in the database.")
     public ResponseEntity<SystemStatsDto> getCacheStats() {
         String currentActorId = systemStateService.getCurrentActorId().get();
         long myUnitsCount = 0;
@@ -79,17 +79,17 @@ public class SystemController {
     }
 
     @GetMapping("/cache/state")
-    @Operation(summary = "Zustand der Datenbank abrufen", description = "Ruft eine Momentaufnahme der Kerndaten ab.")
+    @Operation(summary = "Get database state", description = "Retrieves a snapshot of the core data.")
     public ResponseEntity<SystemStateDto> getCacheState() {
         String actorId = systemStateService.getCurrentActorId().get();
 
-        // Daten direkt aus den Repositories laden
+        // Load data directly from the repositories
         List<Actor> allActors = actorRepository.findAll();
         List<Medikament> allMedikamente = medikamentRepository.findAll();
         List<Unit> myUnits = StringUtils.hasText(actorId) ?
                 unitRepository.findByCurrentOwnerActorId(actorId) : Collections.emptyList();
 
-        // Mappen auf DTOs
+        // Map to DTOs
         List<ActorResponseDto> actorsDto = actorMapper.toDtoList(allActors);
         List<MedikamentResponseDto> medikamenteDto = medikamentMapper.toDtoList(allMedikamente);
         List<UnitResponseDto> unitsDto = unitMapper.toDtoList(myUnits);

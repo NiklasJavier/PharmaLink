@@ -23,7 +23,7 @@ body {
     text-align: left;
 }
 
-/* --- NEU: Logo-Styling für Login-Seite --- */
+/* --- NEW: Logo styling for the login page --- */
 .logo-container {
     text-align: center;
     margin-bottom: 1.5em;
@@ -37,13 +37,13 @@ body {
 }
 
 .logo {
-    display: inline-flex; /* Damit es sich im Container zentriert */
+    display: inline-flex; /* Ensures centering inside the container */
     flex-direction: column;
     align-items: center;
 }
 
 .logo-title {
-    font-size: 2.2rem; /* Größer für den Login-Titel */
+    font-size: 2.2rem; /* Larger for the login title */
     font-weight: 700;
     color: #333;
     line-height: 1.1;
@@ -58,7 +58,7 @@ body {
     opacity: 0.8;
 }
 
-/* --- RESTLICHES FORMULAR-STYLING --- */
+/* --- REMAINING FORM STYLING --- */
 
 .message {
     padding: 0.6em 0.8em;
@@ -126,10 +126,10 @@ body {
 }
 
 .form-group input[type="submit"]:hover {
-    background-color: #333; /* Etwas heller im Hover für Feedback */
+    background-color: #333; /* Slightly lighter on hover for visual feedback */
 }
 
-/* --- RESPONSIVE ANPASSUNGEN --- */
+/* --- RESPONSIVE ADJUSTMENTS --- */
 @media (max-width: 480px) {
     .login-box {
         padding: 1.8em 2em;

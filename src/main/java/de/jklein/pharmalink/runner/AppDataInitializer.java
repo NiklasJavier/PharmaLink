@@ -18,9 +18,9 @@ public class AppDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("Starte Initialisierung der Anwendungsdaten...");
+        log.info("Starting application data initialization...");
         try {
-            log.info("Führe 'initCall' am Chaincode aus, um den aktuellen Akteur zu identifizieren...");
+            log.info("Executing 'initCall' on chaincode to identify the current actor...");
 
             String actorJson = fabricClient.submitGenericTransaction("initCall");
             Actor initializedActor = fabricClient.getGson().fromJson(actorJson, Actor.class);
@@ -28,10 +28,10 @@ public class AppDataInitializer implements CommandLineRunner {
 
             systemStateService.reconcileAndCacheActorId(actorIdFromChaincode);
 
-            log.info("Initialisierung der Anwendungsdaten abgeschlossen. Aktueller Akteur: {}", actorIdFromChaincode);
+            log.info("Application data initialization completed. Current actor: {}", actorIdFromChaincode);
 
         } catch (Exception e) {
-            log.error("Konnte den aktuellen Akteur nicht über 'initCall' vom Chaincode identifizieren. Die Anwendung wird ohne spezifischen Akteur-Kontext fortgesetzt.", e);
+            log.error("Could not identify the current actor via 'initCall' from chaincode. Continuing application without a specific actor context.", e);
         }
     }
 }

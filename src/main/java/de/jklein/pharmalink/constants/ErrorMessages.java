@@ -4,16 +4,16 @@ public final class ErrorMessages {
 
     private ErrorMessages() { }
 
-    public static final String DEFAULT_TITLE = "Ein Fehler ist aufgetreten.";
-    public static final String DEFAULT_MESSAGE = "Entschuldigen Sie die Unannehmlichkeiten. Es gab ein Problem beim Verarbeiten Ihrer Anfrage. Bitte versuchen Sie es später erneut oder kehren Sie zur Startseite zurück.";
+    public static final String DEFAULT_TITLE = "An error occurred.";
+    public static final String DEFAULT_MESSAGE = "We apologize for the inconvenience. There was a problem processing your request. Please try again later or return to the home page.";
 
-    public static final String TITLE_404 = "Seite nicht gefunden";
-    public static final String MESSAGE_404 = "Die angeforderte Seite konnte nicht gefunden werden. Möglicherweise wurde die Adresse falsch eingegeben oder die Seite existiert nicht mehr.";
+    public static final String TITLE_404 = "Page Not Found";
+    public static final String MESSAGE_404 = "The requested page could not be found. The address may have been entered incorrectly or the page no longer exists.";
 
-    public static final String TITLE_500 = "Interner Serverfehler";
-    public static final String MESSAGE_500 = "Entschuldigen Sie die Unannehmlichkeiten. Es ist ein unerwarteter Serverfehler aufgetreten. Unser Team wurde benachrichtigt und arbeitet bereits an einer Lösung.";
+    public static final String TITLE_500 = "Internal Server Error";
+    public static final String MESSAGE_500 = "We apologize for the inconvenience. An unexpected server error occurred. Our team has been notified and is already working on a solution.";
 
-    public static final String NAV_HOME = "Startseite";
+    public static final String NAV_HOME = "Home";
 
     public static String getTitleForCode(int code) {
         return switch (code) {

@@ -42,18 +42,18 @@ public class LoginAuditListener implements ApplicationListener<AbstractAuthentic
         saveLoginAttempt(loginAttempt);
 
         if (successful) {
-            logger.info("Erfolgreicher Login: Benutzer '{}' von IP '{}'", username, ipAddress);
+            logger.info("Successful login: User '{}' from IP '{}'", username, ipAddress);
         } else {
-            logger.warn("Fehlgeschlagener Login: Benutzer '{}' von IP '{}' - Grund: {}", username, ipAddress, errorMessage);
+            logger.warn("Failed login: User '{}' from IP '{}' - Reason: {}", username, ipAddress, errorMessage);
         }
     }
 
     private void saveLoginAttempt(LoginAttempt loginAttempt) {
         try {
             loginAttemptRepository.save(loginAttempt);
-            logger.debug("Login-Versuch für Benutzer '{}' gespeichert. Erfolgreich: {}", loginAttempt.getUsername(), loginAttempt.isSuccessful());
+            logger.debug("Login attempt saved for user '{}'. Successful: {}", loginAttempt.getUsername(), loginAttempt.isSuccessful());
         } catch (Exception e) {
-            logger.error("Fehler beim Speichern des Login-Versuchs für Benutzer '{}': {}", loginAttempt.getUsername(), e.getMessage());
+            logger.error("Error saving login attempt for user '{}': {}", loginAttempt.getUsername(), e.getMessage());
         }
     }
 
@@ -63,7 +63,7 @@ public class LoginAuditListener implements ApplicationListener<AbstractAuthentic
                 .map(ServletRequestAttributes.class::cast)
                 .map(ServletRequestAttributes::getRequest)
                 .map(HttpServletRequest::getRemoteAddr)
-                .orElse("UNBEKANNT");
+                .orElse("UNKNOWN");
     }
 
     private String getCurrentRequestUserAgent() {
@@ -72,6 +72,6 @@ public class LoginAuditListener implements ApplicationListener<AbstractAuthentic
                 .map(ServletRequestAttributes.class::cast)
                 .map(ServletRequestAttributes::getRequest)
                 .map(request -> request.getHeader("User-Agent"))
-                .orElse("UNBEKANNT");
+                .orElse("UNKNOWN");
     }
 }

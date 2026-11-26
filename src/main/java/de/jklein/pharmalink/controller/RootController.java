@@ -4,7 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.security.authentication.AnonymousAuthenticationToken; // Wichtig: Import hinzufügen
+import org.springframework.security.authentication.AnonymousAuthenticationToken; // Important: add import
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +21,9 @@ public class RootController {
 
         if (authentication != null) {
             logger.info("RootController Debug: Authentication Object: {}", authentication);
-            logger.info("RootController Debug: Authentication Class: {}", authentication.getClass().getName()); // EXAKTER KLASSENNAME
+            logger.info("RootController Debug: Authentication Class: {}", authentication.getClass().getName()); // EXACT CLASS NAME
             logger.info("RootController Debug: Authentication Principal: {}", authentication.getPrincipal());
-            logger.info("RootController Debug: Authentication Principal Class: {}", authentication.getPrincipal().getClass().getName()); // EXAKTER KLASSENNAME DES PRINCIPAL
+            logger.info("RootController Debug: Authentication Principal Class: {}", authentication.getPrincipal().getClass().getName()); // EXACT CLASS NAME OF PRINCIPAL
             logger.info("RootController Debug: authentication.isAuthenticated(): {}", authentication.isAuthenticated());
             logger.info("RootController Debug: authentication instanceof AnonymousAuthenticationToken: {}", (authentication instanceof AnonymousAuthenticationToken));
             logger.info("RootController Debug: Combined condition: (isAuthenticated && !isAnonymous): {}", (authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)));

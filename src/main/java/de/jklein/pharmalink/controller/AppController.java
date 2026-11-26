@@ -35,7 +35,7 @@ public class AppController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
-    // Benötigte Services und Repositories
+    // Required services and repositories
     private final SystemStateService systemStateService;
     private final SearchService searchService;
     private final ObjectMapper objectMapper;
@@ -70,15 +70,15 @@ public class AppController {
     public String showDashboard(Model model, RedirectAttributes redirectAttributes) throws IOException {
         String currentActorId = systemStateService.getCurrentActorId().get();
         if (!StringUtils.hasText(currentActorId)) {
-            redirectAttributes.addFlashAttribute("error", "Keine Akteur-ID initialisiert.");
+            redirectAttributes.addFlashAttribute("error", "No actor ID initialized.");
             return "redirect:/app/errors/unknown-actor";
         }
 
         Optional<Actor> actorOpt = actorRepository.findByActorId(currentActorId);
 
         if (actorOpt.isEmpty()) {
-            logger.error("Inkonsistenter Zustand: Akteur mit ID {} nicht in der Datenbank gefunden!", currentActorId);
-            redirectAttributes.addFlashAttribute("error", "Ihre Akteur-ID " + currentActorId + " konnte nicht gefunden werden.");
+            logger.error("Inconsistent state: Actor with ID {} not found in the database!", currentActorId);
+            redirectAttributes.addFlashAttribute("error", "Your actor ID " + currentActorId + " could not be found.");
             return "redirect:/app/errors/unknown-actor";
         }
 
@@ -110,30 +110,30 @@ public class AppController {
             switch (currentActor.getRole().toLowerCase()) {
                 case "hersteller":
                     mainTableData = medikamentRepository.findByHerstellerId(currentActorId);
-                    tableTitle = "Meine Medikamente";
-                    kpiData.put("Eigene Medikamente", mainTableData.size());
-                    kpiData.put("Meine Einheiten", unitRepository.findByCurrentOwnerActorId(currentActorId).size());
-                    kpiData.put("Alle Grosshändler", searchService.searchActors("grosshaendler", null, null).size());
+                    tableTitle = "My Medications";
+                    kpiData.put("Own Medications", mainTableData.size());
+                    kpiData.put("My Units", unitRepository.findByCurrentOwnerActorId(currentActorId).size());
+                    kpiData.put("All Wholesalers", searchService.searchActors("grosshaendler", null, null).size());
                     break;
                 case "grosshaendler":
                 case "apotheke":
                     mainTableData = unitRepository.findByCurrentOwnerActorId(currentActorId);
-                    tableTitle = "Mein Inventar (Einheiten)";
-                    kpiData.put("Besessene Einheiten", mainTableData.size());
-                    kpiData.put("Alle Apotheken", searchService.searchActors("apotheke", null, null).size());
-                    kpiData.put("Alle Großhändler", searchService.searchActors("grosshaendler", null, null).size());
+                    tableTitle = "My Inventory (Units)";
+                    kpiData.put("Owned Units", mainTableData.size());
+                    kpiData.put("All Pharmacies", searchService.searchActors("apotheke", null, null).size());
+                    kpiData.put("All Wholesalers", searchService.searchActors("grosshaendler", null, null).size());
                     break;
                 case "behoerde":
                     mainTableData = medikamentRepository.findAll();
-                    tableTitle = "Alle Medikamente im System";
-                    kpiData.put("Registrierte Medikamente", mainTableData.size());
-                    kpiData.put("Registrierte Akteure", actorRepository.count());
-                    kpiData.put("Alle Einheiten im Umlauf", unitRepository.count());
+                    tableTitle = "All Medications in the System";
+                    kpiData.put("Registered Medications", mainTableData.size());
+                    kpiData.put("Registered Actors", actorRepository.count());
+                    kpiData.put("All Units in Circulation", unitRepository.count());
                     break;
                 default:
                     mainTableData = List.of();
-                    tableTitle = "Keine Daten für Ihre Rolle";
-                    kpiData.put("Info", "Keine spezifische Ansicht für Ihre Rolle.");
+                    tableTitle = "No data for your role";
+                    kpiData.put("Info", "No specific view is available for your role.");
                     break;
             }
 
@@ -142,11 +142,11 @@ public class AppController {
             model.addAttribute("mainTableTitle", tableTitle);
 
         } catch (JsonProcessingException e) {
-            logger.error("Fehler bei der Serialisierung der Dashboard-Daten für Akteur {}: {}", currentActorId, e.getMessage(), e);
-            model.addAttribute("dashboardError", "Fehler bei der Aufbereitung der Ansicht.");
+            logger.error("Error serializing dashboard data for actor {}: {}", currentActorId, e.getMessage(), e);
+            model.addAttribute("dashboardError", "Error preparing view.");
         } catch (Exception e) {
-            logger.error("Ein unerwarteter Fehler ist beim Laden des Dashboards aufgetreten für Akteur {}: {}", currentActorId, e.getMessage(), e);
-            model.addAttribute("dashboardError", "Ein unerwarteter Fehler ist aufgetreten.");
+            logger.error("An unexpected error occurred while loading the dashboard for actor {}: {}", currentActorId, e.getMessage(), e);
+            model.addAttribute("dashboardError", "An unexpected error occurred.");
         }
 
         return "dashboard/overview";
@@ -157,7 +157,7 @@ public class AppController {
         return "errors/unknown-actor";
     }
 
-    // Die Helper-Methoden zum Entfernen von JSON-Keys bleiben unverändert
+    // Helper methods for removing JSON keys remain unchanged
     private String removeKeysFromJsonNode(String jsonString, Set<String> keysToRemove) throws IOException {
         JsonNode rootNode = objectMapper.readTree(jsonString);
         JsonNode filteredNode = removeKeysFromJsonNode(rootNode, keysToRemove);

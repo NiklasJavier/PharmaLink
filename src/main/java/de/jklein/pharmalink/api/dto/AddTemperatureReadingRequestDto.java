@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class AddTemperatureReadingRequestDto {
 
-    @NotBlank(message = "Der Temperaturwert darf nicht leer sein.")
+    @NotBlank(message = "Temperature must not be blank.")
     private String temperature;
 
-    @NotBlank(message = "Der Zeitstempel darf nicht leer sein.")
+    @NotBlank(message = "Timestamp must not be blank.")
     private String timestamp;
 }

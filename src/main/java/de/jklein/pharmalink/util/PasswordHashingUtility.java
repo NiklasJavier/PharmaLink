@@ -1,7 +1,7 @@
 package de.jklein.pharmalink.util;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component; // Damit Spring diese Klasse als Bean verwalten kann
+import org.springframework.stereotype.Component; // Allows Spring to manage this class as a bean
 
 @Component
 public class PasswordHashingUtility {
@@ -18,14 +18,14 @@ public class PasswordHashingUtility {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("Verwendung: java -cp <your-app-jar.jar> de.jklein.pharmalink.util.PasswordHashingUtility <passwort>");
-            System.out.println("Um ein Passwort zu hashen.");
+            System.out.println("Usage: java -cp <your-app-jar.jar> de.jklein.pharmalink.util.PasswordHashingUtility <password>");
+            System.out.println("To hash a password.");
             return;
         }
         String rawPassword = args[0];
         PasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
         String hashedPassword = encoder.encode(rawPassword);
-        System.out.println("Klartext-Passwort: " + rawPassword);
-        System.out.println("Gehashtes Passwort: " + hashedPassword);
+        System.out.println("Plaintext password: " + rawPassword);
+        System.out.println("Hashed password: " + hashedPassword);
     }
 }

@@ -1,6 +1,6 @@
 /*
 ====================================================================
-    1. GLOBALE VARIABLEN & BASIS-STILE
+    1. GLOBAL VARIABLES & BASE STYLES
 ====================================================================
 */
 
@@ -18,13 +18,13 @@
     --color-text-primary: #222;
     --color-text-secondary: #475569;
 
-    /* Header & Footer Farben */
+    /* Header & footer colors */
     --color-header-bg: #1B1B1B;
     --color-header-text: #ffffff;
     --color-nav-hover-bg: rgba(255, 255, 255, 0.1);
     --color-nav-active-bg: #3b82f6;
 
-    /* Akzentfarben */
+    /* Accent colors */
     --color-accent-red: #e74c3c;
     --color-accent-red-dark: #c0392b;
     --color-accent-green-dark: #16a34a;
@@ -58,7 +58,7 @@ hr.section-divider {
 
 /*
 ====================================================================
-    2. STANDARD-KOMPONENTEN
+    2. STANDARD COMPONENTS
 ====================================================================
 */
 
@@ -115,24 +115,24 @@ hr.section-divider {
 
 .logo-link {
     display: flex;
-    flex-direction: column; /* Stellt Titel und Untertitel untereinander dar */
+    flex-direction: column; /* Stacks title and subtitle vertically */
     text-decoration: none;
 }
 
 .logo-title {
-    font-size: 1.5rem; /* Etwas kleiner als vorher */
-    font-weight: 600;  /* Semibold für einen modernen Look */
+    font-size: 1.5rem; /* Slightly smaller than before */
+    font-weight: 600;  /* Semibold for a modern look */
     color: var(--color-header-text);
-    line-height: 1.1;  /* Zeilenhöhe für kompakte Darstellung */
+    line-height: 1.1;  /* Line height for compact presentation */
 }
 
 .logo-subtitle {
-    font-size: 0.65rem; /* Sehr kleiner Text */
+    font-size: 0.65rem; /* Very small text */
     font-weight: 400;
-    text-transform: uppercase; /* In Großbuchstaben für einen "technischen" Look */
-    letter-spacing: 0.1em;     /* Mehr Abstand zwischen den Buchstaben */
+    text-transform: uppercase; /* Uppercase for a "technical" look */
+    letter-spacing: 0.1em;     /* Extra letter spacing */
     color: var(--color-header-text);
-    opacity: 0.7; /* Leicht transparent, um untergeordnet zu wirken */
+    opacity: 0.7; /* Slightly transparent to appear subordinate */
 }
 
 /*
@@ -239,7 +239,7 @@ hr.section-divider {
 
 /*
 ====================================================================
-    4. HELFER-KLASSEN
+    4. HELPER CLASSES
 ====================================================================
 */
 
@@ -262,7 +262,7 @@ hr.section-divider {
 
 /*
 ====================================================================
-    5. RESPONSIVE ANPASSUNGEN
+    5. RESPONSIVE ADJUSTMENTS
 ====================================================================
 */
 

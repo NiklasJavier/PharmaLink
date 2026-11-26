@@ -61,7 +61,7 @@ public class ApiTransactionInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
         String username = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(Authentication::getName)
-                .orElse("anonym");
+                .orElse("anonymous");
 
         String requestBody = null;
         if (request instanceof ContentCachingRequestWrapper) {
@@ -70,7 +70,7 @@ public class ApiTransactionInterceptor implements HandlerInterceptor {
                 try {
                     requestBody = new String(content, request.getCharacterEncoding());
                 } catch (Exception e) {
-                    logger.warn("Anfrageinhalt für URL {} konnte nicht gelesen werden: {}", url, e.getMessage());
+                    logger.warn("Could not read request body for URL {}: {}", url, e.getMessage());
                 }
             }
         }
@@ -82,16 +82,16 @@ public class ApiTransactionInterceptor implements HandlerInterceptor {
             errorMessage = ex.getMessage();
             successful = false;
         } else if (!successful) {
-            errorMessage = "HTTP-Status: " + status;
+            errorMessage = "HTTP status: " + status;
         }
 
         ApiTransaction apiTransaction = new ApiTransaction(url, method, username, requestBody, status, timestamp, successful, errorMessage);
 
         try {
             apiTransactionRepository.save(apiTransaction);
-            logger.debug("API-Transaktion protokolliert: {} {} -> Status {} (Dauer: {}ms)", method, url, status, duration);
+            logger.debug("API transaction logged: {} {} -> status {} (duration: {}ms)", method, url, status, duration);
         } catch (Exception e) {
-            logger.error("Fehler beim Speichern des API-Transaktionsprotokolls für {} {}: {}", method, url, e.getMessage());
+            logger.error("Error saving API transaction log for {} {}: {}", method, url, e.getMessage());
         }
     }
 }

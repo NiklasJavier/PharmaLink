@@ -44,7 +44,7 @@ public class ActorFabricService {
             List<Actor> actors = fabricClient.getGson().fromJson(resultJson, listType);
             return enrichActorList(actors);
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen der Akteure für die Rolle '{}': {}", role, e.getMessage(), e);
+            logger.error("Error retrieving actors for role '{}': {}", role, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -56,7 +56,7 @@ public class ActorFabricService {
             List<Actor> actors = fabricClient.getGson().fromJson(resultJson, listType);
             return enrichActorList(actors);
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen aller Akteure: {}", e.getMessage(), e);
+            logger.error("Error retrieving all actors: {}", e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -85,10 +85,10 @@ public class ActorFabricService {
                     Type dataType = new TypeToken<Map<String, Object>>() {}.getType();
                     Map<String, Object> ipfsData = ipfsClient.getObject(cleanHash, dataType);
                     actor.setIpfsData(ipfsData);
-                    logger.debug("Akteur {} erfolgreich mit IPFS-Daten angereichert.", actor.getActorId());
+                    logger.debug("Actor {} successfully enriched with IPFS data.", actor.getActorId());
                 }
             } catch (IOException e) {
-                logger.warn("Konnte IPFS-Daten für Akteur {} nicht abrufen oder verarbeiten: {}", actor.getActorId(), e.getMessage());
+                logger.warn("Could not retrieve or process IPFS data for actor {}: {}", actor.getActorId(), e.getMessage());
             }
         }
         return actor;
@@ -98,21 +98,21 @@ public class ActorFabricService {
         String finalIpfsLink = "";
 
         if (ipfsData != null && !ipfsData.isEmpty()) {
-            logger.info("Verarbeite neue 'ipfsData' für Akteur-ID: {}", actorId);
+            logger.info("Processing new 'ipfsData' for actor ID: {}", actorId);
             try {
                 String ipfsJson = fabricClient.getGson().toJson(ipfsData);
                 String ipfsHash = ipfsClient.addObject(ipfsJson);
                 if (StringUtils.hasText(ipfsHash)) {
                     finalIpfsLink = ipfsHash;
-                    logger.info("Neuer IPFS-Link für Akteur-Update erstellt: {}", finalIpfsLink);
+                    logger.info("New IPFS link created for actor update: {}", finalIpfsLink);
                 }
             } catch (Exception e) {
-                logger.error("Fehler beim Hochladen der IPFS-Daten für Akteur {}: {}", actorId, e.getMessage(), e);
-                throw new RuntimeException("Fehler beim IPFS-Upload.", e);
+                logger.error("Error uploading IPFS data for actor {}: {}", actorId, e.getMessage(), e);
+                throw new RuntimeException("Error during IPFS upload.", e);
             }
         }
 
-        logger.debug("Sende 'updateActor'-Transaktion für ID: {}", actorId);
+        logger.debug("Submitting 'updateActor' transaction for ID: {}", actorId);
         String resultJson = fabricClient.submitGenericTransaction(
                 "updateActor",
                 actorId,
@@ -129,7 +129,7 @@ public class ActorFabricService {
             Actor actor = fabricClient.evaluateTransaction("queryActorById", Actor.class, actorId);
             return Optional.ofNullable(enrichSingleActorWithIpfs(actor));
         } catch (Exception e) {
-            logger.error("Fehler beim Abrufen des Akteurs mit ID '{}': {}", actorId, e.getMessage(), e);
+            logger.error("Error retrieving actor with ID '{}': {}", actorId, e.getMessage(), e);
             return Optional.empty();
         }
     }
