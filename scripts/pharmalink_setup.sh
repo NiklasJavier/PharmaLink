@@ -1,6 +1,8 @@
 #!/bin/bash
+set -euo pipefail
 
-COMPOSE_FILE="../docker/docker-compose-pharmalink.yaml"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${SCRIPT_DIR}/../docker/docker-compose-pharmalink.yaml"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -8,27 +10,40 @@ NC='\033[0m'
 
 usage() {
     echo "Nutzung: $0 {up|down}"
-    echo "  up:   Startet die Pharmalink-Umgebung mit docker-compose."
-    echo "  down: Stoppt und bereinigt die Pharmalink-Umgebung."
+    echo "  up:   Startet die PharmaLink-Umgebung mit Docker Compose."
+    echo "  down: Stoppt und bereinigt die PharmaLink-Umgebung."
+}
+
+detect_compose() {
+    if docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD=(docker compose)
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD=(docker-compose)
+    else
+        echo -e "${RED}Fehler: Weder 'docker compose' noch 'docker-compose' gefunden.${NC}"
+        exit 1
+    fi
 }
 
 start_services() {
-    echo -e "${GREEN}Starte Pharmalink-Dienste...${NC}"
-    if [ ! -f "$COMPOSE_FILE" ]; then
+    echo -e "${GREEN}Starte PharmaLink-Dienste...${NC}"
+    if [ ! -f "${COMPOSE_FILE}" ]; then
         echo -e "${RED}Fehler: Docker-Compose-Datei nicht unter ${COMPOSE_FILE} gefunden.${NC}"
         exit 1
     fi
-    docker-compose -f "${COMPOSE_FILE}" up -d
+    detect_compose
+    "${COMPOSE_CMD[@]}" -f "${COMPOSE_FILE}" up -d
     echo -e "${GREEN}Dienste gestartet. Mit 'docker ps' können Sie den Status prüfen.${NC}"
 }
 
 stop_services() {
-    echo -e "${GREEN}Stoppe und bereinige Pharmalink-Dienste...${NC}"
-    if [ ! -f "$COMPOSE_FILE" ]; then
+    echo -e "${GREEN}Stoppe und bereinige PharmaLink-Dienste...${NC}"
+    if [ ! -f "${COMPOSE_FILE}" ]; then
         echo -e "${RED}Fehler: Docker-Compose-Datei nicht unter ${COMPOSE_FILE} gefunden.${NC}"
         exit 1
     fi
-    docker-compose -f "${COMPOSE_FILE}" down
+    detect_compose
+    "${COMPOSE_CMD[@]}" -f "${COMPOSE_FILE}" down
     echo -e "${GREEN}Umgebung wurde bereinigt.${NC}"
 }
 
@@ -37,9 +52,9 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-ACTION=$1
+ACTION="$1"
 
-case "$ACTION" in
+case "${ACTION}" in
     up)
         start_services
         ;;
@@ -47,10 +62,8 @@ case "$ACTION" in
         stop_services
         ;;
     *)
-        echo -e "${RED}Fehler: Ungültiges Argument '$ACTION'${NC}"
+        echo -e "${RED}Fehler: Ungültiges Argument '${ACTION}'${NC}"
         usage
         exit 1
         ;;
 esac
-
-exit 0

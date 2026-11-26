@@ -1,34 +1,55 @@
 #!/bin/bash
+set -euo pipefail
 
-echo "Dieses Skript wird ALLE Docker-Container, -Images, -Volumes und -Netzwerke entfernen."
-echo "Dies ist eine destruktive Aktion und kann NICHT rückgängig gemacht werden."
-read -p "Bist du dir sicher, dass du fortfahren möchtest? (ja/nein) " confirm
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-if [[ "$confirm" != "ja" ]]; then
-    echo "Abbruch. Es wurden keine Docker-Ressourcen entfernt."
+if [[ "${1:-}" == "--all-docker" ]]; then
+    echo "WARNUNG: '--all-docker' entfernt ALLE Docker-Container, -Images, -Volumes und -Netzwerke auf diesem Host."
+    echo "Dies ist destruktiv und wirkt sich auch auf andere Projekte aus."
+    read -r -p "Möchten Sie wirklich ALLE Docker-Ressourcen entfernen? (ja/nein) " confirm
+
+    if [[ "${confirm}" != "ja" ]]; then
+        echo "Abbruch. Es wurden keine Docker-Ressourcen entfernt."
+        exit 0
+    fi
+
+    echo "Stoppe alle laufenden Docker-Container..."
+    containers="$(docker ps -aq || true)"
+    if [[ -n "${containers}" ]]; then
+        docker stop ${containers} 2>/dev/null || true
+        docker rm ${containers} 2>/dev/null || true
+    fi
+
+    echo "Entferne alle Docker-Images..."
+    images="$(docker images -aq || true)"
+    if [[ -n "${images}" ]]; then
+        docker rmi ${images} 2>/dev/null || true
+    fi
+
+    echo "Entferne alle Docker-Volumes..."
+    volumes="$(docker volume ls -q || true)"
+    if [[ -n "${volumes}" ]]; then
+        docker volume rm ${volumes} 2>/dev/null || true
+    fi
+
+    echo "Entferne benutzerdefinierte Docker-Netzwerke..."
+    networks="$(docker network ls -q | grep -vE '^(bridge|host|none)$' || true)"
+    if [[ -n "${networks}" ]]; then
+        docker network rm ${networks} 2>/dev/null || true
+    fi
+
+    echo "Bereinige verwaiste Docker-Ressourcen (system prune)..."
+    docker system prune -f
+    echo "Alle Docker-Ressourcen wurden bereinigt."
     exit 0
 fi
 
-echo "Stoppe alle laufenden Docker-Container..."
-docker stop $(docker ps -aq) 2>/dev/null || echo "Keine Container zum Stoppen gefunden."
+echo "Stoppe PharmaLink-Compose-Stack..."
+bash "${SCRIPTS_ROOT}/pharmalink_setup.sh" down || true
 
-echo "Entferne alle Docker-Container..."
-docker rm $(docker ps -aq) 2>/dev/null || echo "Keine Container zum Entfernen gefunden."
+echo "Stoppe Hyperledger Fabric Test-Netzwerk..."
+bash "${SCRIPTS_ROOT}/fabric_setup_test.sh" down || true
 
-echo "Entferne alle Docker-Images..."
-docker rmi $(docker images -aq) 2>/dev/null || echo "Keine Images zum Entfernen gefunden."
-
-echo "Entferne alle Docker-Volumes..."
-docker volume rm $(docker volume ls -q) 2>/dev/null || echo "Keine Volumes zum Entfernen gefunden."
-
-echo "Entferne alle Docker-Netzwerke (außer den Standardnetzwerken)..."
-# Exclude default networks (bridge, host, none)
-docker network rm $(docker network ls -q | grep -v 'bridge\|host\|none') 2>/dev/null || echo "Keine benutzerdefinierten Netzwerke zum Entfernen gefunden."
-
-echo "Bereinige verwaiste Docker-Ressourcen (system prune)..."
-docker state prune -f
-
-echo "Alle Docker-Ressourcen wurden erfolgreich entfernt."
-
-echo "Repo zurücksetzen"
-git reset --hard HEAD && git clean -fd
+echo "PharmaLink-Umgebung wurde sauber zurückgesetzt."
+echo "Hinweis: Für eine komplette host-weite Docker-Bereinigung nutzen Sie '$0 --all-docker'."
