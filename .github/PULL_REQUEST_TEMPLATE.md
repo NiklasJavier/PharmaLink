@@ -12,4 +12,4 @@
 - [ ] Frontend: `./gradlew -p frontend compileJava --no-daemon`
 - [ ] Chaincode (JDK 11): `./gradlew -p chaincode/pharmalink_chaincode_main compileJava checkstyleMain --no-daemon`
 - [ ] Scripts: `bash -n scripts/*.sh scripts/*/*.sh`
-- [ ] No hardcoded local paths (`/Users/...`, `/home/...`) or real secrets committed
+- [ ] No hardcoded local home paths, private hostnames, or real secrets committed

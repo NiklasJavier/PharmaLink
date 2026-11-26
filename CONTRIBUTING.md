@@ -28,6 +28,6 @@ for f in scripts/*.sh scripts/*/*.sh common/organizations/fabric-ca/registerEnro
 
 ## Pull Request Guidelines
 
-- Do not commit personal paths (`/Users/...`, `/home/...`), private hostnames, or generated `fabric-samples/` crypto outputs.
+- Do not commit host-specific home directory paths, private hostnames, or generated `fabric-samples/` crypto outputs.
 - Preserve existing MIT licensing headers and test-network safety disclaimers.
 - Use the [Pull Request Template](./.github/PULL_REQUEST_TEMPLATE.md) when submitting changes.

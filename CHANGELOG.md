@@ -14,7 +14,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - GitHub Actions CI workflow (`.github/workflows/ci.yml`) for backend, frontend, chaincode, shell syntax, JSON, and YAML checks.
 
 ### Changed
-- Sanitized personal paths (`/Users/niklas/...`), hardcoded private hostnames (`node.d1.navine.tech`, `d1.navine.tech`), and stale Quarkus `.gitignore` entries in favor of environment-parameterized defaults.
+- Sanitized hardcoded local user paths, private test hostnames, and stale Quarkus `.gitignore` entries in favor of environment-parameterized defaults.
 - Updated `docker/docker-compose-pharmalink.yaml` to drop the obsolete `version` key, remove an unused `/app/config` volume mount, and use `ipfs/kubo:v0.29.0`.
 - Reworked all setup, role, and reset scripts in `scripts/` for dynamic repo-root path resolution, Linux/macOS + `bash`/`zsh` compatibility, Compose v2 auto-detection, and safe non-destructive reset defaults (`--all-docker` opt-in).
 - Corrected `chaincode/pharmalink_chaincode_main/Dockerfile` group creation flag and JaCoCo build flag; refined `.github/workflows/release.yml` to build both backend and frontend GHCR images.
