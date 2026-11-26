@@ -93,35 +93,36 @@ On-chain permissions and certificate attributes use German domain identifiers ma
 | `grosshaendler` | Wholesaler | Hold custody of units, append cold-chain temperature readings, transfer individual units or serial ranges downstream |
 | `apotheke` | Pharmacy | Receive and inspect units, append temperature logs, verify full chain of custody and leaflet hashes |
 
-## Quickstart (Local Test Stack)
+## Quickstart (End-to-End Go-Live & Verification)
 
-**Prerequisites:** Docker + Docker Compose v2, plus either [Nix](https://nixos.org/download/) (`flake.nix` provides **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip`) or manual Java 11 & Java 21 via [SDKMAN](https://sdkman.io/). See [docs/getting-started.md](./docs/getting-started.md) for OS setup and IDE workflows.
+**1. Install prerequisites:** [Docker](https://docs.docker.com/get-docker/) + Docker Compose v2, plus [Nix](https://nixos.org/download/) with Flakes enabled (`flake.nix` provides **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip`):
 
-### With Nix + `just` (Recommended)
+- **macOS / Linux:** `curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install` (official alternative: [nixos.org/download](https://nixos.org/download/))
+- **Windows:** Enable [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) + Docker Desktop WSL2 integration, then run the same Nix installer inside your WSL2 Linux shell.
+
+**2. Verify, boot, and smoke-test end-to-end:**
 
 ```bash
-# 1. Clone and enter the reproducible dev shell (JDK 21 + JDK 11 + just)
-git clone https://github.com/NiklasJavier/PharmaLink.git
-cd PharmaLink
+# Clone, enter reproducible dev shell, and validate toolchain, builds, scripts, configs, docs
+git clone https://github.com/NiklasJavier/PharmaLink.git && cd PharmaLink
 nix develop
+just doctor && just check
 
-# 2. Verify local toolchain and run build/script/config/doc checks
-just doctor
-just check
-
-# 3. Boot Fabric test-network, deploy chaincode, enroll consortium, and start containers
+# Boot Hyperledger Fabric network, deploy chaincode, enroll consortium, and start containers
 just up
+
+# Live E2E check: authenticate seeded admin, query ledger-backed cache stats, inspect UI
+TOKEN=$(curl -fsS -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}' | jq -r '.jwt')
+curl -fsS http://localhost:8080/api/system/cache/stats -H "Authorization: Bearer $TOKEN" | jq .
+# Vaadin UI: http://localhost:3000  |  Swagger: http://localhost:8080/api/swagger
+
+# Stop containers and remove generated local Fabric/wallet/IPFS state
+just down
 ```
 
-### Without Nix (Direct Scripts)
-
-```bash
-source ./scripts/fabric_setEnv.sh
-./scripts/fabric_setup_test.sh up
-./scripts/fabric_setup_test.sh cc
-./scripts/fabric_setup_test_consortium.sh
-./scripts/pharmalink_setup.sh up
-```
+Manual Java 11/21 (`SDKMAN`) setup, direct scripts without Nix, and IDE workflows live in [docs/getting-started.md](./docs/getting-started.md).
 
 ### Default Local Endpoints
 

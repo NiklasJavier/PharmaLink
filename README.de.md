@@ -91,35 +91,36 @@ flowchart LR
 | `grosshaendler` | Großhändler | Einheiten im Bestand führen, Temperaturmesswerte erfassen, Einzel- und Bereichstransfers durchführen |
 | `apotheke` | Apotheke | Einheiten entgegennehmen und prüfen, Temperaturhistorie ergänzen, lückenlose Herkunft und Infoblatt-Hash nachvollziehen |
 
-## Schnellstart (Lokales Testnetzwerk)
+## Schnellstart (End-to-End Go-Live & Verifikation)
 
-**Voraussetzungen:** Docker + Docker Compose v2 sowie entweder [Nix](https://nixos.org/download/) (`flake.nix` liefert **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip`) oder manuelles Java 11 & Java 21 per [SDKMAN](https://sdkman.io/). Details zu IDE-Entwicklung und Umgebungsvariablen stehen in [docs/getting-started.md](./docs/getting-started.md).
+**1. Voraussetzungen installieren:** [Docker](https://docs.docker.com/get-docker/) + Docker Compose v2 sowie [Nix](https://nixos.org/download/) mit aktivierten Flakes (`flake.nix` liefert **JDK 21**, **JDK 11**, `just`, `shellcheck`, `jq`, `curl`, `zip`, `unzip`):
 
-### Mit Nix + `just` (Empfohlen)
+- **macOS / Linux:** `curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install` (offizielle Alternative: [nixos.org/download](https://nixos.org/download/))
+- **Windows:** [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) + WSL2-Integration in Docker Desktop aktivieren, danach denselben Nix-Installer in der WSL2-Linux-Shell ausführen.
+
+**2. Prüfen, starten und End-to-End verifizieren:**
 
 ```bash
-# 1. Repository klonen und reproduzierbare Dev-Shell betreten (JDK 21 + JDK 11 + just)
-git clone https://github.com/NiklasJavier/PharmaLink.git
-cd PharmaLink
+# Klonen, Dev-Shell betreten und Toolchain, Builds, Skripte, Configs sowie Doku prüfen
+git clone https://github.com/NiklasJavier/PharmaLink.git && cd PharmaLink
 nix develop
+just doctor && just check
 
-# 2. Toolchain prüfen und Builds, Skripte, Configs sowie Doku-Links validieren
-just doctor
-just check
-
-# 3. Fabric-Testnetzwerk starten, Chaincode deployen, Konsortium anlegen, Container starten
+# Hyperledger Fabric starten, Chaincode deployen, Konsortium anlegen und Container hochfahren
 just up
+
+# Live-E2E-Check: Test-Admin anmelden, Cache-/Ledger-Status abfragen, UI aufrufen
+TOKEN=$(curl -fsS -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}' | jq -r '.jwt')
+curl -fsS http://localhost:8080/api/system/cache/stats -H "Authorization: Bearer $TOKEN" | jq .
+# Vaadin UI: http://localhost:3000  |  Swagger: http://localhost:8080/api/swagger
+
+# Stack sauber stoppen und erzeugte Fabric-/Wallet-/IPFS-Daten bereinigen
+just down
 ```
 
-### Ohne Nix (Direkte Skripte)
-
-```bash
-source ./scripts/fabric_setEnv.sh
-./scripts/fabric_setup_test.sh up
-./scripts/fabric_setup_test.sh cc
-./scripts/fabric_setup_test_consortium.sh
-./scripts/pharmalink_setup.sh up
-```
+Manuelles Java-11/21-Setup (`SDKMAN`), direkte Skripte ohne Nix und IDE-Workflows stehen in [docs/getting-started.md](./docs/getting-started.md).
 
 ### Standard-Endpunkte
 

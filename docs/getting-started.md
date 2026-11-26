@@ -12,7 +12,16 @@ This guide covers full local setup of the Hyperledger Fabric test network, Java 
 
 ### Recommended: Nix + `just` Dev Shell
 
-Enter the declarative dev shell from `flake.nix` (or let `direnv allow` load `.envrc` automatically):
+Install Nix with Flakes enabled once on your machine:
+
+- **macOS / Linux:**
+  ```bash
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+  ```
+  (Official alternative: [nixos.org/download](https://nixos.org/download/).)
+- **Windows:** Enable [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and turn on **Docker Desktop -> Settings -> Resources -> WSL Integration**, then run the same Linux Nix installer above inside your WSL2 distribution (Fabric test-network Bash scripts require a POSIX shell).
+
+Then enter the declarative dev shell from `flake.nix` (or let `direnv allow` load `.envrc` automatically):
 
 ```bash
 nix develop
@@ -74,6 +83,21 @@ Check running containers with:
 ```bash
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
+
+### End-to-End Live Smoke Verification
+
+Once `just up` (or the manual steps above) finishes, verify authentication, backend ledger cache sync, and the Vaadin frontend:
+
+```bash
+TOKEN=$(curl -fsS -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}' | jq -r '.jwt')
+
+curl -fsS http://localhost:8080/api/system/cache/stats \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+Then open [http://localhost:3000](http://localhost:3000) (Vaadin UI) and [http://localhost:8080/api/swagger](http://localhost:8080/api/swagger) (Swagger UI). Tear down cleanly with `just down`.
 
 ---
 
