@@ -38,7 +38,7 @@ public class LoginSuccessView extends VerticalLayout implements BeforeEnterObser
         final String token = event.getRouteParameters().get("token").orElse("");
 
         if (token.isEmpty() || username.isEmpty()) {
-            log.warn("LoginSuccessView ohne Token oder Benutzername aufgerufen. Leite zum Login weiter.");
+            log.warn("LoginSuccessView invoked without token or username. Forwarding to login.");
             event.forwardTo(LoginView.class);
             return;
         }
@@ -63,11 +63,11 @@ public class LoginSuccessView extends VerticalLayout implements BeforeEnterObser
 
             securityContextRepository.saveContext(context, request, response);
 
-            log.info("Sitzung für Benutzer '{}' erfolgreich erstellt. Leite zum Dashboard weiter.", username);
+            log.info("Session for user '{}' successfully created. Forwarding to dashboard.", username);
             event.forwardTo("");
 
         } catch (Exception e) {
-            log.error("Fehler bei der Erstellung der Benutzersitzung für '{}'.", username, e);
+            log.error("Error creating user session for '{}'.", username, e);
             event.rerouteTo(LoginView.class);
         }
     }

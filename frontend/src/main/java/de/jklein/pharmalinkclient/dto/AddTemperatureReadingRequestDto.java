@@ -3,10 +3,10 @@ package de.jklein.pharmalinkclient.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class AddTemperatureReadingRequestDto {
-    @NotBlank(message = "Temperature darf nicht leer sein.")
+    @NotBlank(message = "Temperature must not be empty.")
     private String temperature;
 
-    @NotBlank(message = "Timestamp darf nicht leer sein.")
+    @NotBlank(message = "Timestamp must not be empty.")
     private String timestamp;
 
     public AddTemperatureReadingRequestDto() {

@@ -32,7 +32,7 @@ public class SystemService {
                     if (jwt != null && !jwt.isEmpty()) {
                         headers.setBearerAuth(jwt);
                     } else {
-                        System.err.println("Kein JWT-Token in der UserSession verfügbar für getCurrentActorId.");
+                        System.err.println("No JWT token available in UserSession for getCurrentActorId.");
                     }
                 })
                 .retrieve()
@@ -48,7 +48,7 @@ public class SystemService {
                     if (jwt != null && !jwt.isEmpty()) {
                         headers.setBearerAuth(jwt);
                     } else {
-                        System.err.println("Kein JWT-Token in der UserSession verfügbar für getCacheStats.");
+                        System.err.println("No JWT token available in UserSession for getCacheStats.");
                     }
                 })
                 .retrieve()
@@ -63,7 +63,7 @@ public class SystemService {
                     if (jwt != null && !jwt.isEmpty()) {
                         headers.setBearerAuth(jwt);
                     } else {
-                        System.err.println("Kein JWT-Token in der UserSession verfügbar für getCacheState.");
+                        System.err.println("No JWT token available in UserSession for getCacheState.");
                     }
                 })
                 .retrieve()

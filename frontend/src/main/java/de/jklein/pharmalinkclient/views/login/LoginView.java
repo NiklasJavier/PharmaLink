@@ -24,8 +24,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     public LoginView(AuthService authService, UserSession userSession) {
         this.userSession = userSession;
 
-        loginOverlay.setTitle("Pharmalink");
-        loginOverlay.setDescription("Sichere Authentifizierung für die Lieferkette");
+        loginOverlay.setTitle("PharmaLink");
+        loginOverlay.setDescription("Secure Supply Chain Authentication");
         loginOverlay.setOpened(false);
 
         loginOverlay.setForgotPasswordButtonVisible(false);
@@ -36,7 +36,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             final String username = event.getUsername();
             final String password = event.getPassword();
 
-            log.info("Login-Versuch für Benutzer '{}'", username);
+            log.info("Login attempt for user '{}'", username);
 
             loginOverlay.setEnabled(false);
 
@@ -45,11 +45,11 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
                         getUI().ifPresent(ui -> ui.access(() -> {
                             loginOverlay.setEnabled(true);
                             if (tokenOptional != null && tokenOptional.isPresent()) {
-                                log.info("Token erhalten. Leite zur Session-Erstellung mit Benutzer '{}' weiter.", username);
+                                log.info("Token received. Redirecting to session creation for user '{}'.", username);
                                 String url = String.format("login/token/%s/%s", username, tokenOptional.get());
                                 ui.getPage().setLocation(url);
                             } else {
-                                log.warn("Login fehlgeschlagen für Benutzer: {}", username);
+                                log.warn("Login failed for user: {}", username);
                                 loginOverlay.setError(true);
                             }
                         }));

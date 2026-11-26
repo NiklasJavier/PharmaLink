@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
 
 public class UpdateMedicationStatusRequestDto {
-    @NotBlank(message = "Der Status darf nicht leer sein.")
-    @Pattern(regexp = "freigegeben|abgelehnt", message = "Der Status muss 'freigegeben' oder 'abgelehnt' sein.")
+    @NotBlank(message = "Status must not be empty.")
+    @Pattern(regexp = "freigegeben|abgelehnt", message = "Status must be 'freigegeben' or 'abgelehnt'.")
     private String newStatus;
 
     public UpdateMedicationStatusRequestDto() {

@@ -42,7 +42,7 @@ public class HerstellerDetailContent extends Div {
         manufacturerInfoWrapper.getStyle().set("padding", "var(--lumo-space-m)");
         manufacturerInfoWrapper.getStyle().set("flex-grow", "1");
 
-        manufacturerInfoWrapper.add(new H4("Herstellerinformationen"));
+        manufacturerInfoWrapper.add(new H4("Manufacturer Information"));
 
         setupFields();
         FormLayout infoFormLayout = new FormLayout();
@@ -61,10 +61,10 @@ public class HerstellerDetailContent extends Div {
     }
 
     private void setupFields() {
-        actorIdField = createReadOnlyTextField("Hersteller ID");
-        bezeichnungField = createReadOnlyTextField("Bezeichnung");
-        roleField = createReadOnlyTextField("Rolle");
-        emailField = createReadOnlyTextField("E-Mail");
+        actorIdField = createReadOnlyTextField("Manufacturer ID");
+        bezeichnungField = createReadOnlyTextField("Name");
+        roleField = createReadOnlyTextField("Role");
+        emailField = createReadOnlyTextField("Email");
     }
 
     private TextField createReadOnlyTextField(String label) {
@@ -81,25 +81,25 @@ public class HerstellerDetailContent extends Div {
             String herstellerId = medikament.getHerstellerId();
 
             if (herstellerId != null && !herstellerId.isEmpty()) {
-                System.out.println("DEBUG: Suche Hersteller für ID: " + herstellerId);
+                System.out.println("DEBUG: Searching manufacturer for ID: " + herstellerId);
                 ActorResponseDto hersteller = actorService.getHerstellerById(herstellerId);
                 if (hersteller != null) {
                     actorIdField.setValue(hersteller.getActorId() != null ? hersteller.getActorId() : "N/A");
                     bezeichnungField.setValue(hersteller.getBezeichnung() != null ? hersteller.getBezeichnung() : "N/A");
                     roleField.setValue(hersteller.getRole() != null ? hersteller.getRole() : "N/A");
                     emailField.setValue(hersteller.getEmail() != null ? hersteller.getEmail() : "N/A");
-                    System.out.println("DEBUG: Hersteller gefunden und Felder aktualisiert für ID: " + hersteller.getActorId());
+                    System.out.println("DEBUG: Manufacturer found and fields updated for ID: " + hersteller.getActorId());
                 } else {
                     clearManufacturerFields();
-                    System.err.println("WARN: Hersteller mit ID " + herstellerId + " im Backend nicht gefunden. Felder wurden geleert.");
+                    System.err.println("WARN: Manufacturer with ID " + herstellerId + " not found in backend. Fields cleared.");
                 }
             } else {
                 clearManufacturerFields();
-                System.out.println("WARN: Ausgewähltes Medikament hat keine Hersteller-ID. Felder wurden geleert.");
+                System.out.println("WARN: Selected medication has no manufacturer ID. Fields cleared.");
             }
         } else {
             clearManufacturerFields();
-            System.out.println("INFO: Kein Medikament ausgewählt. Herstellerfelder wurden geleert.");
+            System.out.println("INFO: No medication selected. Manufacturer fields cleared.");
         }
     }
 

@@ -52,25 +52,25 @@ public class ActorMasterContent extends Div {
         grid.addComponentColumn(actor -> {
             String bezeichnung = actor.getBezeichnung();
             if (bezeichnung == null || bezeichnung.trim().isEmpty()) {
-                Span span = new Span("nicht angegeben");
+                Span span = new Span("not specified");
                 span.addClassName(LumoUtility.TextColor.SECONDARY);
                 return span;
             }
             return new Span(bezeichnung);
-        }).setHeader("Bezeichnung").setAutoWidth(true).setSortable(true);
+        }).setHeader("Name").setAutoWidth(true).setSortable(true);
 
         grid.addComponentColumn(actor -> {
             String email = actor.getEmail();
             if (email == null || email.trim().isEmpty()) {
-                Span span = new Span("nicht angegeben");
+                Span span = new Span("not specified");
                 span.addClassName(LumoUtility.TextColor.SECONDARY);
                 return span;
             }
             return new Span(email);
-        }).setHeader("E-Mail").setAutoWidth(true).setSortable(true);
+        }).setHeader("Email").setAutoWidth(true).setSortable(true);
 
-        grid.addColumn("role").setHeader("Rolle").setAutoWidth(true).setSortable(true);
-        grid.addColumn("actorId").setHeader("Akteur ID").setAutoWidth(true).setSortable(true);
+        grid.addColumn("role").setHeader("Role").setAutoWidth(true).setSortable(true);
+        grid.addColumn("actorId").setHeader("Actor ID").setAutoWidth(true).setSortable(true);
 
         add(grid);
 

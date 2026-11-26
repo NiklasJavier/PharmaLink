@@ -5,7 +5,7 @@ import java.util.Map;
 public class ActorResponseDto {
     private String actorId;
     private String bezeichnung;
-    private String role; // z.B. "hersteller"
+    private String role; // e.g., "hersteller"
     private String email;
     private String ipfsLink;
     private Map<String, Object> ipfsData;

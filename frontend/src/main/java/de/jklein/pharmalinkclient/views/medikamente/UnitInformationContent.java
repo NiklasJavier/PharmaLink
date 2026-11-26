@@ -34,20 +34,20 @@ public class UnitInformationContent extends Div {
         getStyle().set("padding", "var(--lumo-space-m)");
         getStyle().set("flex-grow", "1");
 
-        add(new H4("Chargeninformationen"));
+        add(new H4("Batch Information"));
 
         unitGrid = new Grid<>(ChargeSummaryDto.class, false);
         unitGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_NO_BORDER);
         unitGrid.setSizeFull();
 
         unitGrid.addColumn("chargeBezeichnung")
-                .setHeader("Charge")
+                .setHeader("Batch")
                 .setAutoWidth(true)
                 .setFlexGrow(1)
                 .setTextAlign(ColumnTextAlign.START);
 
         unitGrid.addColumn("anzahl")
-                .setHeader("Anzahl")
+                .setHeader("Quantity")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.START);

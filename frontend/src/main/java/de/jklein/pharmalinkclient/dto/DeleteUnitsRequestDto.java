@@ -4,7 +4,7 @@ import java.util.List;
 import jakarta.validation.constraints.NotEmpty;
 
 public class DeleteUnitsRequestDto {
-    @NotEmpty(message = "Die Liste der Unit-IDs darf nicht leer sein.")
+    @NotEmpty(message = "The list of unit IDs must not be empty.")
     private List<String> unitIds;
 
     public DeleteUnitsRequestDto() {

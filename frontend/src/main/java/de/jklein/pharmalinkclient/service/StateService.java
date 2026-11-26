@@ -45,12 +45,12 @@ public class StateService implements Serializable {
     private final PropertyChangeSupport navigateToMedikamentSupport = new PropertyChangeSupport(this);
 
     private String currentActorId;
-    private SystemStatsDto cacheStats; // GEÄNDERT: Typ von Map<String, Object> zu SystemStatsDto
-    private SystemStateDto systemState; // NEU: Variable für den vollständigen Systemzustand
+    private SystemStatsDto cacheStats; // CHANGED: Type from Map<String, Object> to SystemStatsDto
+    private SystemStateDto systemState; // NEW: Variable for full system state
 
     private final transient CopyOnWriteArrayList<Consumer<String>> currentActorIdListeners = new CopyOnWriteArrayList<>();
-    private final transient CopyOnWriteArrayList<Consumer<SystemStatsDto>> cacheStatsListeners = new CopyOnWriteArrayList<>(); // GEÄNDERT: Typ
-    private final transient CopyOnWriteArrayList<Consumer<SystemStateDto>> systemStateListeners = new CopyOnWriteArrayList<>(); // NEU: Listener für SystemStateDto
+    private final transient CopyOnWriteArrayList<Consumer<SystemStatsDto>> cacheStatsListeners = new CopyOnWriteArrayList<>(); // CHANGED: Type
+    private final transient CopyOnWriteArrayList<Consumer<SystemStateDto>> systemStateListeners = new CopyOnWriteArrayList<>(); // NEW: Listener for SystemStateDto
 
     private boolean systemDataLoadedForSession = false;
 
@@ -68,7 +68,7 @@ public class StateService implements Serializable {
 
 
     public StateService() {
-        this.currentMedikamentFilterCriteria = Optional.of(new MedikamentFilterCriteriaDto("", "Ohne Filter"));
+        this.currentMedikamentFilterCriteria = Optional.of(new MedikamentFilterCriteriaDto("", "No Filter"));
         this.currentActorFilterCriteria = Optional.of(new ActorFilterCriteriaDto(""));
     }
 

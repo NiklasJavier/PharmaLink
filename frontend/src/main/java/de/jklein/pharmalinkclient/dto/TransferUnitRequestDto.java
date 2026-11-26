@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public class TransferUnitRequestDto {
 
-    @NotBlank(message = "newOwnerActorId darf nicht leer sein.")
+    @NotBlank(message = "newOwnerActorId must not be empty.")
     private String newOwnerActorId;
     
     public TransferUnitRequestDto() {

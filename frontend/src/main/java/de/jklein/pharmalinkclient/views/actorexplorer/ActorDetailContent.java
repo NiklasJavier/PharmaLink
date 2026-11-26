@@ -67,7 +67,7 @@ public class ActorDetailContent extends SplitLayout {
         actorInfoSection.setSpacing(false);
         actorInfoSection.setSizeFull();
 
-        mainTitle = new H3("Akteur Details");
+        mainTitle = new H3("Actor Details");
         actorInfoSection.add(mainTitle);
 
         detailsLayout = new FormLayout();
@@ -76,10 +76,10 @@ public class ActorDetailContent extends SplitLayout {
                 new FormLayout.ResponsiveStep("400px", 2)
         );
 
-        actorIdField = createReadOnlyCopyableTextField("Akteur ID");
-        bezeichnungField = createReadOnlyCopyableTextField("Bezeichnung");
-        roleField = createReadOnlyCopyableTextField("Rolle");
-        emailField = createReadOnlyCopyableTextField("E-Mail");
+        actorIdField = createReadOnlyCopyableTextField("Actor ID");
+        bezeichnungField = createReadOnlyCopyableTextField("Name");
+        roleField = createReadOnlyCopyableTextField("Role");
+        emailField = createReadOnlyCopyableTextField("Email");
 
         detailsLayout.add(actorIdField, bezeichnungField, roleField, emailField);
         actorInfoSection.add(detailsLayout);
@@ -89,7 +89,7 @@ public class ActorDetailContent extends SplitLayout {
         ipfsDataSection.setSpacing(false);
         ipfsDataSection.setSizeFull();
 
-        H4 ipfsDataTitle = new H4("IPFS Daten");
+        H4 ipfsDataTitle = new H4("IPFS Data");
         ipfsDataSection.add(ipfsDataTitle);
 
         ipfsDataGrid = new Grid<>();
@@ -109,17 +109,17 @@ public class ActorDetailContent extends SplitLayout {
         actorMedicationsSection = new VerticalLayout();
         actorMedicationsSection.getStyle().set("border-top", "1px solid var(--lumo-contrast-10pct)");
 
-        H4 medicationsTitle = new H4("Zugeordnete Medikamente");
+        H4 medicationsTitle = new H4("Assigned Medications");
         actorMedicationsSection.add(medicationsTitle);
 
         actorMedicationsGrid = new Grid<>(MedikamentResponseDto.class, false);
         actorMedicationsGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
         actorMedicationsGrid.setSizeFull();
 
-        actorMedicationsGrid.addColumn(MedikamentResponseDto::getStatus)
+        actorMedicationsGrid.addColumn(med -> formatStatus(med.getStatus()))
                 .setHeader("Status").setAutoWidth(true);
-        actorMedicationsGrid.addColumn("bezeichnung").setHeader("Bezeichnung").setAutoWidth(true);
-        actorMedicationsGrid.addColumn("medId").setHeader("Medikament ID").setAutoWidth(true);
+        actorMedicationsGrid.addColumn("bezeichnung").setHeader("Name").setAutoWidth(true);
+        actorMedicationsGrid.addColumn("medId").setHeader("Medication ID").setAutoWidth(true);
 
         actorMedicationsGrid.asSingleSelect().addValueChangeListener(event -> {
             MedikamentResponseDto selectedMedikament = event.getValue();
@@ -154,7 +154,7 @@ public class ActorDetailContent extends SplitLayout {
                         "navigator.clipboard.writeText($0).then(function() { console.log('Text copied to clipboard'); }).catch(function(err) { console.error('Failed to copy text: ', err); });",
                         valueToCopy
                 );
-                Notification.show("'" + valueToCopy + "' in Zwischenablage kopiert.", 3000, Notification.Position.MIDDLE);
+                Notification.show("'" + valueToCopy + "' copied to clipboard.", 3000, Notification.Position.MIDDLE);
             }
         });
         return textField;
@@ -163,7 +163,7 @@ public class ActorDetailContent extends SplitLayout {
     public void updateDetails(ActorResponseDto actor) {
         if (actor != null) {
             this.setVisible(true);
-            mainTitle.setText("Details für: " + actor.getBezeichnung());
+            mainTitle.setText("Details for: " + actor.getBezeichnung());
             actorIdField.setValue(actor.getActorId() != null ? actor.getActorId() : "");
             bezeichnungField.setValue(actor.getBezeichnung() != null ? actor.getBezeichnung() : "");
             roleField.setValue(actor.getRole() != null ? actor.getRole() : "");
@@ -190,7 +190,7 @@ public class ActorDetailContent extends SplitLayout {
 
         } else {
             this.setVisible(false);
-            mainTitle.setText("Akteur Details");
+            mainTitle.setText("Actor Details");
             actorIdField.setValue("");
             bezeichnungField.setValue("");
             roleField.setValue("");
@@ -200,5 +200,17 @@ public class ActorDetailContent extends SplitLayout {
             actorMedicationsGrid.setItems(List.of());
             actorMedicationsSection.setVisible(false);
         }
+    }
+
+    private String formatStatus(String status) {
+        if (status == null) {
+            return "";
+        }
+        return switch (status.toLowerCase()) {
+            case "angelegt", "erstellt" -> "Created";
+            case "freigegeben" -> "Approved";
+            case "abgelehnt" -> "Rejected";
+            default -> status;
+        };
     }
 }

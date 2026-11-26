@@ -32,12 +32,12 @@ public class AuthService {
     }
 
     public CompletableFuture<Optional<String>> fetchToken(String username, String password) {
-        log.info("Frage Token für Benutzer an: {}", username);
+        log.info("Requesting token for user: {}", username);
         LoginRequest loginRequest = new LoginRequest(username, password);
         CompletableFuture<Optional<String>> future = new CompletableFuture<>();
 
         webClient.post()
-                .uri("/v1/auth/login") // **GEÄNDERT: Relative URI verwenden**
+                .uri("/v1/auth/login") // CHANGED: Use relative URI
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(loginRequest), LoginRequest.class)
                 .retrieve()
@@ -47,7 +47,7 @@ public class AuthService {
                 .subscribe(
                         future::complete,
                         error -> {
-                            log.error("Fehler beim Abrufen des Tokens für Benutzer '{}': {}", username, error.getMessage());
+                            log.error("Error fetching token for user '{}': {}", username, error.getMessage());
                             future.complete(Optional.empty());
                         }
                 );
@@ -60,12 +60,12 @@ public class AuthService {
                 userSession.setJwt(null);
                 userSession.setUsername(null);
                 VaadinSession.getCurrent().getSession().removeAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-                log.info("Benutzerdefinierte Session und Security Context aus HttpSession entfernt.");
+                log.info("Custom session and security context removed from HttpSession.");
             } catch (Exception e) {
-                log.error("Fehler beim Bereinigen der Vaadin-Session.", e);
+                log.error("Error clearing Vaadin session.", e);
             }
         }
         SecurityContextHolder.clearContext();
-        log.info("Benutzer ausgeloggt.");
+        log.info("User logged out.");
     }
 }

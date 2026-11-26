@@ -41,7 +41,7 @@ public class ActorService {
         if (jwt != null && !jwt.isEmpty()) {
             headers.setBearerAuth(jwt);
         } else {
-            System.err.println("Kein JWT-Token in der UserSession verfügbar. Authentifizierung erforderlich.");
+            System.err.println("No JWT token available in UserSession. Authentication required.");
         }
         return new HttpEntity<>(headers);
     }
@@ -53,7 +53,7 @@ public class ActorService {
         if (jwt != null && !jwt.isEmpty()) {
             headers.setBearerAuth(jwt);
         } else {
-            System.err.println("Kein JWT-Token in der UserSession verfügbar. Authentifizierung erforderlich.");
+            System.err.println("No JWT token available in UserSession. Authentication required.");
         }
         return new HttpEntity<>(body, headers);
     }
@@ -85,15 +85,15 @@ public class ActorService {
                 return Arrays.asList(response.getBody());
             }
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Suchen/Filtern der Akteure: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error searching/filtering actors: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Suchen/Filtern der Akteure: " + e.getMessage());
+            System.err.println("General error searching/filtering actors: " + e.getMessage());
         }
         return Collections.emptyList();
     }
 
     public ActorResponseDto getHerstellerById(String herstellerId) {
-        String url = backendConfig.getBaseUrl() + "/v1/hersteller/" + herstellerId; // Korrigierter URI-Pfad
+        String url = backendConfig.getBaseUrl() + "/v1/hersteller/" + herstellerId; // Corrected URI path
         HttpEntity<String> entity = createHttpEntityWithJwt();
 
         try {
@@ -105,15 +105,15 @@ public class ActorService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden von Hersteller-Details mit ID '" + herstellerId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading manufacturer details for ID '" + herstellerId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden von Hersteller-Details mit ID: " + e.getMessage());
+            System.err.println("General error loading manufacturer details by ID: " + e.getMessage());
         }
         return null;
     }
 
-    public List<MedikamentResponseDto> getMedicationsByHersteller(String herstellerId) { // NEU: Methode hinzugefügt
-        String url = backendConfig.getBaseUrl() + "/v1/hersteller/" + herstellerId + "/medications"; // Korrigierter URI-Pfad
+    public List<MedikamentResponseDto> getMedicationsByHersteller(String herstellerId) { // NEW: Method added
+        String url = backendConfig.getBaseUrl() + "/v1/hersteller/" + herstellerId + "/medications"; // Corrected URI path
         HttpEntity<String> entity = createHttpEntityWithJwt();
 
         try {
@@ -127,9 +127,9 @@ public class ActorService {
                 return Arrays.asList(response.getBody());
             }
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden von Medikamenten für Hersteller ID '" + herstellerId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading medications for manufacturer ID '" + herstellerId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden von Medikamenten für Hersteller: " + e.getMessage());
+            System.err.println("General error loading medications for manufacturer: " + e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -147,9 +147,9 @@ public class ActorService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden der eigenen Hersteller-Informationen: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading own manufacturer information: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden der eigenen Hersteller-Informationen: " + e.getMessage());
+            System.err.println("General error loading own manufacturer information: " + e.getMessage());
         }
         return null;
     }
@@ -167,9 +167,9 @@ public class ActorService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden der eigenen Akteur-ID: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading own actor ID: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden der eigenen Akteur-ID: " + e.getMessage());
+            System.err.println("General error loading own actor ID: " + e.getMessage());
         }
         return null;
     }
@@ -182,11 +182,11 @@ public class ActorService {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT);
             String jsonOutput = mapper.writeValueAsString(requestDto);
-            System.out.println("----- Ausgehendes JSON für Akteur-Update -----");
+            System.out.println("----- Outgoing JSON for actor update -----");
             System.out.println(jsonOutput);
             System.out.println("-------------------------------------------");
         } catch (JsonProcessingException jsonEx) {
-            System.err.println("Fehler beim Umwandeln des DTO in JSON: " + jsonEx.getMessage());
+            System.err.println("Error serializing DTO to JSON: " + jsonEx.getMessage());
         }
 
         try {
@@ -196,13 +196,13 @@ public class ActorService {
                     entity,
                     Void.class
             );
-            System.out.println("Akteur mit ID " + actorId + " erfolgreich aktualisiert.");
+            System.out.println("Actor with ID " + actorId + " successfully updated.");
             return true;
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Aktualisieren des Akteurs mit ID '" + actorId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error updating actor with ID '" + actorId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             return false;
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Aktualisieren des Akteurs: " + e.getMessage());
+            System.err.println("General error updating actor: " + e.getMessage());
             return false;
         }
     }

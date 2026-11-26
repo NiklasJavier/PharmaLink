@@ -59,7 +59,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-@PageTitle("Medikamente")
+@PageTitle("Medications")
 @Route(value = "medikamente", layout = MainLayout.class)
 @PermitAll
 public class MedikamenteView extends VerticalLayout {
@@ -114,8 +114,8 @@ public class MedikamenteView extends VerticalLayout {
         setSpacing(false);
         setPadding(false);
 
-        alleTab = new Tab("Alle");
-        eigeneTab = new Tab("Eigene");
+        alleTab = new Tab("All");
+        eigeneTab = new Tab("Owned");
 
         List<Tab> visibleTabs = new ArrayList<>();
         visibleTabs.add(alleTab);
@@ -159,14 +159,15 @@ public class MedikamenteView extends VerticalLayout {
         searchAndSortArea.addClassName("pharmalink-search-sort-area");
 
         sortBySelect = new Select<>();
-        sortBySelect.setItems("Ohne Filter", "angelegt", "freigegeben", "abgelehnt");
-        sortBySelect.setValue("Ohne Filter");
+        sortBySelect.setItems("No Filter", "angelegt", "freigegeben", "abgelehnt");
+        sortBySelect.setItemLabelGenerator(this::formatStatus);
+        sortBySelect.setValue("No Filter");
         sortBySelect.addValueChangeListener(event -> {
             performSearch();
         });
 
         searchField = new TextField();
-        searchField.setPlaceholder("Medikament suchen...");
+        searchField.setPlaceholder("Search medication...");
         searchField.setWidth("300px");
         searchField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
         searchField.addValueChangeListener(event -> {
@@ -290,16 +291,16 @@ public class MedikamenteView extends VerticalLayout {
             userRole = currentActorId.substring(0, currentActorId.indexOf("-")).toLowerCase();
         }
 
-        MenuItem aktionen = newMenuBar.addItem("Aktionen");
+        MenuItem aktionen = newMenuBar.addItem("Actions");
         SubMenu aktionenSubMenu = aktionen.getSubMenu();
 
-        aktionenSubMenu.addItem("Anzeigen", event -> {
+        aktionenSubMenu.addItem("View", event -> {
             Optional<MedikamentResponseDto> selectedMedikament = stateService.getSelectedMedikament();
             if (selectedMedikament.isPresent()) {
                 showMedikamentDetailsPopup(selectedMedikament.get());
             } else {
                 Notification notification = new Notification(
-                        "Bitte wählen Sie zuerst ein Medikament aus der Liste aus.",
+                        "Please select a medication from the list first.",
                         3000,
                         Position.MIDDLE
                 );
@@ -311,14 +312,14 @@ public class MedikamenteView extends VerticalLayout {
         if (userRole != null) {
             switch (userRole) {
                 case "hersteller":
-                    aktionenSubMenu.addItem("Medikament anlegen", event -> showCreateMedikamentPopup());
-                    aktionenSubMenu.addItem("Medikament bearbeiten", event -> {
+                    aktionenSubMenu.addItem("Create Medication", event -> showCreateMedikamentPopup());
+                    aktionenSubMenu.addItem("Edit Medication", event -> {
                         Optional<MedikamentResponseDto> selectedMedikament = stateService.getSelectedMedikament();
                         if (selectedMedikament.isPresent()) {
                             showEditMedikamentPopup(selectedMedikament.get());
                         } else {
                             Notification notification = new Notification(
-                                    "Bitte wählen Sie zuerst ein Medikament zum Bearbeiten aus der Liste aus.",
+                                    "Please select a medication from the list to edit first.",
                                     3000,
                                     Position.MIDDLE
                             );
@@ -326,12 +327,12 @@ public class MedikamenteView extends VerticalLayout {
                             notification.open();
                         }
                     });
-                    aktionenSubMenu.addItem("Medikament löschen", event -> {
+                    aktionenSubMenu.addItem("Delete Medication", event -> {
                         Optional<MedikamentResponseDto> selectedMedikament = stateService.getSelectedMedikament();
                         if (selectedMedikament.isPresent()) {
                             showDeleteMedikamentConfirmation(selectedMedikament.get());
                         } else {
-                            Notification.show("Bitte wählen Sie zuerst ein Medikament zum Löschen aus.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
+                            Notification.show("Please select a medication to delete first.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
                         }
                     });
 
@@ -339,19 +340,19 @@ public class MedikamenteView extends VerticalLayout {
                     if (selectedMedikamentForCharge.isPresent() &&
                             selectedMedikamentForCharge.get().getStatus() != null &&
                             selectedMedikamentForCharge.get().getStatus().equalsIgnoreCase("freigegeben")) {
-                        aktionenSubMenu.addItem("Charge anlegen", event -> {
+                        aktionenSubMenu.addItem("Create Batch", event -> {
                             Optional<MedikamentResponseDto> currentSelectedMed = stateService.getSelectedMedikament();
                             if (currentSelectedMed.isPresent() && currentSelectedMed.get().getStatus().equalsIgnoreCase("freigegeben")) {
                                 showCreateChargePopup(currentSelectedMed.get());
                             } else {
-                                Notification.show("Bitte wählen Sie ein freigegebenes Medikament aus, für das Sie eine Charge anlegen möchten.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
+                                Notification.show("Please select an approved medication to create a batch for.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
                             }
                         });
                     }
                     break;
                 case "behoerde":
                     if (tabs.getSelectedTab() == alleTab) {
-                        aktionenSubMenu.addItem("Status vergeben", event -> showSetStatusPopup());
+                        aktionenSubMenu.addItem("Set Status", event -> showSetStatusPopup());
                     }
                     break;
                 default:
@@ -370,14 +371,14 @@ public class MedikamenteView extends VerticalLayout {
     private void showSetStatusPopup() {
         Optional<MedikamentResponseDto> selectedMedikamentOptional = stateService.getSelectedMedikament();
         if (selectedMedikamentOptional.isEmpty()) {
-            Notification.show("Bitte wählen Sie zuerst ein Medikament aus der Liste aus, um den Status zu vergeben.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
+            Notification.show("Please select a medication from the list first to set its status.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
             return;
         }
 
         MedikamentResponseDto selectedMedikament = selectedMedikamentOptional.get();
 
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Status für Medikament: " + selectedMedikament.getBezeichnung() + " festlegen");
+        dialog.setHeaderTitle("Set Status for Medication: " + selectedMedikament.getBezeichnung());
         dialog.setWidth("400px");
         dialog.setCloseOnEsc(true);
         dialog.setCloseOnOutsideClick(true);
@@ -387,17 +388,18 @@ public class MedikamenteView extends VerticalLayout {
         dialogLayout.setPadding(true);
 
         Select<String> statusSelect = new Select<>();
-        statusSelect.setLabel("Neuer Status");
+        statusSelect.setLabel("New Status");
         statusSelect.setItems("freigegeben", "abgelehnt");
+        statusSelect.setItemLabelGenerator(this::formatStatus);
         statusSelect.setValue(selectedMedikament.getStatus());
         dialogLayout.add(statusSelect);
 
-        Button saveButton = new Button("Status speichern");
+        Button saveButton = new Button("Save Status");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(event -> {
             String newStatus = statusSelect.getValue();
             if (newStatus == null || newStatus.isEmpty()) {
-                Notification.show("Bitte wählen Sie einen Status aus.", 3000, Position.BOTTOM_START).addThemeVariants(NotificationVariant.LUMO_WARNING);
+                Notification.show("Please select a status.", 3000, Position.BOTTOM_START).addThemeVariants(NotificationVariant.LUMO_WARNING);
                 return;
             }
 
@@ -405,15 +407,15 @@ public class MedikamenteView extends VerticalLayout {
             boolean success = medikamentService.approveMedication(selectedMedikament.getMedId(), request);
 
             if (success) {
-                Notification.show("Status von Medikament '" + selectedMedikament.getBezeichnung() + "' erfolgreich auf '" + newStatus + "' gesetzt.", 5000, Position.BOTTOM_START).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                Notification.show("Status of medication '" + selectedMedikament.getBezeichnung() + "' successfully set to '" + formatStatus(newStatus) + "'.", 5000, Position.BOTTOM_START).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
                 performSearch();
             } else {
-                Notification.show("Fehler beim Setzen des Status für Medikament '" + selectedMedikament.getBezeichnung() + "'.", 5000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notification.show("Error setting status for medication '" + selectedMedikament.getBezeichnung() + "'.", 5000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
 
-        Button cancelButton = new Button("Abbrechen", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         dialog.getFooter().add(cancelButton, saveButton);
@@ -424,18 +426,18 @@ public class MedikamenteView extends VerticalLayout {
 
     private void showDeleteMedikamentConfirmation(MedikamentResponseDto medikamentToDelete) {
         Dialog confirmationDialog = new Dialog();
-        confirmationDialog.setHeaderTitle("Medikament löschen: " + medikamentToDelete.getBezeichnung() + "?");
+        confirmationDialog.setHeaderTitle("Delete Medication: " + medikamentToDelete.getBezeichnung() + "?");
 
         VerticalLayout dialogLayout = new VerticalLayout();
         dialogLayout.setSpacing(true);
         dialogLayout.setPadding(true);
 
-        dialogLayout.add(new Div(new Span("Sie können das Medikament nur löschen, wenn darauf keine Einheiten angelegt wurden.")));
-        dialogLayout.add(new Div(new Span("Möchten Sie das Medikament mit der Bezeichnung '" + medikamentToDelete.getBezeichnung() + "' wirklich löschen?")));
-        dialogLayout.add(new Div(new Span("Bitte geben Sie die Bezeichnung zur Bestätigung ein:")));
+        dialogLayout.add(new Div(new Span("You can only delete the medication if no units have been created for it.")));
+        dialogLayout.add(new Div(new Span("Do you really want to delete the medication named '" + medikamentToDelete.getBezeichnung() + "'?")));
+        dialogLayout.add(new Div(new Span("Please enter the name to confirm:")));
 
         TextField confirmNameField = new TextField();
-        confirmNameField.setPlaceholder("Bezeichnung des Medikaments eingeben");
+        confirmNameField.setPlaceholder("Enter medication name");
         confirmNameField.setWidthFull();
         dialogLayout.add(confirmNameField);
 
@@ -443,23 +445,23 @@ public class MedikamenteView extends VerticalLayout {
         confirmationDialog.setCloseOnEsc(true);
         confirmationDialog.setCloseOnOutsideClick(true);
 
-        Button confirmButton = new Button("Löschen", event -> {
+        Button confirmButton = new Button("Delete", event -> {
             if (confirmNameField.getValue().equalsIgnoreCase(medikamentToDelete.getBezeichnung())) {
                 boolean success = medikamentService.deleteMedikamentIfNoUnits(medikamentToDelete.getMedId());
                 if (success) {
-                    Notification.show("Medikament '" + medikamentToDelete.getBezeichnung() + "' erfolgreich gelöscht.", 5000, Position.BOTTOM_START).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    Notification.show("Medication '" + medikamentToDelete.getBezeichnung() + "' successfully deleted.", 5000, Position.BOTTOM_START).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     confirmationDialog.close();
                     performSearch();
                 } else {
-                    Notification.show("Fehler beim Löschen des Medikaments '" + medikamentToDelete.getBezeichnung() + "'. Möglicherweise sind noch Einheiten damit verbunden.", 5000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    Notification.show("Error deleting medication '" + medikamentToDelete.getBezeichnung() + "'. Units may still be associated with it.", 5000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
             } else {
-                Notification.show("Die eingegebene Bezeichnung stimmt nicht überein. Löschvorgang abgebrochen.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notification.show("The entered name does not match. Deletion canceled.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-        Button cancelButton = new Button("Abbrechen", event -> confirmationDialog.close());
+        Button cancelButton = new Button("Cancel", event -> confirmationDialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         confirmationDialog.getFooter().add(cancelButton, confirmButton);
@@ -468,12 +470,12 @@ public class MedikamenteView extends VerticalLayout {
 
     public void showMedikamentDetailsPopup(MedikamentResponseDto medikament) {
         if (medikament == null) {
-            Notification.show("Kein Medikament ausgewählt.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
+            Notification.show("No medication selected.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
             return;
         }
 
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Medikamenten Details: " + medikament.getBezeichnung());
+        dialog.setHeaderTitle("Medication Details: " + medikament.getBezeichnung());
         dialog.setWidth("600px");
         dialog.setHeight("auto");
         dialog.setCloseOnEsc(true);
@@ -488,15 +490,15 @@ public class MedikamenteView extends VerticalLayout {
         infoForm.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("400px", 2));
 
-        infoForm.add(createReadOnlyTextField("Medikament ID", medikament.getMedId()));
-        infoForm.add(createReadOnlyTextField("Bezeichnung", medikament.getBezeichnung()));
-        infoForm.add(createReadOnlyTextField("Hersteller ID", medikament.getHerstellerId()));
-        infoForm.add(createReadOnlyTextField("Status", medikament.getStatus()));
+        infoForm.add(createReadOnlyTextField("Medication ID", medikament.getMedId()));
+        infoForm.add(createReadOnlyTextField("Name", medikament.getBezeichnung()));
+        infoForm.add(createReadOnlyTextField("Manufacturer ID", medikament.getHerstellerId()));
+        infoForm.add(createReadOnlyTextField("Status", formatStatus(medikament.getStatus())));
         infoForm.add(createReadOnlyTextField("IPFS Link", medikament.getIpfsLink()));
 
         dialogLayout.add(infoForm);
 
-        H4 ipfsHeader = new H4("Zusätzliche IPFS Daten");
+        H4 ipfsHeader = new H4("Additional IPFS Data");
         dialogLayout.add(ipfsHeader);
 
         Grid<IpfsEntry> ipfsDisplayGrid = new Grid<>(IpfsEntry.class, false);
@@ -504,7 +506,7 @@ public class MedikamenteView extends VerticalLayout {
         ipfsDisplayGrid.setHeight("150px");
         ipfsDisplayGrid.setWidthFull();
 
-        ipfsDisplayGrid.addColumn(IpfsEntry::getKey).setHeader("Key Bezeichnung").setAutoWidth(true);
+        ipfsDisplayGrid.addColumn(IpfsEntry::getKey).setHeader("Key Name").setAutoWidth(true);
         ipfsDisplayGrid.addColumn(IpfsEntry::getValue).setHeader("Key Value").setAutoWidth(true);
 
         List<IpfsEntry> ipfsEntries = new ArrayList<>();
@@ -514,7 +516,7 @@ public class MedikamenteView extends VerticalLayout {
         ipfsDisplayGrid.setItems(ipfsEntries);
         dialogLayout.add(ipfsDisplayGrid);
 
-        Button closeButton = new Button("Schließen", event -> dialog.close());
+        Button closeButton = new Button("Close", event -> dialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.getFooter().add(closeButton);
 
@@ -524,7 +526,7 @@ public class MedikamenteView extends VerticalLayout {
 
     private void showCreateMedikamentPopup() {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Neues Medikament anlegen");
+        dialog.setHeaderTitle("Create New Medication");
         dialog.setWidth("800px");
         dialog.setHeight("auto");
         dialog.setCloseOnEsc(true);
@@ -534,11 +536,11 @@ public class MedikamenteView extends VerticalLayout {
         splitLayout.setSizeFull();
         splitLayout.setSplitterPosition(55);
 
-        VerticalLayout leftSide = new VerticalLayout(new H4("Allgemeine Informationen"));
+        VerticalLayout leftSide = new VerticalLayout(new H4("General Information"));
         leftSide.setSpacing(true);
         leftSide.setPadding(true);
 
-        VerticalLayout rightSide = new VerticalLayout(new H4("Zusätzliche IPFS Daten"));
+        VerticalLayout rightSide = new VerticalLayout(new H4("Additional IPFS Data"));
         rightSide.setSpacing(true);
         rightSide.setPadding(true);
 
@@ -548,14 +550,14 @@ public class MedikamenteView extends VerticalLayout {
         FormLayout detailsForm = new FormLayout();
         detailsForm.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
-        TextField bezeichnungField = new TextField("Bezeichnung");
-        TextField infoblattHashField = new TextField("Infoblatt Hash (optional)");
+        TextField bezeichnungField = new TextField("Name");
+        TextField infoblattHashField = new TextField("Package Leaflet Hash (optional)");
 
         detailsForm.add(bezeichnungField, infoblattHashField);
         leftSide.add(detailsForm);
 
         binder.forField(bezeichnungField)
-                .asRequired("Bezeichnung ist erforderlich")
+                .asRequired("Name is required")
                 .bind(CreateMedikamentRequestDto::getBezeichnung, CreateMedikamentRequestDto::setBezeichnung);
         binder.forField(infoblattHashField)
                 .bind(CreateMedikamentRequestDto::getInfoblattHash, CreateMedikamentRequestDto::setInfoblattHash);
@@ -570,17 +572,17 @@ public class MedikamenteView extends VerticalLayout {
         ListDataProvider<IpfsEntry> ipfsDataProvider = new ListDataProvider<>(editableIpfsData);
         ipfsEditGrid.setDataProvider(ipfsDataProvider);
 
-        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Bezeichnung").setSortable(true);
+        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Name").setSortable(true);
         ipfsEditGrid.addColumn(IpfsEntry::getValue).setHeader("Key Value").setSortable(true);
 
         GridContextMenu<IpfsEntry> contextMenu = ipfsEditGrid.addContextMenu();
-        contextMenu.addItem("Zeile bearbeiten", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
+        contextMenu.addItem("Edit Row", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
 
-        Button addRowButton = new Button("Zeile hinzufügen", VaadinIcon.PLUS.create());
+        Button addRowButton = new Button("Add Row", VaadinIcon.PLUS.create());
         addRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addRowButton.addClickListener(e -> showIpfsEntryRowEditDialog(new IpfsEntry("", ""), ipfsDataProvider));
 
-        Button removeRowButton = new Button("Zeile entfernen", VaadinIcon.TRASH.create());
+        Button removeRowButton = new Button("Remove Row", VaadinIcon.TRASH.create());
         removeRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
         removeRowButton.setVisible(false);
 
@@ -593,7 +595,7 @@ public class MedikamenteView extends VerticalLayout {
             if (selectedEntry != null) {
                 editableIpfsData.remove(selectedEntry);
                 ipfsDataProvider.refreshAll();
-                Notification notification = new Notification("Zeile entfernt.", 2000, Position.BOTTOM_START);
+                Notification notification = new Notification("Row removed.", 2000, Position.BOTTOM_START);
                 notification.open();
             }
         });
@@ -605,7 +607,7 @@ public class MedikamenteView extends VerticalLayout {
         splitLayout.addToSecondary(rightSide);
         dialog.add(splitLayout);
 
-        Button saveButton = new Button("Speichern");
+        Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(e -> {
             try {
@@ -620,7 +622,7 @@ public class MedikamenteView extends VerticalLayout {
 
                 if (createdMedikament != null) {
                     Notification notification = new Notification(
-                            "Medikament '" + createdMedikament.getBezeichnung() + "' erfolgreich angelegt. ID: " + createdMedikament.getMedId(),
+                            "Medication '" + createdMedikament.getBezeichnung() + "' successfully created. ID: " + createdMedikament.getMedId(),
                             5000,
                             Position.BOTTOM_START
                     );
@@ -631,7 +633,7 @@ public class MedikamenteView extends VerticalLayout {
                     performSearch();
                 } else {
                     Notification notification = new Notification(
-                            "Fehler beim Anlegen des Medikaments im Backend.",
+                            "Error creating medication in the backend.",
                             5000,
                             Position.MIDDLE
                     );
@@ -641,7 +643,7 @@ public class MedikamenteView extends VerticalLayout {
 
             } catch (ValidationException ex) {
                 Notification notification = new Notification(
-                        "Fehler beim Speichern: Bitte alle Pflichtfelder ausfüllen und überprüfen.",
+                        "Error saving: Please fill in and check all required fields.",
                         3000,
                         Position.MIDDLE
                 );
@@ -649,7 +651,7 @@ public class MedikamenteView extends VerticalLayout {
                 notification.open();
             } catch (Exception ex) {
                 Notification notification = new Notification(
-                        "Ein unerwarteter Fehler ist aufgetreten: " + ex.getMessage(),
+                        "An unexpected error occurred: " + ex.getMessage(),
                         5000,
                         Position.MIDDLE
                 );
@@ -660,7 +662,7 @@ public class MedikamenteView extends VerticalLayout {
         });
 
 
-        Button cancelButton = new Button("Abbrechen", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.getFooter().add(cancelButton, saveButton);
 
@@ -669,7 +671,7 @@ public class MedikamenteView extends VerticalLayout {
 
     private void showEditMedikamentPopup(MedikamentResponseDto medikamentToEdit) {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Medikament bearbeiten: " + medikamentToEdit.getBezeichnung());
+        dialog.setHeaderTitle("Edit Medication: " + medikamentToEdit.getBezeichnung());
         dialog.setWidth("800px");
         dialog.setHeight("auto");
         dialog.setCloseOnEsc(true);
@@ -679,11 +681,11 @@ public class MedikamenteView extends VerticalLayout {
         splitLayout.setSizeFull();
         splitLayout.setSplitterPosition(55);
 
-        VerticalLayout leftSide = new VerticalLayout(new H4("Allgemeine Informationen"));
+        VerticalLayout leftSide = new VerticalLayout(new H4("General Information"));
         leftSide.setSpacing(true);
         leftSide.setPadding(true);
 
-        VerticalLayout rightSide = new VerticalLayout(new H4("Zusätzliche IPFS Daten"));
+        VerticalLayout rightSide = new VerticalLayout(new H4("Additional IPFS Data"));
         rightSide.setSpacing(true);
         rightSide.setPadding(true);
 
@@ -697,18 +699,18 @@ public class MedikamenteView extends VerticalLayout {
         FormLayout detailsForm = new FormLayout();
         detailsForm.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
-        TextField medIdField = createReadOnlyTextField("Medikament ID", medikamentToEdit.getMedId());
-        TextField herstellerIdDisplayField = createReadOnlyTextField("Hersteller ID", medikamentToEdit.getHerstellerId());
-        TextField statusDisplayField = createReadOnlyTextField("Status", medikamentToEdit.getStatus());
+        TextField medIdField = createReadOnlyTextField("Medication ID", medikamentToEdit.getMedId());
+        TextField herstellerIdDisplayField = createReadOnlyTextField("Manufacturer ID", medikamentToEdit.getHerstellerId());
+        TextField statusDisplayField = createReadOnlyTextField("Status", formatStatus(medikamentToEdit.getStatus()));
 
-        TextField bezeichnungField = new TextField("Bezeichnung");
-        TextField infoblattHashField = new TextField("Infoblatt Hash (optional)");
+        TextField bezeichnungField = new TextField("Name");
+        TextField infoblattHashField = new TextField("Package Leaflet Hash (optional)");
 
         leftSide.add(medIdField, herstellerIdDisplayField, statusDisplayField, detailsForm);
         detailsForm.add(bezeichnungField, infoblattHashField);
 
         binder.forField(bezeichnungField)
-                .asRequired("Bezeichnung ist erforderlich")
+                .asRequired("Name is required")
                 .bind(UpdateMedikamentRequestDto::getBezeichnung, UpdateMedikamentRequestDto::setBezeichnung);
         binder.forField(infoblattHashField)
                 .bind(UpdateMedikamentRequestDto::getInfoblattHash, UpdateMedikamentRequestDto::setInfoblattHash);
@@ -727,17 +729,17 @@ public class MedikamenteView extends VerticalLayout {
         ListDataProvider<IpfsEntry> ipfsDataProvider = new ListDataProvider<>(editableIpfsData);
         ipfsEditGrid.setDataProvider(ipfsDataProvider);
 
-        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Bezeichnung").setSortable(true);
+        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Name").setSortable(true);
         ipfsEditGrid.addColumn(IpfsEntry::getValue).setHeader("Key Value").setSortable(true);
 
         GridContextMenu<IpfsEntry> contextMenu = ipfsEditGrid.addContextMenu();
-        contextMenu.addItem("Zeile bearbeiten", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
+        contextMenu.addItem("Edit Row", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
 
-        Button addRowButton = new Button("Zeile hinzufügen", VaadinIcon.PLUS.create());
+        Button addRowButton = new Button("Add Row", VaadinIcon.PLUS.create());
         addRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addRowButton.addClickListener(e -> showIpfsEntryRowEditDialog(new IpfsEntry("", ""), ipfsDataProvider));
 
-        Button removeRowButton = new Button("Zeile entfernen", VaadinIcon.TRASH.create());
+        Button removeRowButton = new Button("Remove Row", VaadinIcon.TRASH.create());
         removeRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
         removeRowButton.setVisible(false);
 
@@ -750,7 +752,7 @@ public class MedikamenteView extends VerticalLayout {
             if (selectedEntry != null) {
                 editableIpfsData.remove(selectedEntry);
                 ipfsDataProvider.refreshAll();
-                Notification notification = new Notification("Zeile entfernt.", 2000, Position.BOTTOM_START);
+                Notification notification = new Notification("Row removed.", 2000, Position.BOTTOM_START);
                 notification.open();
             }
         });
@@ -762,7 +764,7 @@ public class MedikamenteView extends VerticalLayout {
         splitLayout.addToSecondary(rightSide);
         dialog.add(splitLayout);
 
-        Button saveButton = new Button("Speichern");
+        Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(e -> {
             try {
@@ -777,7 +779,7 @@ public class MedikamenteView extends VerticalLayout {
 
                 if (updatedMedikament != null) {
                     Notification notification = new Notification(
-                            "Medikament '" + updatedMedikament.getBezeichnung() + "' erfolgreich aktualisiert. ID: " + updatedMedikament.getMedId(),
+                            "Medication '" + updatedMedikament.getBezeichnung() + "' successfully updated. ID: " + updatedMedikament.getMedId(),
                             5000,
                             Position.BOTTOM_START
                     );
@@ -788,7 +790,7 @@ public class MedikamenteView extends VerticalLayout {
                     performSearch();
                 } else {
                     Notification notification = new Notification(
-                            "Fehler beim Aktualisieren des Medikaments im Backend.",
+                            "Error updating medication in the backend.",
                             5000,
                             Position.MIDDLE
                     );
@@ -798,7 +800,7 @@ public class MedikamenteView extends VerticalLayout {
 
             } catch (ValidationException ex) {
                 Notification notification = new Notification(
-                        "Fehler beim Speichern: Bitte alle Pflichtfelder ausfüllen und überprüfen.",
+                        "Error saving: Please fill in and check all required fields.",
                         3000,
                         Position.MIDDLE
                 );
@@ -806,7 +808,7 @@ public class MedikamenteView extends VerticalLayout {
                 notification.open();
             } catch (Exception ex) {
                 Notification notification = new Notification(
-                        "Ein unerwarteter Fehler ist aufgetreten: " + ex.getMessage(),
+                        "An unexpected error occurred: " + ex.getMessage(),
                         5000,
                         Position.MIDDLE
                 );
@@ -817,7 +819,7 @@ public class MedikamenteView extends VerticalLayout {
         });
 
 
-        Button cancelButton = new Button("Abbrechen", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.getFooter().add(cancelButton, saveButton);
 
@@ -828,21 +830,21 @@ public class MedikamenteView extends VerticalLayout {
     private void showIpfsEntryRowEditDialog(IpfsEntry entry, ListDataProvider<IpfsEntry> dataProvider) {
         Dialog rowEditDialog = new Dialog();
         boolean isNewEntry = entry.getKey() == null || entry.getKey().isEmpty();
-        rowEditDialog.setHeaderTitle(isNewEntry ? "Neue IPFS Zeile" : "IPFS Zeile bearbeiten");
+        rowEditDialog.setHeaderTitle(isNewEntry ? "New IPFS Row" : "Edit IPFS Row");
 
         Binder<IpfsEntry> rowBinder = new Binder<>(IpfsEntry.class);
-        TextField keyField = new TextField("Key Bezeichnung");
-        TextField valueField = new TextField("Key Value Eintrag");
+        TextField keyField = new TextField("Key Name");
+        TextField valueField = new TextField("Key Value");
         keyField.setWidthFull();
         valueField.setWidthFull();
 
-        rowBinder.forField(keyField).asRequired("Key darf nicht leer sein").bind(IpfsEntry::getKey, IpfsEntry::setKey);
+        rowBinder.forField(keyField).asRequired("Key must not be empty").bind(IpfsEntry::getKey, IpfsEntry::setKey);
         rowBinder.forField(valueField).bind(IpfsEntry::getValue, IpfsEntry::setValue);
         rowBinder.setBean(entry);
 
         rowEditDialog.add(new VerticalLayout(keyField, valueField));
 
-        Button saveRowButton = new Button("Speichern");
+        Button saveRowButton = new Button("Save");
         saveRowButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveRowButton.addClickListener(e -> {
             try {
@@ -854,7 +856,7 @@ public class MedikamenteView extends VerticalLayout {
                 rowEditDialog.close();
             } catch (ValidationException ex) {
                 Notification notification = new Notification(
-                        "Fehler: " + ex.getValidationErrors().get(0).getErrorMessage(),
+                        "Error: " + ex.getValidationErrors().get(0).getErrorMessage(),
                         3000,
                         Position.BOTTOM_START
                 );
@@ -863,7 +865,7 @@ public class MedikamenteView extends VerticalLayout {
             }
         });
 
-        Button cancelButton = new Button("Abbrechen", e -> rowEditDialog.close());
+        Button cancelButton = new Button("Cancel", e -> rowEditDialog.close());
         rowEditDialog.getFooter().add(cancelButton, saveRowButton);
         rowEditDialog.open();
     }
@@ -878,7 +880,7 @@ public class MedikamenteView extends VerticalLayout {
 
     private void showCreateChargePopup(MedikamentResponseDto selectedMedikament) {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Neue Charge für Medikament: " + selectedMedikament.getBezeichnung() + " anlegen");
+        dialog.setHeaderTitle("Create New Batch for Medication: " + selectedMedikament.getBezeichnung());
         dialog.setWidth("800px");
         dialog.setHeight("auto");
         dialog.setCloseOnEsc(true);
@@ -888,11 +890,11 @@ public class MedikamenteView extends VerticalLayout {
         splitLayout.setSizeFull();
         splitLayout.setSplitterPosition(55);
 
-        VerticalLayout leftSide = new VerticalLayout(new H4("Chargen Details"));
+        VerticalLayout leftSide = new VerticalLayout(new H4("Batch Details"));
         leftSide.setSpacing(true);
         leftSide.setPadding(true);
 
-        VerticalLayout rightSide = new VerticalLayout(new H4("Zusätzliche IPFS Daten für Charge"));
+        VerticalLayout rightSide = new VerticalLayout(new H4("Additional IPFS Data for Batch"));
         rightSide.setSpacing(true);
         rightSide.setPadding(true);
 
@@ -904,10 +906,10 @@ public class MedikamenteView extends VerticalLayout {
         FormLayout detailsForm = new FormLayout();
         detailsForm.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
-        TextField medIdDisplayField = createReadOnlyTextField("Medikament ID", selectedMedikament.getMedId());
-        TextField ownerActorIdDisplayField = createReadOnlyTextField("Besitzer ID", currentActorId);
-        TextField chargeBezeichnungField = new TextField("Chargen Bezeichnung");
-        NumberField anzahlField = new NumberField("Anzahl");
+        TextField medIdDisplayField = createReadOnlyTextField("Medication ID", selectedMedikament.getMedId());
+        TextField ownerActorIdDisplayField = createReadOnlyTextField("Owner ID", currentActorId);
+        TextField chargeBezeichnungField = new TextField("Batch Name");
+        NumberField anzahlField = new NumberField("Quantity");
         anzahlField.setStep(1.0);
         anzahlField.setMin(1.0);
         anzahlField.setValue(1.0);
@@ -916,12 +918,12 @@ public class MedikamenteView extends VerticalLayout {
         leftSide.add(detailsForm);
 
         binder.forField(chargeBezeichnungField)
-                .asRequired("Chargen Bezeichnung ist erforderlich")
+                .asRequired("Batch name is required")
                 .bind(CreateUnitsRequestDto::getChargeBezeichnung, CreateUnitsRequestDto::setChargeBezeichnung);
         binder.forField(anzahlField)
-                .asRequired("Anzahl ist erforderlich")
-                .withConverter(Double::intValue, Integer::doubleValue, "Muss eine ganze Zahl sein")
-                .withValidator(anzahl -> anzahl != null && anzahl > 0, "Anzahl muss positiv sein")
+                .asRequired("Quantity is required")
+                .withConverter(Double::intValue, Integer::doubleValue, "Must be an integer")
+                .withValidator(anzahl -> anzahl != null && anzahl > 0, "Quantity must be positive")
                 .bind(CreateUnitsRequestDto::getAnzahl, CreateUnitsRequestDto::setAnzahl);
 
         binder.setBean(newChargeRequest);
@@ -935,17 +937,17 @@ public class MedikamenteView extends VerticalLayout {
         ListDataProvider<IpfsEntry> ipfsDataProvider = new ListDataProvider<>(editableIpfsData);
         ipfsEditGrid.setDataProvider(ipfsDataProvider);
 
-        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Bezeichnung").setSortable(true);
+        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Name").setSortable(true);
         ipfsEditGrid.addColumn(IpfsEntry::getValue).setHeader("Key Value").setSortable(true);
 
         GridContextMenu<IpfsEntry> contextMenu = ipfsEditGrid.addContextMenu();
-        contextMenu.addItem("Zeile bearbeiten", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
+        contextMenu.addItem("Edit Row", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
 
-        Button addRowButton = new Button("Zeile hinzufügen", VaadinIcon.PLUS.create());
+        Button addRowButton = new Button("Add Row", VaadinIcon.PLUS.create());
         addRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addRowButton.addClickListener(e -> showIpfsEntryRowEditDialog(new IpfsEntry("", ""), ipfsDataProvider));
 
-        Button removeRowButton = new Button("Zeile entfernen", VaadinIcon.TRASH.create());
+        Button removeRowButton = new Button("Remove Row", VaadinIcon.TRASH.create());
         removeRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
         removeRowButton.setVisible(false);
 
@@ -958,7 +960,7 @@ public class MedikamenteView extends VerticalLayout {
             if (selectedEntry != null) {
                 editableIpfsData.remove(selectedEntry);
                 ipfsDataProvider.refreshAll();
-                Notification notification = new Notification("Zeile entfernt.", 2000, Position.BOTTOM_START);
+                Notification notification = new Notification("Row removed.", 2000, Position.BOTTOM_START);
                 notification.open();
             }
         });
@@ -970,7 +972,7 @@ public class MedikamenteView extends VerticalLayout {
         splitLayout.addToSecondary(rightSide);
         dialog.add(splitLayout);
 
-        Button saveButton = new Button("Speichern");
+        Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(e -> {
             try {
@@ -985,7 +987,7 @@ public class MedikamenteView extends VerticalLayout {
 
                 if (success) {
                     Notification notification = Notification.show(
-                            newChargeRequest.getAnzahl() + " Einheit(en) für Charge '" + newChargeRequest.getChargeBezeichnung() + "' erfolgreich angelegt.",
+                            newChargeRequest.getAnzahl() + " unit(s) for batch '" + newChargeRequest.getChargeBezeichnung() + "' successfully created.",
                             5000,
                             Position.BOTTOM_START
                     );
@@ -996,7 +998,7 @@ public class MedikamenteView extends VerticalLayout {
                     performSearch();
                 } else {
                     Notification notification = Notification.show(
-                            "Fehler beim Anlegen der Charge im Backend. Bitte überprüfen Sie die Backend-Logs.",
+                            "Error creating batch in the backend. Please check the backend logs.",
                             5000,
                             Position.MIDDLE
                     );
@@ -1006,7 +1008,7 @@ public class MedikamenteView extends VerticalLayout {
 
             } catch (ValidationException ex) {
                 Notification notification = Notification.show(
-                        "Fehler beim Speichern: Bitte alle Pflichtfelder ausfüllen und überprüfen. " + ex.getValidationErrors().get(0).getErrorMessage(),
+                        "Error saving: Please fill in and check all required fields. " + ex.getValidationErrors().get(0).getErrorMessage(),
                         3000,
                         Position.MIDDLE
                 );
@@ -1014,7 +1016,7 @@ public class MedikamenteView extends VerticalLayout {
                 notification.open();
             } catch (Exception ex) {
                 Notification notification = Notification.show(
-                        "Ein unerwarteter Fehler ist aufgetreten: " + ex.getMessage(),
+                        "An unexpected error occurred: " + ex.getMessage(),
                         5000,
                         Position.MIDDLE
                 );
@@ -1025,10 +1027,22 @@ public class MedikamenteView extends VerticalLayout {
         });
 
 
-        Button cancelButton = new Button("Abbrechen", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.getFooter().add(cancelButton, saveButton);
 
         dialog.open();
+    }
+
+    private String formatStatus(String status) {
+        if (status == null) {
+            return "";
+        }
+        return switch (status.toLowerCase()) {
+            case "angelegt", "erstellt" -> "Created";
+            case "freigegeben" -> "Approved";
+            case "abgelehnt" -> "Rejected";
+            default -> status;
+        };
     }
 }

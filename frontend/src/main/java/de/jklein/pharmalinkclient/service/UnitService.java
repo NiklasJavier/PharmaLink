@@ -46,7 +46,7 @@ public class UnitService {
         if (jwt != null && !jwt.isEmpty()) {
             headers.setBearerAuth(jwt);
         } else {
-            System.err.println("Kein JWT-Token in der UserSession verfügbar. Authentifizierung erforderlich.");
+            System.err.println("No JWT token available in UserSession. Authentication required.");
         }
         return new HttpEntity<>(headers);
     }
@@ -58,7 +58,7 @@ public class UnitService {
         if (jwt != null && !jwt.isEmpty()) {
             headers.setBearerAuth(jwt);
         } else {
-            System.err.println("Kein JWT-Token in der UserSession verfügbar. Authentifizierung erforderlich.");
+            System.err.println("No JWT token available in UserSession. Authentication required.");
         }
         return new HttpEntity<>(body, headers);
     }
@@ -76,9 +76,9 @@ public class UnitService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden der Einheit mit ID '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading unit with ID '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden der Einheit mit ID: " + e.getMessage());
+            System.err.println("General error loading unit by ID: " + e.getMessage());
         }
         return null;
     }
@@ -94,13 +94,13 @@ public class UnitService {
                     entity,
                     Void.class
             );
-            System.out.println("Einheit(en) für Medikament ID '" + medId + "' erfolgreich erstellt.");
+            System.out.println("Unit(s) for medication ID '" + medId + "' successfully created.");
             return true;
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Erstellen von Einheiten für Medikament ID '" + medId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error creating units for medication ID '" + medId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             return false;
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Erstellen von Einheiten: " + e.getMessage());
+            System.err.println("General error creating units: " + e.getMessage());
             return false;
         }
     }
@@ -118,9 +118,9 @@ public class UnitService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Transfer der Einheit mit ID '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error transferring unit with ID '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Transfer der Einheit: " + e.getMessage());
+            System.err.println("General error transferring unit: " + e.getMessage());
         }
         return null;
     }
@@ -138,16 +138,16 @@ public class UnitService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Hinzufügen von Temperaturmessung zu Einheit '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error adding temperature reading to unit '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Hinzufügen von Temperaturmessung: " + e.getMessage());
+            System.err.println("General error adding temperature reading: " + e.getMessage());
         }
         return null;
     }
 
     public Map<String, List<UnitResponseDto>> getUnitsGroupedByCharge(String medId) {
         String url = UriComponentsBuilder.fromHttpUrl(backendConfig.getBaseUrl() + "/v1/units/" + medId + "/units-by-charge")
-                .toUriString(); // Sicherstellen, dass die URL korrekt ist
+                .toUriString(); // Ensure URL is properly constructed
         HttpEntity<String> entity = createHttpEntityWithJwt();
 
         System.out.println("DEBUG: Requesting charge counts from URL: " + url);
@@ -163,10 +163,10 @@ public class UnitService {
                 return response.getBody();
             }
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden der Chargenanzahl für Medikament ID '" + medId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading batch counts for medication ID '" + medId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             System.err.println("Backend Response Body: " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden der Chargenanzahl für Medikament ID: " + e.getMessage());
+            System.err.println("General error loading batch counts for medication ID: " + e.getMessage());
             e.printStackTrace();
         }
         System.out.println("DEBUG: Returning empty map for charge counts.");
@@ -184,13 +184,13 @@ public class UnitService {
                     entity,
                     Void.class
             );
-            System.out.println("Einheiten-Bereich erfolgreich transferiert.");
+            System.out.println("Unit range successfully transferred.");
             return true;
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Transfer des Einheiten-Bereichs: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error transferring unit range: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             return false;
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Transfer des Einheiten-Bereichs: " + e.getMessage());
+            System.err.println("General error transferring unit range: " + e.getMessage());
             return false;
         }
     }
@@ -206,10 +206,10 @@ public class UnitService {
                     entity,
                     Void.class
             );
-            System.out.println("Einheit mit ID " + unitId + " erfolgreich gelöscht.");
+            System.out.println("Unit with ID " + unitId + " successfully deleted.");
             return true;
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Löschen der Einheit mit ID '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error deleting unit with ID '" + unitId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             return false;
         }
     }
@@ -225,13 +225,13 @@ public class UnitService {
                     entity,
                     Void.class
             );
-            System.out.println("Einheiten im Batch erfolgreich gelöscht.");
+            System.out.println("Units in batch successfully deleted.");
             return true;
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Löschen von Einheiten im Batch: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error deleting units in batch: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             return false;
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Löschen von Einheiten im Batch: " + e.getMessage());
+            System.err.println("General error deleting units in batch: " + e.getMessage());
             return false;
         }
     }
@@ -256,13 +256,13 @@ public class UnitService {
                 return result;
             }
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Suchen von Einheiten nach Charge '" + query + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
-            System.err.println("Backend Response Body: " + e.getResponseBodyAsString()); // NEU
+            System.err.println("Error searching units by batch '" + query + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Backend Response Body: " + e.getResponseBodyAsString()); // NEW
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Suchen von Einheiten nach Charge: " + e.getMessage());
-            e.printStackTrace(); // NEU
+            System.err.println("General error searching units by batch: " + e.getMessage());
+            e.printStackTrace(); // NEW
         }
-        System.out.println("DEBUG UnitService: Returning empty list for units by charge."); // NEU
+        System.out.println("DEBUG UnitService: Returning empty list for units by charge."); // NEW
         return Collections.emptyList();
     }
 
@@ -283,10 +283,10 @@ public class UnitService {
                 return response.getBody();
             }
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden der Chargenanzahl für Medikament ID '" + medId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading batch counts for medication ID '" + medId + "': " + e.getStatusCode() + " " + e.getResponseBodyAsString());
             System.err.println("Backend Response Body: " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden der Chargenanzahl für Medikament ID: " + e.getMessage());
+            System.err.println("General error loading batch counts for medication ID: " + e.getMessage());
             e.printStackTrace();
         }
         System.out.println("DEBUG: Returning empty map for charge counts.");
@@ -306,9 +306,9 @@ public class UnitService {
             );
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            System.err.println("Fehler beim Laden der eigenen Einheiten: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            System.err.println("Error loading own units: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler beim Laden der eigenen Einheiten: " + e.getMessage());
+            System.err.println("General error loading own units: " + e.getMessage());
         }
         return Collections.emptyList();
     }

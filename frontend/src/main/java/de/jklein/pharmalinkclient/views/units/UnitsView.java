@@ -40,7 +40,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-@PageTitle("Einheiten")
+@PageTitle("Units")
 @Route(value = "units", layout = MainLayout.class)
 @PermitAll
 public class UnitsView extends VerticalLayout {
@@ -54,10 +54,10 @@ public class UnitsView extends VerticalLayout {
 
     private final TreeGrid<TreeItem> myUnitsTreeGrid = new TreeGrid<>();
     private final TreeGrid<TreeItem> globalUnitsTreeGrid = new TreeGrid<>();
-    private final ComboBox<MedikamentResponseDto> globalMedBezeichnungComboBox = new ComboBox<>("Nach Bezeichnung");
-    private final ComboBox<MedikamentResponseDto> globalMedIdComboBox = new ComboBox<>("Nach Medikament ID");
-    private final TextField globalUnitIdSearchField = new TextField("Nach Unit ID");
-    private final Span notFoundMessage = new Span("Die Suche ergab kein Ergebnis.");
+    private final ComboBox<MedikamentResponseDto> globalMedBezeichnungComboBox = new ComboBox<>("By Name");
+    private final ComboBox<MedikamentResponseDto> globalMedIdComboBox = new ComboBox<>("By Medication ID");
+    private final TextField globalUnitIdSearchField = new TextField("By Unit ID");
+    private final Span notFoundMessage = new Span("No results found.");
 
     private List<MedikamentResponseDto> allMedikamente;
     private List<UnitResponseDto> myUnits;
@@ -79,7 +79,7 @@ public class UnitsView extends VerticalLayout {
 
         public TreeItem(String medId, String chargeBezeichnung) {
             this.id = "charge-" + medId + "::" + chargeBezeichnung;
-            this.displayValue = "Charge: " + chargeBezeichnung;
+            this.displayValue = "Batch: " + chargeBezeichnung;
             this.owner = "";
             this.level = 1;
             this.data = this;
@@ -128,8 +128,8 @@ public class UnitsView extends VerticalLayout {
         myUnitsTreeGrid.addSelectionListener(event -> event.getFirstSelectedItem().ifPresent(this::showDetailsIfUnit));
         globalUnitsTreeGrid.addSelectionListener(event -> event.getFirstSelectedItem().ifPresent(this::showDetailsIfUnit));
 
-        Tab myUnitsTab = new Tab("Meine Einheiten");
-        Tab globalUnitsTab = new Tab("Globale Suche");
+        Tab myUnitsTab = new Tab("My Units");
+        Tab globalUnitsTab = new Tab("Global Search");
         Tabs tabs = new Tabs(myUnitsTab, globalUnitsTab);
         tabs.setWidthFull();
 
@@ -156,7 +156,7 @@ public class UnitsView extends VerticalLayout {
         header.setWidthFull();
         header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         header.setAlignItems(FlexComponent.Alignment.CENTER);
-        configureTreeGrid(myUnitsTreeGrid, "Medikament / Charge / Einheit-ID");
+        configureTreeGrid(myUnitsTreeGrid, "Medication / Batch / Unit ID");
         VerticalLayout panel = new VerticalLayout(header, myUnitsTreeGrid);
         panel.setSizeFull();
         return panel;
@@ -169,7 +169,7 @@ public class UnitsView extends VerticalLayout {
         HorizontalLayout selectorLayout = new HorizontalLayout(globalMedBezeichnungComboBox, globalMedIdComboBox, globalUnitIdSearchField, searchUnitButton);
         selectorLayout.setWidthFull();
         selectorLayout.setAlignItems(FlexComponent.Alignment.END);
-        configureTreeGrid(globalUnitsTreeGrid, "Charge / Einheit-ID");
+        configureTreeGrid(globalUnitsTreeGrid, "Batch / Unit ID");
         notFoundMessage.setVisible(false);
         notFoundMessage.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.LARGE, LumoUtility.Margin.Top.XLARGE);
         globalMedBezeichnungComboBox.addValueChangeListener(event -> {
@@ -190,25 +190,25 @@ public class UnitsView extends VerticalLayout {
 
     private MenuBar createActionsMenu() {
         MenuBar menuBar = new MenuBar();
-        menuBar.addItem("Aktionen", item -> {})
-                .getSubMenu().addItem("Einheit(en) transferieren", e -> showTransferPopup());
+        menuBar.addItem("Actions", item -> {})
+                .getSubMenu().addItem("Transfer Unit(s)", e -> showTransferPopup());
         menuBar.getItems().get(0).getSubMenu()
-                .addItem("Temperatur hinzufügen", e -> showAddTemperaturePopup());
+                .addItem("Add Temperature", e -> showAddTemperaturePopup());
         return menuBar;
     }
 
     private void showTransferPopup() {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Einheiten transferieren");
+        dialog.setHeaderTitle("Transfer Units");
         dialog.setWidth("800px");
 
-        ComboBox<MedikamentResponseDto> medSelector = new ComboBox<>("Medikament");
-        ComboBox<String> chargeSelector = new ComboBox<>("Charge");
+        ComboBox<MedikamentResponseDto> medSelector = new ComboBox<>("Medication");
+        ComboBox<String> chargeSelector = new ComboBox<>("Batch");
         Div rangeInfo = new Div();
-        IntegerField fromField = new IntegerField("Von Nr.");
-        IntegerField toField = new IntegerField("Bis Nr.");
-        ComboBox<ActorResponseDto> ownerSelector = new ComboBox<>("Neuer Besitzer");
-        Button transferButton = new Button("Transferieren", VaadinIcon.ARROW_RIGHT.create());
+        IntegerField fromField = new IntegerField("From No.");
+        IntegerField toField = new IntegerField("To No.");
+        ComboBox<ActorResponseDto> ownerSelector = new ComboBox<>("New Owner");
+        Button transferButton = new Button("Transfer", VaadinIcon.ARROW_RIGHT.create());
 
         medSelector.setItems(allMedikamente);
         medSelector.setItemLabelGenerator(m -> String.format("%s (%s)", m.getBezeichnung(), m.getMedId()));
@@ -251,10 +251,10 @@ public class UnitsView extends VerticalLayout {
                     ownerSelector.getValue().getActorId()
             ));
             if (success) {
-                Notification.show("Transfer erfolgreich gestartet.");
+                Notification.show("Transfer started successfully.");
                 loadInitialData();
             } else {
-                Notification.show("Fehler beim Transfer.");
+                Notification.show("Error during transfer.");
             }
             dialog.close();
         });
@@ -267,12 +267,12 @@ public class UnitsView extends VerticalLayout {
 
     private void showAddTemperaturePopup() {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Temperaturmessung hinzufügen");
-        ComboBox<UnitResponseDto> unitSelector = new ComboBox<>("Einheit auswählen");
+        dialog.setHeaderTitle("Add Temperature Reading");
+        ComboBox<UnitResponseDto> unitSelector = new ComboBox<>("Select Unit");
         unitSelector.setItems(this.myUnits);
         unitSelector.setItemLabelGenerator(UnitResponseDto::getUnitId);
-        TextField tempField = new TextField("Temperatur (°C)");
-        Button saveButton = new Button("Speichern", VaadinIcon.CHECK.create());
+        TextField tempField = new TextField("Temperature (°C)");
+        Button saveButton = new Button("Save", VaadinIcon.CHECK.create());
         saveButton.setEnabled(false);
         unitSelector.addValueChangeListener(e -> saveButton.setEnabled(e.getValue() != null && !tempField.isEmpty()));
         tempField.addValueChangeListener(e -> saveButton.setEnabled(unitSelector.getValue() != null && !e.getValue().isEmpty()));
@@ -282,15 +282,15 @@ public class UnitsView extends VerticalLayout {
                     new AddTemperatureReadingRequestDto(tempField.getValue(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
             );
             if (response != null) {
-                Notification.show("Temperaturmessung gespeichert.");
+                Notification.show("Temperature reading saved.");
                 loadInitialData();
             } else {
-                Notification.show("Fehler beim Speichern.");
+                Notification.show("Error saving.");
             }
             dialog.close();
         });
         dialog.add(new VerticalLayout(unitSelector, tempField));
-        dialog.getFooter().add(new Button("Abbrechen", ev -> dialog.close()), saveButton);
+        dialog.getFooter().add(new Button("Cancel", ev -> dialog.close()), saveButton);
         dialog.open();
     }
 
@@ -303,10 +303,10 @@ public class UnitsView extends VerticalLayout {
                 .map(this::parseUnitSuffix)
                 .filter(Objects::nonNull).sorted().collect(Collectors.toList());
         if (suffixes.isEmpty()) {
-            container.add(new Span("Keine nummerierten Einheiten in dieser Charge gefunden."));
+            container.add(new Span("No numbered units found in this batch."));
             return;
         }
-        container.add(new H4("Verfügbare Bereiche:"));
+        container.add(new H4("Available Ranges:"));
         StringBuilder ranges = new StringBuilder();
         int start = suffixes.get(0);
         for (int i = 1; i < suffixes.size(); i++) {
@@ -340,10 +340,10 @@ public class UnitsView extends VerticalLayout {
     private void showUnitDetailsPopup(UnitResponseDto unit) {
         Dialog dialog = new Dialog();
         dialog.setWidth("600px");
-        dialog.setHeaderTitle("Details für Einheit: " + unit.getUnitId());
+        dialog.setHeaderTitle("Details for Unit: " + unit.getUnitId());
         Tab detailsTab = new Tab("Details");
-        Tab historyTab = new Tab("Transfer-Historie");
-        Tab tempTab = new Tab("Temperatur-Messungen");
+        Tab historyTab = new Tab("Transfer History");
+        Tab tempTab = new Tab("Temperature Readings");
         Tabs tabs = new Tabs(detailsTab, historyTab, tempTab);
         tabs.setWidthFull();
         FormLayout detailsLayout = createDetailsLayout(unit);
@@ -361,7 +361,7 @@ public class UnitsView extends VerticalLayout {
             tabsToPages.get(tabs.getSelectedTab()).setVisible(true);
         });
         dialog.add(tabs, pages);
-        Button closeButton = new Button("Schließen", e -> dialog.close());
+        Button closeButton = new Button("Close", e -> dialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         dialog.getFooter().add(closeButton);
         dialog.open();
@@ -369,17 +369,17 @@ public class UnitsView extends VerticalLayout {
 
     private FormLayout createDetailsLayout(UnitResponseDto unit) {
         FormLayout formLayout = new FormLayout();
-        TextField medId = new TextField("Medikament-ID");
+        TextField medId = new TextField("Medication ID");
         medId.setValue(unit.getMedId());
         medId.setReadOnly(true);
-        TextField charge = new TextField("Charge");
+        TextField charge = new TextField("Batch");
         charge.setValue(unit.getChargeBezeichnung());
         charge.setReadOnly(true);
-        TextField owner = new TextField("Aktueller Besitzer");
+        TextField owner = new TextField("Current Owner");
         owner.setValue(unit.getCurrentOwnerActorId());
         owner.setReadOnly(true);
         TextField consumed = new TextField("Status");
-        consumed.setValue(unit.isConsumed() ? "Verbraucht" : "Verfügbar");
+        consumed.setValue(unit.isConsumed() ? "Consumed" : "Available");
         consumed.setReadOnly(true);
         formLayout.add(medId, charge, owner, consumed);
         return formLayout;
@@ -402,7 +402,7 @@ public class UnitsView extends VerticalLayout {
     }
 
     private String formatMapList(List<Map<String, String>> list) {
-        if (list == null || list.isEmpty()) return "Keine Daten vorhanden.";
+        if (list == null || list.isEmpty()) return "No data available.";
         return list.stream()
                 .map(map -> map.entrySet().stream()
                         .map(entry -> entry.getKey() + ": " + entry.getValue())
@@ -434,7 +434,7 @@ public class UnitsView extends VerticalLayout {
         treeGrid.setSizeFull();
         treeGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_NO_BORDER);
         treeGrid.addHierarchyColumn(TreeItem::getDisplayValue).setHeader(hierarchyColumnHeader).setAutoWidth(true).setFlexGrow(1);
-        treeGrid.addColumn(TreeItem::getOwner).setHeader("Besitzer").setAutoWidth(true);
+        treeGrid.addColumn(TreeItem::getOwner).setHeader("Owner").setAutoWidth(true);
         treeGrid.setClassNameGenerator(item -> {
             if (item.getLevel() == 0) return "medikament-level";
             if (item.getLevel() == 1) return "charge-level";
@@ -493,7 +493,7 @@ public class UnitsView extends VerticalLayout {
                 });
             } else {
                 globalUnitsTreeGrid.setVisible(false);
-                notFoundMessage.setText("Für dieses Medikament wurden keine Einheiten gefunden.");
+                notFoundMessage.setText("No units found for this medication.");
                 notFoundMessage.setVisible(true);
             }
         }
@@ -516,7 +516,7 @@ public class UnitsView extends VerticalLayout {
             globalUnitsTreeGrid.select(unitItem);
         } else {
             globalUnitsTreeGrid.setVisible(false);
-            notFoundMessage.setText("Keine Einheit mit der ID '" + unitId + "' gefunden.");
+            notFoundMessage.setText("No unit found with ID '" + unitId + "'.");
             notFoundMessage.setVisible(true);
         }
     }

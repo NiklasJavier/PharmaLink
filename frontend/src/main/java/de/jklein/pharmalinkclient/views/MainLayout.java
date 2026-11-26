@@ -114,8 +114,8 @@ public class MainLayout extends AppLayout {
             contextMenu.setTarget(userIconButton);
             contextMenu.setOpenOnClick(true);
 
-            contextMenu.addItem("Angemeldet als: " + userSession.getUsername(), e -> {}).setEnabled(false);
-            contextMenu.addItem("Abmelden", e -> {
+            contextMenu.addItem("Signed in as: " + userSession.getUsername(), e -> {}).setEnabled(false);
+            contextMenu.addItem("Sign Out", e -> {
                 authService.logout();
                 UI.getCurrent().getPage().reload();
             });
@@ -128,9 +128,9 @@ public class MainLayout extends AppLayout {
     private Tabs createNavigationTabs() {
         Tabs tabs = new Tabs();
         tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard", DashboardView.class));
-        tabs.add(createTab(VaadinIcon.GROUP, "Akteure", ActorExplorerView.class));
-        tabs.add(createTab(VaadinIcon.PILLS, "Medikamente", MedikamenteView.class));
-        tabs.add(createTab(VaadinIcon.PACKAGE, "Einheiten", UnitsView.class));
+        tabs.add(createTab(VaadinIcon.GROUP, "Actors", ActorExplorerView.class));
+        tabs.add(createTab(VaadinIcon.PILLS, "Medications", MedikamenteView.class));
+        tabs.add(createTab(VaadinIcon.PACKAGE, "Units", UnitsView.class));
         return tabs;
     }
 
@@ -182,11 +182,11 @@ public class MainLayout extends AppLayout {
                     ui.access(() -> {
                         stateService.setCurrentActorId(actorId); 
                         stateService.setSystemDataLoadedForSession(true);
-                        System.out.println("Aktuelle Actor ID im Frontend (von MainLayout): " + actorId);
+                        System.out.println("Current Actor ID in frontend (from MainLayout): " + actorId);
                     });
                 }, error -> {
                     ui.access(() -> {
-                        System.err.println("Fehler beim Abrufen der aktuellen Actor ID (von MainLayout): " + error.getMessage());
+                        System.err.println("Error fetching current Actor ID (from MainLayout): " + error.getMessage());
                         stateService.setSystemDataLoadedForSession(true);
                     });
                 });
@@ -195,11 +195,11 @@ public class MainLayout extends AppLayout {
                 .subscribe(stats -> {
                     ui.access(() -> {
                         stateService.setCacheStats(stats);
-                        System.out.println("Cache Statistiken im Frontend (von MainLayout): " + stats);
+                        System.out.println("Cache statistics in frontend (from MainLayout): " + stats);
                     });
                 }, error -> {
                     ui.access(() -> {
-                        System.err.println("Fehler beim Abrufen der Cache-Statistiken (von MainLayout): " + error.getMessage());
+                        System.err.println("Error fetching cache statistics (from MainLayout): " + error.getMessage());
                     });
                 });
     }

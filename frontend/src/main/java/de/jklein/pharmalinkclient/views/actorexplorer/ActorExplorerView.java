@@ -83,7 +83,7 @@ public class ActorExplorerView extends VerticalLayout {
         searchBar.addClassName("actor-explorer-search-bar");
 
         searchField = new TextField();
-        searchField.setPlaceholder("Akteur suchen (Bezeichnung, ID, E-Mail)...");
+        searchField.setPlaceholder("Search actor (Name, ID, Email)...");
         searchField.setWidth("400px");
         searchField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
         searchField.addValueChangeListener(event -> performActorSearch());
@@ -118,10 +118,10 @@ public class ActorExplorerView extends VerticalLayout {
         MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_DROPDOWN_INDICATORS);
 
-        MenuItem meineStammdaten = menuBar.addItem("Meine Stammdaten");
+        MenuItem meineStammdaten = menuBar.addItem("My Master Data");
         SubMenu stammdatenSubMenu = meineStammdaten.getSubMenu();
 
-        stammdatenSubMenu.addItem("Stammdaten anzeigen", event -> {
+        stammdatenSubMenu.addItem("View Master Data", event -> {
             String currentActorId = stateService.getCurrentActorId();
             if (currentActorId != null && !currentActorId.isEmpty()) {
                 List<ActorResponseDto> allActors = stateService.getAllLoadedActors();
@@ -133,14 +133,14 @@ public class ActorExplorerView extends VerticalLayout {
                 if (myActorDetailsOptional.isPresent()) {
                     showActorDetailsPopup(myActorDetailsOptional.get());
                 } else {
-                    Notification.show("Konnte Stammdaten für Akteur ID " + currentActorId + " in den lokal geladenen Daten nicht finden. Möglicherweise sind die Daten noch nicht vollständig geladen oder der Akteur existiert nicht.", 5000, Notification.Position.MIDDLE);
+                    Notification.show("Could not find master data for Actor ID " + currentActorId + " in locally loaded data. The data may not be fully loaded yet or the actor does not exist.", 5000, Notification.Position.MIDDLE);
                 }
             } else {
-                Notification.show("Ihre Akteur-ID ist nicht verfügbar. Bitte melden Sie sich erneut an oder prüfen Sie das Dashboard.", 5000, Notification.Position.MIDDLE);
+                Notification.show("Your Actor ID is not available. Please sign in again or check the dashboard.", 5000, Notification.Position.MIDDLE);
             }
         });
 
-        stammdatenSubMenu.addItem("Stammdaten bearbeiten", event -> {
+        stammdatenSubMenu.addItem("Edit Master Data", event -> {
             String currentActorId = stateService.getCurrentActorId();
             if (currentActorId != null && !currentActorId.isEmpty()) {
                 List<ActorResponseDto> allActors = stateService.getAllLoadedActors();
@@ -152,10 +152,10 @@ public class ActorExplorerView extends VerticalLayout {
                 if (myActorDetailsOptional.isPresent()) {
                     showActorEditPopup(myActorDetailsOptional.get());
                 } else {
-                    Notification.show("Konnte Stammdaten für Akteur ID " + currentActorId + " in den lokal geladenen Daten nicht finden. Bearbeitung nicht möglich.", 5000, Notification.Position.MIDDLE);
+                    Notification.show("Could not find master data for Actor ID " + currentActorId + " in locally loaded data. Editing is not possible.", 5000, Notification.Position.MIDDLE);
                 }
             } else {
-                Notification.show("Ihre Akteur-ID ist nicht verfügbar. Bearbeitung nicht möglich.", 5000, Notification.Position.MIDDLE);
+                Notification.show("Your Actor ID is not available. Editing is not possible.", 5000, Notification.Position.MIDDLE);
             }
         });
 
@@ -164,7 +164,7 @@ public class ActorExplorerView extends VerticalLayout {
 
     private void showActorDetailsPopup(ActorResponseDto actor) {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Meine Stammdaten: " + actor.getBezeichnung());
+        dialog.setHeaderTitle("My Master Data: " + actor.getBezeichnung());
 
         VerticalLayout dialogContent = new VerticalLayout();
         dialogContent.setSpacing(false);
@@ -172,14 +172,14 @@ public class ActorExplorerView extends VerticalLayout {
 
         FormLayout detailsForm = new FormLayout();
         detailsForm.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("400px", 2));
-        detailsForm.add(createReadOnlyTextField("Akteur ID", actor.getActorId()));
-        detailsForm.add(createReadOnlyTextField("Bezeichnung", actor.getBezeichnung()));
-        detailsForm.add(createReadOnlyTextField("Rolle", actor.getRole()));
-        detailsForm.add(createReadOnlyTextField("E-Mail", actor.getEmail()));
+        detailsForm.add(createReadOnlyTextField("Actor ID", actor.getActorId()));
+        detailsForm.add(createReadOnlyTextField("Name", actor.getBezeichnung()));
+        detailsForm.add(createReadOnlyTextField("Role", actor.getRole()));
+        detailsForm.add(createReadOnlyTextField("Email", actor.getEmail()));
         dialogContent.add(detailsForm);
 
         if (actor.getIpfsData() != null && !actor.getIpfsData().isEmpty()) {
-            dialogContent.add(new H4("Zusätzliche IPFS Daten:"));
+            dialogContent.add(new H4("Additional IPFS Data:"));
             Grid<Map.Entry<String, Object>> ipfsGrid = new Grid<>();
             ipfsGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
             ipfsGrid.addColumn(Map.Entry::getKey).setHeader("Key").setAutoWidth(true);
@@ -188,12 +188,12 @@ public class ActorExplorerView extends VerticalLayout {
             ipfsGrid.setHeight("200px");
             dialogContent.add(ipfsGrid);
         } else {
-            dialogContent.add(new Span("Keine zusätzlichen IPFS Daten vorhanden."));
+            dialogContent.add(new Span("No additional IPFS data available."));
         }
 
         dialog.add(dialogContent);
 
-        Button closeButton = new Button("Schließen", event -> dialog.close());
+        Button closeButton = new Button("Close", event -> dialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.getFooter().add(closeButton);
 
@@ -202,7 +202,7 @@ public class ActorExplorerView extends VerticalLayout {
 
     private void showActorEditPopup(ActorResponseDto actorToEdit) {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Stammdaten bearbeiten: " + actorToEdit.getBezeichnung());
+        dialog.setHeaderTitle("Edit Master Data: " + actorToEdit.getBezeichnung());
         dialog.setWidth("800px");
         dialog.setHeight("auto");
 
@@ -210,11 +210,11 @@ public class ActorExplorerView extends VerticalLayout {
         splitLayout.setSizeFull();
         splitLayout.setSplitterPosition(55);
 
-        VerticalLayout leftSide = new VerticalLayout(new H4("Allgemeine Daten"));
+        VerticalLayout leftSide = new VerticalLayout(new H4("General Data"));
         leftSide.setSpacing(true);
         leftSide.setPadding(true);
 
-        VerticalLayout rightSide = new VerticalLayout(new H4("Zusätzliche IPFS Daten"));
+        VerticalLayout rightSide = new VerticalLayout(new H4("Additional IPFS Data"));
         rightSide.setSpacing(true);
         rightSide.setPadding(true);
 
@@ -222,16 +222,16 @@ public class ActorExplorerView extends VerticalLayout {
         FormLayout detailsForm = new FormLayout();
         detailsForm.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
-        TextField actorIdField = createReadOnlyTextField("Akteur ID", actorToEdit.getActorId());
-        TextField bezeichnungField = new TextField("Bezeichnung");
-        TextField roleField = createReadOnlyTextField("Rolle", actorToEdit.getRole());
-        TextField emailField = new TextField("E-Mail");
+        TextField actorIdField = createReadOnlyTextField("Actor ID", actorToEdit.getActorId());
+        TextField bezeichnungField = new TextField("Name");
+        TextField roleField = createReadOnlyTextField("Role", actorToEdit.getRole());
+        TextField emailField = new TextField("Email");
 
         detailsForm.add(actorIdField, roleField, bezeichnungField, emailField);
         leftSide.add(detailsForm);
 
-        binder.forField(bezeichnungField).asRequired("Bezeichnung darf nicht leer sein").bind(ActorResponseDto::getBezeichnung, ActorResponseDto::setBezeichnung);
-        binder.forField(emailField).asRequired("E-Mail ist erforderlich").bind(ActorResponseDto::getEmail, ActorResponseDto::setEmail);
+        binder.forField(bezeichnungField).asRequired("Name must not be empty").bind(ActorResponseDto::getBezeichnung, ActorResponseDto::setBezeichnung);
+        binder.forField(emailField).asRequired("Email is required").bind(ActorResponseDto::getEmail, ActorResponseDto::setEmail);
         binder.readBean(actorToEdit);
 
         Grid<IpfsEntry> ipfsEditGrid = new Grid<>(IpfsEntry.class, false);
@@ -245,17 +245,17 @@ public class ActorExplorerView extends VerticalLayout {
         ListDataProvider<IpfsEntry> ipfsDataProvider = new ListDataProvider<>(editableIpfsData);
         ipfsEditGrid.setDataProvider(ipfsDataProvider);
 
-        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Bezeichnung").setSortable(true);
+        ipfsEditGrid.addColumn(IpfsEntry::getKey).setHeader("Key Name").setSortable(true);
         ipfsEditGrid.addColumn(IpfsEntry::getValue).setHeader("Key Value").setSortable(true);
 
         GridContextMenu<IpfsEntry> contextMenu = ipfsEditGrid.addContextMenu();
-        contextMenu.addItem("Zeile bearbeiten", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
+        contextMenu.addItem("Edit Row", event -> event.getItem().ifPresent(item -> showIpfsEntryRowEditDialog(item, ipfsDataProvider)));
 
-        Button addRowButton = new Button("Zeile hinzufügen", VaadinIcon.PLUS.create());
+        Button addRowButton = new Button("Add Row", VaadinIcon.PLUS.create());
         addRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addRowButton.addClickListener(e -> showIpfsEntryRowEditDialog(new IpfsEntry("", ""), ipfsDataProvider));
 
-        Button removeRowButton = new Button("Zeile entfernen", VaadinIcon.TRASH.create());
+        Button removeRowButton = new Button("Remove Row", VaadinIcon.TRASH.create());
         removeRowButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
         removeRowButton.setVisible(false);
 
@@ -268,7 +268,7 @@ public class ActorExplorerView extends VerticalLayout {
             if (selectedEntry != null) {
                 editableIpfsData.remove(selectedEntry);
                 ipfsDataProvider.refreshAll();
-                Notification.show("Zeile entfernt.", 2000, Notification.Position.BOTTOM_START);
+                Notification.show("Row removed.", 2000, Notification.Position.BOTTOM_START);
             }
         });
 
@@ -279,7 +279,7 @@ public class ActorExplorerView extends VerticalLayout {
         splitLayout.addToSecondary(rightSide);
         dialog.add(splitLayout);
 
-        Button saveButton = new Button("Speichern");
+        Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(e -> {
             try {
@@ -287,7 +287,7 @@ public class ActorExplorerView extends VerticalLayout {
 
                 ActorUpdateRequestDto updateRequest = new ActorUpdateRequestDto();
                 updateRequest.setName(actorToEdit.getBezeichnung());
-                updateRequest.setEmail(actorToEdit.getEmail()); // E-Mail wird jetzt gesetzt
+                updateRequest.setEmail(actorToEdit.getEmail()); // Email is now set
                 Map<String, Object> updatedIpfsData = editableIpfsData.stream()
                         .filter(entry -> entry.getKey() != null && !entry.getKey().isEmpty())
                         .collect(Collectors.toMap(IpfsEntry::getKey, IpfsEntry::getValue));
@@ -296,20 +296,20 @@ public class ActorExplorerView extends VerticalLayout {
                 boolean success = actorService.updateActor(actorToEdit.getActorId(), updateRequest);
 
                 if (success) {
-                    Notification.show("Stammdaten erfolgreich gespeichert.", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Master data successfully saved.", 3000, Notification.Position.MIDDLE);
                     dialog.close();
                     performActorSearch();
                 } else {
-                    Notification.show("Fehler beim Speichern der Stammdaten im Backend.", 5000, Notification.Position.MIDDLE);
+                    Notification.show("Error saving master data in the backend.", 5000, Notification.Position.MIDDLE);
                 }
 
             } catch (ValidationException ex) {
-                Notification.show("Fehler beim Speichern: Bitte alle Pflichtfelder ausfüllen.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Error saving: Please fill in all required fields.", 3000, Notification.Position.MIDDLE);
             }
         });
 
 
-        Button cancelButton = new Button("Abbrechen", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.getFooter().add(cancelButton, saveButton);
 
@@ -319,21 +319,21 @@ public class ActorExplorerView extends VerticalLayout {
     private void showIpfsEntryRowEditDialog(IpfsEntry entry, ListDataProvider<IpfsEntry> dataProvider) {
         Dialog rowEditDialog = new Dialog();
         boolean isNewEntry = entry.getKey() == null || entry.getKey().isEmpty();
-        rowEditDialog.setHeaderTitle(isNewEntry ? "Neue IPFS Zeile" : "IPFS Zeile bearbeiten");
+        rowEditDialog.setHeaderTitle(isNewEntry ? "New IPFS Row" : "Edit IPFS Row");
 
         Binder<IpfsEntry> rowBinder = new Binder<>(IpfsEntry.class);
-        TextField keyField = new TextField("Bezeichnung");
-        TextField valueField = new TextField("Eintrag");
+        TextField keyField = new TextField("Key Name");
+        TextField valueField = new TextField("Key Value");
         keyField.setWidthFull();
         valueField.setWidthFull();
 
-        rowBinder.forField(keyField).asRequired("Key darf nicht leer sein").bind(IpfsEntry::getKey, IpfsEntry::setKey);
+        rowBinder.forField(keyField).asRequired("Key must not be empty").bind(IpfsEntry::getKey, IpfsEntry::setKey);
         rowBinder.forField(valueField).bind(IpfsEntry::getValue, IpfsEntry::setValue);
         rowBinder.setBean(entry);
 
         rowEditDialog.add(new VerticalLayout(keyField, valueField));
 
-        Button saveRowButton = new Button("Speichern");
+        Button saveRowButton = new Button("Save");
         saveRowButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveRowButton.addClickListener(e -> {
             try {
@@ -344,11 +344,11 @@ public class ActorExplorerView extends VerticalLayout {
                 dataProvider.refreshAll();
                 rowEditDialog.close();
             } catch (ValidationException ex) {
-                Notification.show("Fehler: " + ex.getValidationErrors().get(0).getErrorMessage(), 3000, Notification.Position.BOTTOM_START);
+                Notification.show("Error: " + ex.getValidationErrors().get(0).getErrorMessage(), 3000, Notification.Position.BOTTOM_START);
             }
         });
 
-        Button cancelRowButton = new Button("Abbrechen", e -> rowEditDialog.close());
+        Button cancelRowButton = new Button("Cancel", e -> rowEditDialog.close());
         rowEditDialog.getFooter().add(cancelRowButton, saveRowButton);
         rowEditDialog.open();
     }

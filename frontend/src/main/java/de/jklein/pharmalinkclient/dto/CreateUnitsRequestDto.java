@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Map;
 
 public class CreateUnitsRequestDto {
-    @NotBlank(message = "Die Chargenbezeichnung darf nicht leer sein.")
+    @NotBlank(message = "Batch name must not be empty.")
     private String chargeBezeichnung;
 
-    @Min(value = 1, message = "Die Anzahl muss mindestens 1 sein.")
+    @Min(value = 1, message = "Quantity must be at least 1.")
     private int anzahl;
 
     private Map<String, Object> ipfsData;

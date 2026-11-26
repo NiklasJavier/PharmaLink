@@ -68,7 +68,7 @@ public class DashboardView extends Main {
     private Consumer<SystemStatsDto> cacheStatsListener;
 
     @Autowired
-    public DashboardView(StateService stateService, UserSession userSession, SystemService systemService) { // NEU: SystemService im Konstruktor
+    public DashboardView(StateService stateService, UserSession userSession, SystemService systemService) { // NEW: SystemService in constructor
         this.stateService = stateService;
         this.userSession = userSession;
         this.systemService = systemService;
@@ -80,27 +80,27 @@ public class DashboardView extends Main {
         rootLayout.setAlignItems(FlexComponent.Alignment.START);
 
         VerticalLayout userInfoCard = createCardLayout();
-        HorizontalLayout userInfoTitleRow = new HorizontalLayout(VaadinIcon.USER_CARD.create(), new H4("Ihre Informationen"));
+        HorizontalLayout userInfoTitleRow = new HorizontalLayout(VaadinIcon.USER_CARD.create(), new H4("Your Information"));
         userInfoTitleRow.setAlignItems(FlexComponent.Alignment.CENTER);
         userInfoCard.add(userInfoTitleRow);
 
-        usernameField = createReadOnlyTextField("Benutzername", "");
-        usernameField.setValue(userSession.getUsername() != null ? userSession.getUsername() : "Nicht angemeldet");
+        usernameField = createReadOnlyTextField("Username", "");
+        usernameField.setValue(userSession.getUsername() != null ? userSession.getUsername() : "Not signed in");
 
-        roleField = createReadOnlyTextField("Ihre Rolle", "Lädt...");
+        roleField = createReadOnlyTextField("Your Role", "Loading...");
 
         FormLayout userForm = new FormLayout(usernameField, roleField);
         userInfoCard.add(userForm);
 
 
         VerticalLayout statsCard = createCardLayout();
-        HorizontalLayout statsTitleRow = new HorizontalLayout(VaadinIcon.CHART_GRID.create(), new H4("Statistiken"));
+        HorizontalLayout statsTitleRow = new HorizontalLayout(VaadinIcon.CHART_GRID.create(), new H4("Statistics"));
         statsTitleRow.setAlignItems(FlexComponent.Alignment.CENTER);
         statsCard.add(statsTitleRow);
 
-        actorCountField = createReadOnlyTextField("Akteur Anzahl", "Lädt...");
-        medikamentCountField = createReadOnlyTextField("Medikament Anzahl", "Lädt...");
-        myUnitsCountField = createReadOnlyTextField("Meine Einheiten Anzahl", "Lädt...");
+        actorCountField = createReadOnlyTextField("Actor Count", "Loading...");
+        medikamentCountField = createReadOnlyTextField("Medication Count", "Loading...");
+        myUnitsCountField = createReadOnlyTextField("My Units Count", "Loading...");
         FormLayout statsFormLayout = new FormLayout(actorCountField, medikamentCountField, myUnitsCountField);
         statsFormLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 3));
         statsCard.add(statsFormLayout);
@@ -109,16 +109,16 @@ public class DashboardView extends Main {
         actorIdCard.setAlignItems(FlexComponent.Alignment.CENTER);
         actorIdCard.setWidth("320px");
 
-        HorizontalLayout actorIdTitleRow = new HorizontalLayout(VaadinIcon.BARCODE.create(), new H4("Ihre Akteur-ID"));
+        HorizontalLayout actorIdTitleRow = new HorizontalLayout(VaadinIcon.BARCODE.create(), new H4("Your Actor ID"));
         actorIdTitleRow.setAlignItems(FlexComponent.Alignment.CENTER);
         actorIdTitleRow.getStyle().set("align-self", "start");
         actorIdCard.add(actorIdTitleRow);
 
-        actorIdReadonlyField = createReadOnlyTextField("", "Lädt...");
+        actorIdReadonlyField = createReadOnlyTextField("", "Loading...");
         actorIdReadonlyField.setWidthFull();
 
         qrCodeImage = new Image();
-        qrCodeImage.setAlt("QR-Code für Akteur-ID");
+        qrCodeImage.setAlt("QR code for Actor ID");
         qrCodeImage.setVisible(false);
         qrCodeImage.setWidth("200px");
         qrCodeImage.setHeight("200px");
@@ -153,7 +153,7 @@ public class DashboardView extends Main {
         actorIdListener = rawActorId -> UI.getCurrent().access(() -> {
             if (rawActorId != null && !rawActorId.isEmpty()) {
                 actorIdReadonlyField.setValue(rawActorId);
-                String role = rawActorId.contains("-") ? rawActorId.split("-", 2)[0] : "Unbekannt";
+                String role = rawActorId.contains("-") ? rawActorId.split("-", 2)[0] : "Unknown";
                 roleField.setValue(role);
                 String base64QrCode = generateQrCodeBase64(rawActorId);
                 if (base64QrCode != null) {
@@ -191,14 +191,14 @@ public class DashboardView extends Main {
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe(
                         actorId -> ui.access(() -> stateService.setCurrentActorId(actorId)),
-                        error -> ui.access(() -> System.err.println("Fehler beim Laden der Akteur-ID: " + error.getMessage()))
+                        error -> ui.access(() -> System.err.println("Error loading Actor ID: " + error.getMessage()))
                 );
 
         systemService.getCacheStats()
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe(
                         stats -> ui.access(() -> stateService.setCacheStats(stats)),
-                        error -> ui.access(() -> System.err.println("Fehler beim Laden der Cache-Statistiken: " + error.getMessage()))
+                        error -> ui.access(() -> System.err.println("Error loading cache statistics: " + error.getMessage()))
                 );
 
         systemService.getCacheState()
@@ -209,9 +209,9 @@ public class DashboardView extends Main {
                             stateService.setAllSystemActors(systemState.getAllActors());
                             stateService.setAllSystemMedikamente(systemState.getAllMedikamente());
                             stateService.setMySystemUnits(systemState.getMyUnits());
-                            stateService.setSystemDataLoadedForSession(true); // Flag setzen
+                            stateService.setSystemDataLoadedForSession(true); // Set flag
                         }),
-                        error -> ui.access(() -> System.err.println("Fehler beim Laden des Systemzustands: " + error.getMessage()))
+                        error -> ui.access(() -> System.err.println("Error loading system state: " + error.getMessage()))
                 );
     }
 
@@ -219,7 +219,7 @@ public class DashboardView extends Main {
         String currentActorId = stateService.getCurrentActorId();
         if (currentActorId != null && !currentActorId.isEmpty()) {
             actorIdReadonlyField.setValue(currentActorId);
-            String role = currentActorId.contains("-") ? currentActorId.split("-", 2)[0] : "Unbekannt";
+            String role = currentActorId.contains("-") ? currentActorId.split("-", 2)[0] : "Unknown";
             roleField.setValue(role);
             String base64QrCode = generateQrCodeBase64(currentActorId);
             if (base64QrCode != null) {

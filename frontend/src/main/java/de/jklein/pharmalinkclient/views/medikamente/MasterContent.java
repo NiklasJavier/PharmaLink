@@ -46,7 +46,7 @@ public class MasterContent extends Div {
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_NO_BORDER);
         grid.setSizeFull();
 
-        // Spalte: Status (mit LitRenderer und Inline-Styles für Badge)
+        // Column: Status (using LitRenderer and inline badge styles)
         grid.addColumn(LitRenderer.<MedikamentResponseDto>of(
                                 "<span style='" +
                                         "display: inline-block; " +
@@ -65,13 +65,14 @@ public class MasterContent extends Div {
                                         "'>" +
                                         "${item.status}" +
                                         "</span>")
-                        .withProperty("status", MedikamentResponseDto::getStatus)
+                        .withProperty("status", dto -> formatStatus(dto.getStatus()))
                         .withProperty("bgColor", MedikamentResponseDto -> {
                             String status = MedikamentResponseDto.getStatus();
                             if (status == null) return "#A9A9A9";
                             switch (status.toLowerCase()) {
                                 case "freigegeben": return "#D3F8D3";
                                 case "abgelehnt": return "#FFD3D3";
+                                case "angelegt":
                                 case "erstellt": return "#FFFACD";
                                 default: return "#A9A9A9";
                             }
@@ -82,16 +83,17 @@ public class MasterContent extends Div {
                             switch (status.toLowerCase()) {
                                 case "freigegeben": return "#006400";
                                 case "abgelehnt": return "#8B0000";
+                                case "angelegt":
                                 case "erstellt": return "#B8860B";
                                 default: return "#FFFFFF";
                             }
                         }))
-                .setTooltipGenerator(MedikamentResponseDto::getStatus)
+                .setTooltipGenerator(dto -> formatStatus(dto.getStatus()))
                 .setHeader("Status")
                 .setAutoWidth(true);
 
-        grid.addColumn("bezeichnung").setHeader("Bezeichnung").setAutoWidth(true);
-        grid.addColumn("medId").setHeader("Medikament ID").setAutoWidth(true);
+        grid.addColumn("bezeichnung").setHeader("Name").setAutoWidth(true);
+        grid.addColumn("medId").setHeader("Medication ID").setAutoWidth(true);
 
         grid.asSingleSelect().addValueChangeListener(event -> {
             stateService.setSelectedMedikament(event.getValue());
@@ -102,7 +104,7 @@ public class MasterContent extends Div {
             if (selectedMedikament != null && doubleClickListener != null) {
                 doubleClickListener.accept(selectedMedikament);
             } else if (selectedMedikament == null) {
-                Notification.show("Kein Medikament zum Anzeigen ausgewählt.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
+                Notification.show("No medication selected to display.", 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
             }
         });
 
@@ -120,16 +122,16 @@ public class MasterContent extends Div {
     public void updateGridWithFilters(Optional<MedikamentFilterCriteriaDto> criteriaOptional) {
         List<MedikamentResponseDto> filteredMedikamente;
 
-        MedikamentFilterCriteriaDto criteria = criteriaOptional.orElse(new MedikamentFilterCriteriaDto("", "Ohne Filter", false));
-        System.out.println("DEBUG MasterContent: Suche Medikamente mit Kriterien: " + criteria.getSearchTerm() + ", " + criteria.getStatusFilter() + ", " + criteria.isFilterByCurrentActor());
+        MedikamentFilterCriteriaDto criteria = criteriaOptional.orElse(new MedikamentFilterCriteriaDto("", "No Filter", false));
+        System.out.println("DEBUG MasterContent: Searching medications with criteria: " + criteria.getSearchTerm() + ", " + criteria.getStatusFilter() + ", " + criteria.isFilterByCurrentActor());
 
         filteredMedikamente = medikamentService.searchMedikamente(criteria);
 
-        System.out.println("DEBUG MasterContent: Medikamente vom Service erhalten: " + filteredMedikamente.size() + " Einträge.");
+        System.out.println("DEBUG MasterContent: Received medications from service: " + filteredMedikamente.size() + " entries.");
         if (filteredMedikamente.isEmpty()) {
-            System.out.println("DEBUG MasterContent: Erhaltene Liste ist leer.");
+            System.out.println("DEBUG MasterContent: Received list is empty.");
         } else {
-            System.out.println("DEBUG MasterContent: Erster Medikamenten-Eintrag (Beispiel): " + filteredMedikamente.get(0).getBezeichnung() + ", ID: " + filteredMedikamente.get(0).getMedId());
+            System.out.println("DEBUG MasterContent: First medication entry (sample): " + filteredMedikamente.get(0).getBezeichnung() + ", ID: " + filteredMedikamente.get(0).getMedId());
         }
 
         grid.setItems(filteredMedikamente);
@@ -137,5 +139,17 @@ public class MasterContent extends Div {
         if (!filteredMedikamente.contains(stateService.getSelectedMedikament().orElse(null))) {
             stateService.clearSelectedMedikament();
         }
+    }
+
+    private String formatStatus(String status) {
+        if (status == null) {
+            return "";
+        }
+        return switch (status.toLowerCase()) {
+            case "angelegt", "erstellt" -> "Created";
+            case "freigegeben" -> "Approved";
+            case "abgelehnt" -> "Rejected";
+            default -> status;
+        };
     }
 }

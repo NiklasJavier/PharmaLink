@@ -91,53 +91,53 @@ html {
     justify-content: space-between;
 }
 
-/* Container für Status-Select und Suchfeld */
+/* Container for status select and search field */
 .pharmalink-view .pharmalink-search-sort-area {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--lumo-space-l); /* Abstand zwischen Select und Suchfeld */
+    gap: var(--lumo-space-l); /* Spacing between select and search field */
     padding-right: var(--lumo-space-l);
     padding-top: 0;
     padding-bottom: 0;
 }
 
-/* Layout für nur das Suchfeld (ohne Button) */
+/* Layout for the search field only (without button) */
 .pharmalink-view .search-input-layout {
     display: flex;
     align-items: center;
-    gap: var(--lumo-space-xs); /* Sehr kleiner Abstand, der jetzt nur vom Suchfeld genutzt wird */
+    gap: var(--lumo-space-xs); /* Very small gap used only by the search field */
 }
 
 
-/* Stil für das Suchfeld */
+/* Style for the search field */
 .pharmalink-view .pharmalink-search-sort-area vaadin-text-field {
     margin-bottom: 0;
 }
 
-/* Stil für die Select-Box */
+/* Style for the select box */
 .pharmalink-view .pharmalink-search-sort-area vaadin-select {
-    /* Standardmäßig bereits gut vertikal ausgerichtet */
+    /* Already well aligned vertically by default */
 }
 
-/* Stil für die Menübar */
+/* Style for the menu bar */
 .pharmalink-view .pharmalink-operation-bar vaadin-menu-bar {
     padding: 0;
     background-color: transparent;
 }
 
-/* Hauptinhalts-Container */
+/* Main content container */
 .pharmalink-view .pharmalink-main-content-container {
     flex-grow: 1;
     display: flex;
-    justify-content: center; /* Zentriert Inhalte (SplitLayouts) */
-    align-items: center; /* Zentriert Inhalte vertikal */
-    padding: var(--lumo-space-l); /* Standard-Padding für den Container */
-    border-top: 1px solid var(--lumo-contrast-10pct); /* Trennlinie oben */
-    overflow: auto; /* Wichtig für Scrollbalken bei Inhalten, die größer sind */
+    justify-content: center; /* Centers content (SplitLayouts) */
+    align-items: center; /* Centers content vertically */
+    padding: var(--lumo-space-l); /* Default padding for the container */
+    border-top: 1px solid var(--lumo-contrast-10pct); /* Top divider line */
+    overflow: auto; /* Important for scrollbars when content is larger */
 }
 
-/* Stil für das Main-Content innerhalb des Containers */
+/* Style for the main content inside the container */
 .pharmalink-view .pharmalink-main-content-container vaadin-main {
     width: 100%;
     height: 100%;
@@ -146,49 +146,49 @@ html {
     align-items: center;
 }
 
-/* Stil für das horizontale SplitLayout im Eigene-Modus */
-.pharmalink-view .pharmalink-custom-split-layout-horizontal { /* **NEU: Klasse für horizontales Layout** */
+/* Style for the horizontal SplitLayout in Owned mode */
+.pharmalink-view .pharmalink-custom-split-layout-horizontal { /* NEW: class for horizontal layout */
     width: 100%;
     height: 100%;
 }
 
-/* Stil für das vertikale SplitLayout im Alle-Modus */
-.pharmalink-view .pharmalink-custom-split-layout-vertical { /* **NEU: Klasse für vertikales Layout** */
+/* Style for the vertical SplitLayout in All mode */
+.pharmalink-view .pharmalink-custom-split-layout-vertical { /* NEW: class for vertical layout */
     width: 100%;
     height: 100%;
 }
 
-/* ... (bestehender Code in medikamente-view.css) ... */
+/* ... (existing code in medikamente-view.css) ... */
 
-/* Stil für Status-Zellen im Grid (angewendet auf das td-Element) */
+/* Style for status cells in the grid (applied to the td element) */
 .pharmalink-view .master-content vaadin-grid-cell[part="cell"] {
-    /* Allgemeine Stilmerkmale für alle Status-Zellen, falls gewünscht */
-    /* Dies zielt auf das td-Element ab */
-    text-align: center; /* Text zentrieren */
+    /* General style attributes for all status cells, if desired */
+    /* This targets the td element */
+    text-align: center; /* Center text */
 }
 
-/* Spezifische Farben für die Status-Zellen */
+/* Specific colors for the status cells */
 .pharmalink-view .master-content vaadin-grid-cell[part="cell"].status-cell-freigegeben {
-    background-color: var(--lumo-success-color-10pct); /* Hellgrüner Hintergrund */
-    color: var(--lumo-success-text-color) !important; /* Textfarbe (hellgrün) */
+    background-color: var(--lumo-success-color-10pct); /* Light green background */
+    color: var(--lumo-success-text-color) !important; /* Text color (light green) */
 }
 
 .pharmalink-view .master-content vaadin-grid-cell[part="cell"].status-cell-abgelehnt {
-    background-color: var(--lumo-error-color-10pct); /* Hellroter Hintergrund */
-    color: var(--lumo-error-text-color) !important; /* Textfarbe (hellrot) */
+    background-color: var(--lumo-error-color-10pct); /* Light red background */
+    color: var(--lumo-error-text-color) !important; /* Text color (light red) */
 }
 
 .pharmalink-view .master-content vaadin-grid-cell[part="cell"].status-cell-angelegt {
-    background-color: hsl(45, 100%, 85%); /* Sehr hellgelber Hintergrund */
-    color: hsl(45, 100%, 30%) !important; /* Textfarbe (dunkelgelb/orange) */
+    background-color: hsl(45, 100%, 85%); /* Very light yellow background */
+    color: hsl(45, 100%, 30%) !important; /* Text color (dark yellow/orange) */
 }
 
 .pharmalink-view .master-content vaadin-grid-cell[part="cell"].status-cell-unbekannt {
-    background-color: var(--lumo-contrast-5pct); /* Sehr heller grauer Hintergrund */
-    color: var(--lumo-disabled-text-color) !important; /* Textfarbe (grau) */
+    background-color: var(--lumo-contrast-5pct); /* Very light gray background */
+    color: var(--lumo-disabled-text-color) !important; /* Text color (gray) */
 }
 
-/* Falls der Text in der Zelle immer noch nicht die Farbe annimmt, müssen wir den Inhalt selbst ansprechen */
+/* If the text inside the cell still does not take the color, target the inner content directly */
 .pharmalink-view .master-content vaadin-grid-cell[part="cell"].status-cell-freigegeben > div {
     color: var(--lumo-success-text-color) !important;
 }
@@ -205,7 +205,7 @@ html {
 /* src/main/frontend/themes/pharmalink-client/views/actor-explorer-view.css */
 
 .actor-explorer-view {
-    /* Bestehende Stile beibehalten */
+    /* Keep existing styles */
     padding: 0;
     box-sizing: border-box;
     display: flex;
@@ -221,17 +221,17 @@ html {
 }
 
 .actor-explorer-view .actor-master-content {
-    /* Basiseinstellungen von MasterContent.java übernommen */
-    border-right: 1px solid var(--lumo-contrast-10pct); /* Trennlinie zum Detailbereich */
-    overflow-y: auto; /* Scrollbar, falls der Inhalt zu lang wird */
+    /* Base settings inherited from MasterContent.java */
+    border-right: 1px solid var(--lumo-contrast-10pct); /* Divider line to the detail area */
+    overflow-y: auto; /* Scrollbar if content becomes too long */
 }
 
 .actor-explorer-view .actor-detail-content {
-    /* Basiseinstellungen von DetailContent.java übernommen */
-    overflow-y: auto; /* Scrollbar, falls der Inhalt zu lang wird */
+    /* Base settings inherited from DetailContent.java */
+    overflow-y: auto; /* Scrollbar if content becomes too long */
 }
 
-/* Stil für die IPFS Daten Tabelle */
+/* Style for the IPFS data table */
 .actor-explorer-view .actor-detail-content .ipfs-data-container {
     margin-top: var(--lumo-space-l);
     border-top: 1px solid var(--lumo-contrast-10pct);
@@ -243,46 +243,46 @@ html {
     margin-bottom: var(--lumo-space-s);
 }
 
-/* Für die Abrundung der Karten - stellen Sie sicher, dass lumoImports in theme.json korrekt ist */
+/* For card rounding - ensure lumoImports in theme.json is correct */
 .border-radius-l {
-    border-radius: var(--lumo-border-radius-l, 1em); /* Fallback auf 1em, falls Lumo-Variable nicht geladen */
+    border-radius: var(--lumo-border-radius-l, 1em); /* Fallback to 1em if Lumo variable is not loaded */
 }
 
-/* Für die schmaleren Statistikfelder */
+/* For narrower statistics fields */
 .stat-value-field {
-    width: 80px; /* Eine feste, schmale Breite */
-    /* Oder: width: min-content; max-width: 100px; */
+    width: 80px; /* A fixed, narrow width */
+    /* Or: width: min-content; max-width: 100px; */
 }
 
-/* Optional: Um sicherzustellen, dass Label nicht abgeschnitten wird, wenn Feld sehr schmal ist */
+/* Optional: Ensure label is not truncated when the field is very narrow */
 .stat-value-field label {
-    white-space: normal; /* Erlaubt Zeilenumbruch für lange Labels */
-    word-break: break-word; /* Bricht Wörter um */
-    max-width: 100%; /* Stellt sicher, dass das Label nicht überläuft */
+    white-space: normal; /* Allows line wrapping for long labels */
+    word-break: break-word; /* Wraps words */
+    max-width: 100%; /* Ensures the label does not overflow */
 }
 
-/* Ersetzt die alten dashboard-view-Regeln für Ränder */
+/* Replaces the old dashboard-view rules for borders */
 .dashboard-view vaadin-board-row > * {
-    border: none; /* Entfernt die alten Ränder */
+    border: none; /* Removes the old borders */
 }
 
-/* Neuer, moderner Stil für unsere Dashboard-Karten */
+/* New, modern style for our dashboard cards */
 .dashboard-card {
-    background-color: var(--lumo-contrast-5pct); /* Leicht grauer Hintergrund */
-    border-radius: var(--lumo-border-radius-l);   /* Stärkere Abrundung der Ecken */
-    box-shadow: var(--lumo-box-shadow-s);         /* Subtiler Schatten */
-    padding: var(--lumo-space-l);                 /* Einheitlicher Innenabstand */
+    background-color: var(--lumo-contrast-5pct); /* Light gray background */
+    border-radius: var(--lumo-border-radius-l);   /* Stronger corner rounding */
+    box-shadow: var(--lumo-box-shadow-s);         /* Subtle shadow */
+    padding: var(--lumo-space-l);                 /* Uniform inner padding */
 }
 
-/* Stil für die Statistik-Werte */
+/* Style for the statistics values */
 .stat-value-field {
     font-size: var(--lumo-font-size-xl);
     font-weight: 500;
 }
 
 .qr-code-image {
-    border-radius: var(--lumo-border-radius-xl); /* Starke Abrundung */
-    overflow: hidden; /* Stellt sicher, dass die scharfen Ecken des Bildes abgeschnitten werden */
+    border-radius: var(--lumo-border-radius-xl); /* Strong rounding */
+    overflow: hidden; /* Ensures sharp image corners are clipped */
 }
 
 /* In src/main/frontend/themes/pharmalink-client/styles.css or a new file */
@@ -353,7 +353,7 @@ html {
     --vaadin-split-layout-splitter-position: 75%; /* Ensure 75% for left, 25% for right */
 }
 
-/* For the right-side content container (Chargeninformationen) */
+/* For the right-side content container (Batch Information) */
 .unit-information-content {
     /* The background color is set in Java, but can be overridden here too */
     background-color: var(--lumo-base-color);
@@ -395,7 +395,7 @@ html {
     --vaadin-split-layout-splitter-position: 75%; /* Ensure 75% for left, 25% for right */
 }
 
-/* For the right-side content container (Chargeninformationen) */
+/* For the right-side content container (Batch Information) */
 .unit-information-content {
     background-color: var(--lumo-base-color); /* Set background to white */
     padding: var(--lumo-space-m);
@@ -452,7 +452,7 @@ html {
     max-height: 200px; /* Still useful to constrain total table height */
     overflow-y: auto;
 
-    /* Remove width: fit-content; if set previously, as setFlexGrow(0) on 'Anzahl' column and flex-grow(1) on 'Charge' is more robust */
+    /* Remove width: fit-content; if set previously, as setFlexGrow(0) on the 'Quantity' column and flex-grow(1) on 'Batch' is more robust */
     /* If the grid still stretches, you can try combinations of max-width or specific width here,
        but the flex-grow on columns is usually preferred for Vaadin Grids. */
     width: 100%; /* Allow it to occupy full width *if needed*, but columns inside control their sizing */
@@ -461,18 +461,18 @@ html {
 }
 
 /* Optional: To ensure the grid header cells also align properly if setAlign(END) isn't enough */
-.unit-information-content vaadin-grid th[part~="header-cell"]:has(span:contains("Anzahl")) {
+.unit-information-content vaadin-grid th[part~="header-cell"]:has(span:contains("Quantity")) {
     text-align: right;
 }
 
 /* Optional: To ensure grid cell content itself is right-aligned for numbers */
-.unit-information-content vaadin-grid td[part~="cell"]:last-child { /* Assuming Anzahl is always the last column */
+.unit-information-content vaadin-grid td[part~="cell"]:last-child { /* Assuming Quantity is always the last column */
     text-align: right;
 }
 
 /* In src/main/frontend/themes/pharmalink-client/views/medikamente-view.css */
 
-/* For the right-side content container (Chargeninformationen) */
+/* For the right-side content container (Batch Information) */
 .unit-information-content {
     background-color: var(--lumo-base-color);
     padding: var(--lumo-space-m);
@@ -507,13 +507,13 @@ html {
     flex-shrink: 1; /* Allow it to shrink if needed */
 }
 
-/* Optional: Ensure header cells are left-aligned for 'Anzahl' as well */
-.unit-information-content vaadin-grid th[part~="header-cell"]:has(span:contains("Anzahl")) {
+/* Optional: Ensure header cells are left-aligned for 'Quantity' as well */
+.unit-information-content vaadin-grid th[part~="header-cell"]:has(span:contains("Quantity")) {
     text-align: left; /* Explicitly left align header text */
 }
 
-/* Optional: Ensure data cells are left-aligned for 'Anzahl' */
-.unit-information-content vaadin-grid td[part~="cell"][aria-colindex="2"] { /* Assuming Anzahl is the second column */
+/* Optional: Ensure data cells are left-aligned for 'Quantity' */
+.unit-information-content vaadin-grid td[part~="cell"][aria-colindex="2"] { /* Assuming Quantity is the second column */
     text-align: left; /* Explicitly left align cell content */
 }
 
@@ -567,7 +567,7 @@ html {
     text-align: left; /* Default all data cells to left */
 }
 
-/* If you need specific alignment for the 'Anzahl' column, even with text-align: START in Java */
+/* If you need specific alignment for the 'Quantity' column, even with text-align: START in Java */
 .unit-information-content vaadin-grid [part~="header-cell"][column-id="anzahl"],
 .unit-information-content vaadin-grid [part~="cell"][column-id="anzahl"] {
     text-align: left;
@@ -580,7 +580,7 @@ html {
 
 /* In src/main/frontend/themes/pharmalink-client/views/medikamente-view.css */
 
-/* For the right-side content container (Chargeninformationen) */
+/* For the right-side content container (Batch Information) */
 .unit-information-content {
     background-color: var(--lumo-base-color); /* White background */
     padding: var(--lumo-space-m);
@@ -629,9 +629,9 @@ html {
 }
 
 .dashboard-view .dashboard-card {
-    /* Entfernt den Schatten-Effekt komplett */
+    /* Removes the shadow effect completely */
     box-shadow: none !important;
 
-    /* Optional: Entfernt auch den feinen Rand für einen komplett flachen Look */
+    /* Optional: Also removes the subtle border for a completely flat look */
     border: none !important;
 }

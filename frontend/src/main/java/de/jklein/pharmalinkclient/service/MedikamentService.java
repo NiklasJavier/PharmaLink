@@ -44,7 +44,7 @@ public class MedikamentService {
         if (jwt != null && !jwt.isEmpty()) {
             headers.setBearerAuth(jwt);
         } else {
-            log.warn("Kein JWT-Token in der UserSession verfügbar. Authentifizierung erforderlich.");
+            log.warn("No JWT token available in UserSession. Authentication required.");
             return new HttpEntity<>(headers);
         }
         return new HttpEntity<>(headers);
@@ -57,7 +57,7 @@ public class MedikamentService {
         if (jwt != null && !jwt.isEmpty()) {
             headers.setBearerAuth(jwt);
         } else {
-            log.warn("Kein JWT-Token in der UserSession verfügbar. Authentifizierung erforderlich.");
+            log.warn("No JWT token available in UserSession. Authentication required.");
         }
         return new HttpEntity<>(body, headers);
     }
@@ -68,7 +68,7 @@ public class MedikamentService {
         if (criteria.getSearchTerm() != null && !criteria.getSearchTerm().isEmpty()) {
             uriBuilder.queryParam("query", criteria.getSearchTerm());
         }
-        if (criteria.getStatusFilter() != null && !criteria.getStatusFilter().isEmpty() && !criteria.getStatusFilter().equals("Ohne Filter")) {
+        if (criteria.getStatusFilter() != null && !criteria.getStatusFilter().isEmpty() && !criteria.getStatusFilter().equals("No Filter")) {
             uriBuilder.queryParam("status", criteria.getStatusFilter());
         }
         if (criteria.isFilterByCurrentActor()) {
@@ -76,7 +76,7 @@ public class MedikamentService {
         }
 
         String url = uriBuilder.toUriString();
-        log.info("Sende GET-Anfrage für Medikamente an URL: {}", url);
+        log.info("Sending GET request for medications to URL: {}", url);
         HttpEntity<String> entity = createHttpEntityWithJwt();
 
         try {
@@ -88,20 +88,20 @@ public class MedikamentService {
             );
             if (response.getBody() != null) {
                 List<MedikamentResponseDto> result = Arrays.asList(response.getBody());
-                log.info("Erfolgreich {} Medikamenten-Einträge erhalten.", result.size());
+                log.info("Successfully retrieved {} medication entries.", result.size());
                 return result;
             }
         } catch (HttpClientErrorException e) {
-            log.error("Fehler beim Suchen/Filtern der Medikamente: {} {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
+            log.error("Error searching/filtering medications: {} {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
         } catch (Exception e) {
-            log.error("Allgemeiner Fehler beim Suchen/Filtern der Medikamente: {}", e.getMessage(), e);
+            log.error("General error searching/filtering medications: {}", e.getMessage(), e);
         }
         return Collections.emptyList();
     }
 
     public MedikamentResponseDto getMedikamentById(String medId) {
         String url = backendConfig.getBaseUrl() + "/v1/medications/" + medId;
-        log.info("Sende GET-Anfrage für Medikament ID {} an URL: {}", medId, url);
+        log.info("Sending GET request for medication ID {} to URL: {}", medId, url);
         HttpEntity<String> entity = createHttpEntityWithJwt();
 
         try {
@@ -111,26 +111,26 @@ public class MedikamentService {
                     entity,
                     MedikamentResponseDto.class
             );
-            log.info("Medikament mit ID {} erfolgreich abgerufen.", medId);
+            log.info("Medication with ID {} successfully retrieved.", medId);
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            log.error("Fehler beim Laden des Medikaments mit ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
+            log.error("Error loading medication with ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
         } catch (Exception e) {
-            log.error("Allgemeiner Fehler beim Laden des Medikaments mit ID: {}", e.getMessage(), e);
+            log.error("General error loading medication by ID: {}", e.getMessage(), e);
         }
         return null;
     }
 
     public MedikamentResponseDto createMedikament(CreateMedikamentRequestDto request) {
         String url = backendConfig.getBaseUrl() + "/v1/medications";
-        log.info("Sende POST-Anfrage zum Erstellen eines Medikaments an URL: {}", url);
+        log.info("Sending POST request to create a medication to URL: {}", url);
         HttpEntity<CreateMedikamentRequestDto> entity = createHttpEntityWithJwtAndBody(request);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT);
             String jsonOutput = mapper.writeValueAsString(request);
-            log.debug("----- Ausgehendes JSON für Medikament-Erstellung -----\n{}\n--------------------------------------------------", jsonOutput);
+            log.debug("----- Outgoing JSON for medication creation -----\n{}\n--------------------------------------------------", jsonOutput);
 
             ResponseEntity<MedikamentResponseDto> response = restTemplate.exchange(
                     url,
@@ -138,27 +138,27 @@ public class MedikamentService {
                     entity,
                     MedikamentResponseDto.class
             );
-            log.info("Medikament erfolgreich erstellt. Response Body: {}", response.getBody());
+            log.info("Medication successfully created. Response body: {}", response.getBody());
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            log.error("Fehler beim Erstellen des Medikaments: {} {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
+            log.error("Error creating medication: {} {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
             return null;
         } catch (Exception e) {
-            log.error("Allgemeiner Fehler beim Erstellen des Medikaments: {}", e.getMessage(), e);
+            log.error("General error creating medication: {}", e.getMessage(), e);
             return null;
         }
     }
 
     public MedikamentResponseDto updateMedikament(String medId, UpdateMedikamentRequestDto request) {
         String url = backendConfig.getBaseUrl() + "/v1/medications/" + medId;
-        log.info("Sende PUT-Anfrage zum Aktualisieren von Medikament ID {} an URL: {}", medId, url);
+        log.info("Sending PUT request to update medication ID {} to URL: {}", medId, url);
         HttpEntity<UpdateMedikamentRequestDto> entity = createHttpEntityWithJwtAndBody(request);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT);
             String jsonOutput = mapper.writeValueAsString(request);
-            log.debug("----- Ausgehendes JSON für Medikament-Update -----\n{}\n--------------------------------------------------", jsonOutput);
+            log.debug("----- Outgoing JSON for medication update -----\n{}\n--------------------------------------------------", jsonOutput);
 
             ResponseEntity<MedikamentResponseDto> response = restTemplate.exchange(
                     url,
@@ -166,20 +166,20 @@ public class MedikamentService {
                     entity,
                     MedikamentResponseDto.class
             );
-            log.info("Medikament mit ID {} erfolgreich aktualisiert. Response Body: {}", medId, response.getBody());
+            log.info("Medication with ID {} successfully updated. Response body: {}", medId, response.getBody());
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            log.error("Fehler beim Aktualisieren des Medikaments mit ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
+            log.error("Error updating medication with ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
             return null;
         } catch (Exception e) {
-            log.error("Allgemeiner Fehler beim Aktualisieren des Medikaments: {}", e.getMessage(), e);
+            log.error("General error updating medication: {}", e.getMessage(), e);
         }
         return null;
     }
 
     public boolean approveMedication(String medId, UpdateMedicationStatusRequestDto request) {
         String url = backendConfig.getBaseUrl() + "/v1/medications/" + medId + "/approval";
-        log.info("Sende POST-Anfrage zum Genehmigen/Ablehnen von Medikament ID {} an URL: {}", medId, url);
+        log.info("Sending POST request to approve/reject medication ID {} to URL: {}", medId, url);
         HttpEntity<UpdateMedicationStatusRequestDto> entity = createHttpEntityWithJwtAndBody(request);
 
         try {
@@ -189,20 +189,20 @@ public class MedikamentService {
                     entity,
                     Void.class
             );
-            log.info("Medikament mit ID {} erfolgreich genehmigt/abgelehnt.", medId);
+            log.info("Medication with ID {} successfully approved/rejected.", medId);
             return true;
         } catch (HttpClientErrorException e) {
-            log.error("Fehler beim Genehmigen/Ablehnen des Medikaments mit ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
+            log.error("Error approving/rejecting medication with ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
             return false;
         } catch (Exception e) {
-            log.error("Allgemeiner Fehler beim Genehmigen/Ablehnen des Medikaments: {}", e.getMessage(), e);
+            log.error("General error approving/rejecting medication: {}", e.getMessage(), e);
             return false;
         }
     }
 
     public boolean deleteMedikamentIfNoUnits(String medId) {
         String url = backendConfig.getBaseUrl() + "/v1/medications/" + medId + "/conditional-delete";
-        log.info("Sende DELETE-Anfrage zum bedingten Löschen von Medikament ID {} an URL: {}", medId, url);
+        log.info("Sending DELETE request for conditional deletion of medication ID {} to URL: {}", medId, url);
         HttpEntity<String> entity = createHttpEntityWithJwt();
 
         try {
@@ -212,13 +212,13 @@ public class MedikamentService {
                     entity,
                     Void.class
             );
-            log.info("Medikament mit ID {} erfolgreich bedingt gelöscht.", medId);
+            log.info("Medication with ID {} successfully conditionally deleted.", medId);
             return true;
         } catch (HttpClientErrorException e) {
-            log.error("Fehler beim bedingten Löschen des Medikaments mit ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
+            log.error("Error conditionally deleting medication with ID '{}': {} {}", medId, e.getStatusCode(), e.getResponseBodyAsString(), e);
             return false;
         } catch (Exception e) {
-            log.error("Allgemeiner Fehler beim bedingten Löschen des Medikaments: {}", e.getMessage(), e);
+            log.error("General error conditionally deleting medication: {}", e.getMessage(), e);
             return false;
         }
     }
