@@ -1,6 +1,6 @@
 # Contributing to PharmaLink
 
-Contributions, documentation improvements, and bug fixes are welcome.
+> **Maintenance Note:** PharmaLink originated as a completed Bachelor's thesis project and is no longer actively developed or maintained. Feel free to fork the repository for your own experiments; upstream pull requests are reviewed only on a best-effort basis.
 
 ## Development Workflow
 

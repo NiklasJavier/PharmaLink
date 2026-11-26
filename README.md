@@ -5,6 +5,7 @@
 **Language:** **English** | [Deutsch](./README.de.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+![Status: Completed (Bachelor's Thesis)](https://img.shields.io/badge/Status-Completed%20%28Bachelor%27s%20Thesis%29-6c757d)
 [![CI](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/PharmaLink/actions/workflows/ci.yml)
 [![Java](https://img.shields.io/badge/Java-21%20%28App%29%20%7C%2011%20%28Chaincode%29-ED8B00?logo=openjdk&logoColor=white)](./build.gradle)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white)](./build.gradle)
@@ -16,7 +17,7 @@
 ---
 
 > [!NOTE]
-> **Project Context:** PharmaLink is an early engineering prototype built as a test and evaluation platform for federated pharmaceutical traceability. The repository uses local Hyperledger Fabric test-network CAs and default development credentials documented in [`SECURITY.md`](./SECURITY.md); do not deploy unmodified defaults to production.
+> **Project Context:** PharmaLink originated as a Bachelor's thesis project exploring permissioned blockchain traceability in pharmaceutical supply chains. The repository is **completed and no longer actively maintained or developed further**, and remains public as a reference implementation. It uses local Hyperledger Fabric test-network CAs and default development credentials documented in [`SECURITY.md`](./SECURITY.md); do not deploy unmodified defaults to production.
 
 ## Visual Overview
 
@@ -152,8 +153,8 @@ source ./scripts/roles/fabric_role_behoerde.sh
 | [frontend/README.md](./frontend/README.md) | Vaadin 24 client UI routes, state management, QR generation, and theme setup |
 | [evaluation/README.md](./evaluation/README.md) | Captured ledger block snapshots, MSP archive, and OpenAPI artifact guide |
 
-## Contributing, Security & License
+## Reference Status, Security & License
 
-- Contributions and cleanups are welcome via [CONTRIBUTING.md](./CONTRIBUTING.md).
-- For security posture and test-credential boundaries, read [SECURITY.md](./SECURITY.md).
-- Released under the [MIT License](./LICENSE).
+- **Status:** Completed Bachelor's thesis prototype; preserved as an open reference with no ongoing development (see [CONTRIBUTING.md](./CONTRIBUTING.md) for local build checks when experimenting on a fork).
+- **Security:** Test-credential boundaries and hardening notes are documented in [SECURITY.md](./SECURITY.md).
+- **License:** Released under the [MIT License](./LICENSE).
