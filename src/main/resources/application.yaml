@@ -2,12 +2,13 @@ logging:
   level:
     root: INFO
     de.jklein.pharmalink: INFO
+
 spring:
   application:
     name: pharmalink
   data:
     mongodb:
-      uri: mongodb://user:user@localhost:27017/pharmalinkdb?authSource=admin
+      uri: ${MONGODB_URI:mongodb://user:user@localhost:27017/pharmalinkdb?authSource=admin}
   thymeleaf:
     cache: false
     prefix: classpath:/web/
@@ -15,6 +16,8 @@ spring:
     mode: HTML
     encoding: UTF-8
     enabled: true
+
+# Test-network development credentials only. Override JWT_SECRET, SYSTEM_PASSWORD, and app.initial-users in non-local deployments.
 app:
   initial-users:
     - username: admin
@@ -24,12 +27,12 @@ app:
         - ROLE_ADMIN
 
 jwt:
-  secret: a3NkYXNkODMxMm5Bc2RqMm5yQXNkbWtkbGZOQURmOTIzZWtKQVNEa21scGdBRGFTRGc=
-  expiration: 3600000
+  secret: ${JWT_SECRET:a3NkYXNkODMxMm5Bc2RqMm5yQXNkbWtkbGZOQURmOTIzZWtKQVNEa21scGdBRGFTRGc=}
+  expiration: ${JWT_EXPIRATION:3600000}
 
 system:
-  benutzername: admin
-  passwort: admin123
+  benutzername: ${SYSTEM_USERNAME:admin}
+  passwort: ${SYSTEM_PASSWORD:admin123}
 
 springdoc:
   info:
@@ -38,22 +41,25 @@ springdoc:
     path: /api/swagger
   api-docs:
     path: /api/api-docs
+
 actor:
-  bezeichnung: company2
+  bezeichnung: ${ACTOR_NAME:company2}
+
 fabric:
-  msp-id: Org1MSP
-  crypto-path: /Users/niklas/pharmalink/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com
-  cert-path: users/hersteller-user1@org1.example.com/msp/signcerts
-  key-dir-path: users/hersteller-user1@org1.example.com/msp/keystore
-  tls-cert-path: peers/peer0.org1.example.com/tls/ca.crt
+  msp-id: ${FABRIC_MSP_ID:Org1MSP}
+  crypto-path: ${FABRIC_CRYPTO_PATH:./fabric-samples/test-network/organizations/peerOrganizations/org1.example.com}
+  cert-path: ${FABRIC_CERT_PATH:users/hersteller-user1@org1.example.com/msp/signcerts}
+  key-dir-path: ${FABRIC_KEY_DIR_PATH:users/hersteller-user1@org1.example.com/msp/keystore}
+  tls-cert-path: ${FABRIC_TLS_CERT_PATH:peers/peer0.org1.example.com/tls/ca.crt}
   peer:
-    endpoint: node.d1.navine.tech:7051
-    override-auth: peer0.org1.example.com
-  channel-name: pharmalink
-  chaincode-name: pharmalink_chaincode_main
+    endpoint: ${FABRIC_PEER_ENDPOINT:localhost:7051}
+    override-auth: ${FABRIC_PEER_OVERRIDE_AUTH:peer0.org1.example.com}
+  channel-name: ${FABRIC_CHANNEL_NAME:pharmalink}
+  chaincode-name: ${FABRIC_CHAINCODE_NAME:pharmalink_chaincode_main}
+
 ipfs:
-  email: ipfs@example.com
+  email: ${IPFS_EMAIL:ipfs@example.com}
   ipfs-link: null
-  host: localhost
-  port: 5001
-  timeout: 3
+  host: ${IPFS_HOST:localhost}
+  port: ${IPFS_PORT:5001}
+  timeout: ${IPFS_TIMEOUT:3}

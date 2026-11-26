@@ -1,8 +1,5 @@
-version: '3.7'
-
 services:
   pharmalink:
-    #image: ghcr.io/niklasjavier/pharmalink:latest
     build:
       context: ./../.
       dockerfile: Dockerfile
@@ -11,8 +8,11 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      system.benutzername: "admin"
-      system.passwort: "admin123"
+      SYSTEM_USERNAME: "${SYSTEM_USERNAME:-admin}"
+      SYSTEM_PASSWORD: "${SYSTEM_PASSWORD:-admin123}"
+      MONGODB_URI: "mongodb://user:user@mongodb:27017/pharmalinkdb?authSource=admin"
+      IPFS_HOST: "ipfs"
+      FABRIC_PEER_ENDPOINT: "${FABRIC_PEER_ENDPOINT:-host.docker.internal:7051}"
     ports:
       - "8080:8080"
     volumes:
@@ -26,17 +26,14 @@ services:
       - ipfs
 
   pharmalink-ui:
-    #image: ghcr.io/niklasjavier/pharmalink-ui:latest
     build:
       context: ./../frontend/.
       dockerfile: Dockerfile
     container_name: app-pharmalink-ui
     ports:
       - "3000:8083"
-    volumes:
-      - ./pharmalink-ui:/app/config:ro
     environment:
-      - BACKEND_BASEURL=http://app-pharmalink:8080/api
+      - BACKEND_BASEURL=${BACKEND_BASEURL:-http://app-pharmalink:8080/api}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
@@ -46,11 +43,11 @@ services:
       - pharmalink
 
   ipfs:
-    image: ipfs/go-ipfs:latest
+    image: ipfs/kubo:v0.29.0
     container_name: app-ipfs_node
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./pharmalink/ipfs/ipfs_data:/data/ipfs
       - ./pharmalink/ipfs/staging:/export
@@ -65,12 +62,12 @@ services:
   mongodb:
     image: mongo:latest
     container_name: app-mongo
-    restart: always
+    restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: user
-      MONGO_INITDB_ROOT_PASSWORD: user
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-user}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-user}
       MONGO_INITDB_DATABASE: pharmalinkdb
     ports:
       - "27017:27017"

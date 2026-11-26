@@ -6,20 +6,21 @@ springdoc:
   api-docs:
     path: "/api-docs"
 
+# Test-network development credentials only. Override JWT_SECRET, SYSTEM_PASSWORD, and app.initial-users outside local test networks.
 system:
-  benutzername: "admin"
-  passwort: "admin123"
+  benutzername: "${SYSTEM_USERNAME:admin}"
+  passwort: "${SYSTEM_PASSWORD:admin123}"
 
-jwt: #  Base64 wie ksdasd8312nAsdj2nrAsdmkdlfNADf923ekJASDkmlpgADaSDg
-  secret: a3NkYXNkODMxMm5Bc2RqMm5yQXNkbWtkbGZOQURmOTIzZWtKQVNEa21scGdBRGFTRGc=
-  expiration: 3600000
+jwt:
+  secret: "${JWT_SECRET:a3NkYXNkODMxMm5Bc2RqMm5yQXNkbWtkbGZOQURmOTIzZWtKQVNEa21scGdBRGFTRGc=}"
+  expiration: ${JWT_EXPIRATION:3600000}
 
 spring:
   application:
     name: "pharmalink"
   data:
     mongodb:
-      uri: "mongodb://user:user@host.docker.internal:27017/pharmalinkdb?authSource=admin"
+      uri: "${MONGODB_URI:mongodb://user:user@mongodb:27017/pharmalinkdb?authSource=admin}"
   thymeleaf:
     prefix: "classpath:/web/"
     suffix: ".html"
@@ -38,23 +39,23 @@ app:
         - "ROLE_ADMIN"
 
 actor:
-  bezeichnung: "company2"
+  bezeichnung: "${ACTOR_NAME:company2}"
 
 fabric:
-  msp-id: "Org1MSP"
-  crypto-path: "/fabric-crypto/organizations/peerOrganizations/org1.example.com"
-  cert-path: "users/hersteller-user1@org1.example.com/msp/signcerts"
-  key-dir-path: "users/hersteller-user1@org1.example.com/msp/keystore"
-  tls-cert-path: "peers/peer0.org1.example.com/tls/ca.crt"
+  msp-id: "${FABRIC_MSP_ID:Org1MSP}"
+  crypto-path: "${FABRIC_CRYPTO_PATH:/fabric-crypto/organizations/peerOrganizations/org1.example.com}"
+  cert-path: "${FABRIC_CERT_PATH:users/hersteller-user1@org1.example.com/msp/signcerts}"
+  key-dir-path: "${FABRIC_KEY_DIR_PATH:users/hersteller-user1@org1.example.com/msp/keystore}"
+  tls-cert-path: "${FABRIC_TLS_CERT_PATH:peers/peer0.org1.example.com/tls/ca.crt}"
   peer:
-    endpoint: "node.d1.navine.tech:7051"
-    override-auth: "peer0.org1.example.com"
-  channel-name: "pharmalink"
-  chaincode-name: "pharmalink_chaincode_main"
+    endpoint: "${FABRIC_PEER_ENDPOINT:host.docker.internal:7051}"
+    override-auth: "${FABRIC_PEER_OVERRIDE_AUTH:peer0.org1.example.com}"
+  channel-name: "${FABRIC_CHANNEL_NAME:pharmalink}"
+  chaincode-name: "${FABRIC_CHAINCODE_NAME:pharmalink_chaincode_main}"
 
 ipfs:
-  email: "ipfs@example.com"
-  ipfs-link: "12"
-  host: "host.docker.internal"
-  port: "5001"
-  timeout: 3
+  email: "${IPFS_EMAIL:ipfs@example.com}"
+  ipfs-link: null
+  host: "${IPFS_HOST:ipfs}"
+  port: "${IPFS_PORT:5001}"
+  timeout: ${IPFS_TIMEOUT:3}

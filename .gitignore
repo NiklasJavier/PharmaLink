@@ -1,19 +1,14 @@
 # ===================================================================
-# Quarkus & Build-Tools (Maven / Gradle)
-# Von Quarkus und den Build-Tools generierte Dateien und Verzeichnisse
+# Build & Package Tools (Gradle)
 # ===================================================================
 
-# Build-Ausgabeverzeichnisse
+# Build output directories
 /build/
 /target/
+/frontend/build/
+/chaincode/*/build/
 
-# Quarkus spezifische Ausgabedateien
-/quarkus-app/
-*-runner
-*-runner.jar
-*-native-runner
-
-# Log-Dateien
+# Logs
 *.log
 hs_err_pid*
 
@@ -23,14 +18,20 @@ hs_err_pid*
 !/gradlew
 !/gradlew.bat
 
-# Maven
-.mvn/
-mvnw
-mvnw.cmd
+# ===================================================================
+# Hyperledger Fabric & Runtime Artifacts
+# ===================================================================
+/fabric-samples/
+/install-fabric.sh
+/bin/
+/config/
+/staging/
+/release-package/
+docker/pharmalink/ipfs/ipfs_data/
+docker/pharmalink/ipfs/staging/
 
 # ===================================================================
-# IDEs & Editoren
-# Projektspezifische Einstellungen von Entwicklungsumgebungen
+# IDEs & Editors
 # ===================================================================
 
 # IntelliJ IDEA
@@ -48,41 +49,22 @@ mvnw.cmd
 # Visual Studio Code
 .vscode/
 
-# NetBeans
-/nbproject/private/
-/build/
-/nbbuild/
-/dist/
-/nbdist/
-.nb-gradle/
-
 # ===================================================================
-# macOS Spezifisch
-# Vom Betriebssystem erstellte Metadaten- und Systemdateien
+# macOS & Windows OS Metadata
 # ===================================================================
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Resource Forks
 ._*
-
-# Papierkorb-Verzeichnisse auf externen Volumes
 .Trash-
 .Trashes
+Thumbs.db
+ehthumbs.db
 
 # ===================================================================
-# Sensible Daten & lokale Konfigurationen
-# Niemals Passwörter, API-Schlüssel oder lokale Overrides einchecken!
+# Local Secrets & Environment Overrides
+# Never commit passwords, API keys, or local overrides.
 # ===================================================================
 .env
 local.properties
 application-local.properties
-
-# ===================================================================
-# Sonstiges
-# ===================================================================
-
-# OS Thumbnail Caches (auch für Windows nützlich)
-Thumbs.db
-ehthumbs.db
